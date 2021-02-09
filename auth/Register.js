@@ -98,6 +98,12 @@ export default function Register({ navigation }) {
           </TouchableOpacity>
         }
       />
+      <Text>
+        Already have an account ?
+        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+          <Text>Log In</Text>
+        </TouchableOpacity>
+      </Text>
 
       <Button title="Login" onPress={() => validate()} />
       <Modal
