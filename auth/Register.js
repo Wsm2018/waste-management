@@ -82,7 +82,7 @@ export default function Register({ navigation }) {
 
   return (
     <View style={{flex:1}}>
-      <LinearGradient colors={['#4c669f', '#3b5998', '#192f6a']} style={styles.container}>
+      <LinearGradient colors={['#82c582', '#60bd90', '#50ba94']} style={styles.container}>
       {/* <Image
         style={{
           aspectRatio:1/1,
