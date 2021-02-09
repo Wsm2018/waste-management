@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { StyleSheet, LogBox } from "react-native";
 import firebase from "firebase";
 import "firebase/auth";
+import Welcome from "./auth/Welcome";
 import Login from "./auth/Login";
 import Register from "./auth/Register";
 import Home from "./app/Home";
@@ -15,9 +16,13 @@ import { createMaterialBottomTabNavigator } from "react-navigation-material-bott
 import { responsiveScreenHeight } from "react-native-responsive-dimensions";
 
 const AuthNavigator = createStackNavigator({
+  Welcome,
   Register,
-  Login,
-});
+  Login,  
+},{
+  headerMode:null
+}
+);
 
 const AuthContainer = createAppContainer(AuthNavigator);
 
