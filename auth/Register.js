@@ -1,7 +1,4 @@
 import React, { useEffect, useState } from "react";
-<<<<<<< Updated upstream
-import { View, Text, Button, TouchableOpacity, StyleSheet } from "react-native";
-=======
 import {
   View,
   Text,
@@ -11,7 +8,7 @@ import {
   TextInput,
   Image,
 } from "react-native";
->>>>>>> Stashed changes
+
 import { Input, Icon } from "react-native-elements";
 import firebase from "firebase";
 import "firebase/auth";
@@ -22,12 +19,9 @@ import {
   responsiveWidth,
   responsiveFontSize,
 } from "react-native-responsive-dimensions";
-<<<<<<< Updated upstream
-=======
+
 // import LinearGradient from 'react-native-linear-gradient';
 import { LinearGradient } from "expo-linear-gradient";
-import db from "../db";
->>>>>>> Stashed changes
 
 export default function Register({ navigation }) {
   const [email, setEmail] = useState("");
@@ -104,11 +98,6 @@ export default function Register({ navigation }) {
   };
 
   return (
-<<<<<<< Updated upstream
-    <View>
-      <Text>Register Screen</Text>
-      <Input placeholder="Email" label="Email" onChangeText={setEmail} />
-=======
     <View style={{ flex: 1 }}>
       <LinearGradient
         colors={["#4c669f", "#3b5998", "#192f6a"]}
@@ -124,7 +113,6 @@ export default function Register({ navigation }) {
       /> */}
         <Text>Register Screen</Text>
         <Input placeholder="Email" label="Email" onChangeText={setEmail} />
->>>>>>> Stashed changes
 
         <Input
           placeholder="Password"
@@ -141,17 +129,13 @@ export default function Register({ navigation }) {
             </TouchableOpacity>
           }
         />
+
         <Text>
           Already have an account ?
           <TouchableOpacity onPress={() => navigation.navigate("Login")}>
             <Text>Log In</Text>
           </TouchableOpacity>
-<<<<<<< Updated upstream
-        }
-      />
-=======
         </Text>
->>>>>>> Stashed changes
 
         <Button title="Login" onPress={() => validate()} />
         <Modal
@@ -176,16 +160,11 @@ export default function Register({ navigation }) {
               {modalMessage}
             </Text>
           </View>
-<<<<<<< Updated upstream
           <Text style={{ color: "white", fontWeight: "bold" }}>
             {modalMessage}
           </Text>
-        </View>
-      </Modal>
-=======
         </Modal>
       </LinearGradient>
->>>>>>> Stashed changes
     </View>
   );
 }
@@ -194,11 +173,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     // flexDirection: 'column',
-<<<<<<< Updated upstream
-    // justifyContent: 'center',
-=======
     justifyContent: "center",
->>>>>>> Stashed changes
   },
 
   modalContainer: {
