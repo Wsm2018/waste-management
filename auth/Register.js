@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Button, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, Button, TouchableOpacity, StyleSheet, TextInput, Image } from "react-native";
 import { Input, Icon } from "react-native-elements";
 import firebase from "firebase";
 import "firebase/auth";
@@ -10,6 +10,8 @@ import {
   responsiveWidth,
   responsiveFontSize,
 } from "react-native-responsive-dimensions";
+// import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function Register({ navigation }) {
   const [email, setEmail] = useState("");
@@ -79,7 +81,16 @@ export default function Register({ navigation }) {
   };
 
   return (
-    <View>
+    <View style={{flex:1}}>
+      <LinearGradient colors={['#82c582', '#60bd90', '#50ba94']} style={styles.container}>
+      {/* <Image
+        style={{
+          aspectRatio:1/1,
+          flex:0.5,
+          alignSelf:"center"
+        }}
+        source={require('../assets/bg1.png')}
+      /> */}
       <Text>Register Screen</Text>
       <Input placeholder="Email" label="Email" onChangeText={setEmail} />
 
@@ -98,6 +109,12 @@ export default function Register({ navigation }) {
           </TouchableOpacity>
         }
       />
+      <Text>
+        Already have an account ?
+        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+          <Text>Log In</Text>
+        </TouchableOpacity>
+      </Text>
 
       <Button title="Login" onPress={() => validate()} />
       <Modal
@@ -123,6 +140,7 @@ export default function Register({ navigation }) {
           </Text>
         </View>
       </Modal>
+      </LinearGradient>
     </View>
   );
 }
@@ -131,7 +149,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     // flexDirection: 'column',
-    // justifyContent: 'center',
+    justifyContent: 'center',
   },
 
   modalContainer: {
