@@ -48,30 +48,55 @@ export default function Login({ navigation }) {
   return (
     <View style={{ flex: 1 }}>
       <LinearGradient
-        colors={['#82c582', '#60bd90', '#50ba94']}
+        colors={['#4ff085', '#85ffae', '#c7fcd9']}
         style={styles.container}
       >
         <View style={{flex:1}}>
-          <Text>Login Screen</Text>
-          <Input placeholder="Email" label="Email" onChangeText={setEmail} />
+          <View style={{flex:0.7,justifyContent:'flex-end',alignItems:'center'}}>
+            <Text style={{fontSize:25,color:'#005c1f'}}>Login Screen</Text>
+          </View>
 
-          <Input
-            placeholder="Password"
-            label="Password"
-            secureTextEntry={!showPassword}
-            onChangeText={setPassword}
-            rightIcon={
-              <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                <Icon
-                  size={24}
-                  type="ionicon"
-                  name={showPassword ? 'eye-off-outline' : 'eye-outline'}
-                />
+          <View style={{flex:5.3,justifyContent:'center'}}>
+            <Input labelStyle={{color:'#005c1f'}}
+              placeholderTextColor={'#005c1f'} placeholder="Email" label="Email" onChangeText={setEmail} />
+
+            <Input
+              placeholder="Password"
+              label="Password"
+              secureTextEntry={!showPassword}
+              onChangeText={setPassword}
+              labelStyle={{color:'#005c1f'}}
+              placeholderTextColor={'#005c1f'}
+              rightIcon={
+                <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                  <Icon
+                    size={24}
+                    type="ionicon"
+                    name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                  />
+                </TouchableOpacity>
+              }
+            />
+            <Button color={'#005c1f'} title="Forgot Password" onPress={()=>navigation.navigate("Forgot")}/>
+            <Button color={'#005c1f'} title="New User? Register" onPress={()=>navigation.navigate("Register")}/>
+          </View>
+
+          <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
+            
+            <TouchableOpacity 
+            style={{justifyContent:'center',
+              alignItems:'center',
+              backgroundColor:'#a6edbe',
+              width:'90%',
+              borderRadius:20,
+              height:'80%'}} 
+              onPress={() => login()} >
+                <Text  style={{fontSize:25,color:'#005c1f'}}>Login</Text>
               </TouchableOpacity>
-            }
-          />
 
-          <Button title="Login" onPress={() => login()} />
+            {/* <View style={{backgroundColor:'red',width:'100%',height:'70%'}}>
+            </View> */}
+          </View>
         </View>
 
         {/* Error Message Modal */}

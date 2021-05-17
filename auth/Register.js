@@ -82,7 +82,7 @@ export default function Register({ navigation }) {
 
   return (
     <View style={{flex:1}}>
-      <LinearGradient colors={['#82c582', '#60bd90', '#50ba94']} style={styles.container}>
+      <LinearGradient colors={['#4ff085', '#85ffae', '#c7fcd9']} style={styles.container}>
       {/* <Image
         style={{
           aspectRatio:1/1,
@@ -91,32 +91,60 @@ export default function Register({ navigation }) {
         }}
         source={require('../assets/bg1.png')}
       /> */}
-      <Text>Register Screen</Text>
-      <Input placeholder="Email" label="Email" onChangeText={setEmail} />
+      <View style={{flex:1}}>
+        <View style={{flex:0.7,justifyContent:'flex-end',alignItems:'center'}}>
+          <Text style={{fontSize:25,color:'#005c1f'}}>Register Screen</Text>
+        </View>
 
-      <Input
-        placeholder="Password"
-        label="Password"
-        secureTextEntry={!showPassword}
-        onChangeText={setPassword}
-        rightIcon={
-          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-            <Icon
-              size={24}
-              type="ionicon"
-              name={showPassword ? "eye-off-outline" : "eye-outline"}
-            />
-          </TouchableOpacity>
-        }
-      />
-      <Text>
-        Already have an account ?
-        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-          <Text>Log In</Text>
-        </TouchableOpacity>
-      </Text>
+        <View style={{flex:5.3,justifyContent:'center'}}>
+          <Input 
+          labelStyle={{color:'#005c1f'}}
+            placeholderTextColor={'#005c1f'}
+            placeholder="Email" 
+            label="Email" 
+            onChangeText={setEmail} />
 
-      <Button title="Login" onPress={() => validate()} />
+          <Input
+            
+            placeholder="Password"
+            label="Password"
+            secureTextEntry={!showPassword}
+            onChangeText={setPassword}
+            labelStyle={{color:'#005c1f'}}
+            placeholderTextColor={'#005c1f'}
+            rightIcon={
+              <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                <Icon
+                  size={24}
+                  type="ionicon"
+                  name={showPassword ? "eye-off-outline" : "eye-outline"}
+                />
+              </TouchableOpacity>
+            }
+          />
+          
+          <Button color={'#005c1f'} title="Already Have an Account? Login" onPress={()=>navigation.navigate("Login")}/>
+        </View>
+
+    
+        <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
+              
+              <TouchableOpacity 
+              style={{justifyContent:'center',
+                alignItems:'center',
+                backgroundColor:'#a6edbe',
+                width:'90%',
+                borderRadius:20,
+                height:'80%'}} 
+                onPress={() => validate()} >
+                  <Text  style={{fontSize:25,color:'#005c1f'}}>Register</Text>
+                </TouchableOpacity>
+
+              {/* <View style={{backgroundColor:'red',width:'100%',height:'70%'}}>
+              </View> */}
+        </View>
+
+      </View>
       <Modal
         isVisible={isModalVisible}
         animationIn="fadeInUp"
