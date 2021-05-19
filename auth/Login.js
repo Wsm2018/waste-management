@@ -70,7 +70,7 @@ export default function Login({ navigation }) {
               </TouchableOpacity>
             }
           />
-
+        <Button title="Register Screen" onPress={()=> navigation.navigate("Register")} />
           <Button title="Login" onPress={() => login()} />
         </View>
 

@@ -116,7 +116,7 @@ export default function Register({ navigation }) {
         </TouchableOpacity>
       </Text>
 
-      <Button title="Login" onPress={() => validate()} />
+      <Button title="Regitser" onPress={() => validate()} />
       <Modal
         isVisible={isModalVisible}
         animationIn="fadeInUp"
