@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, Button, TouchableOpacity, StyleSheet } from 'react-native'
+import {
+  View,
+  Text,
+  Button,
+  TouchableOpacity,
+  StyleSheet,
+  TextInput,
+} from 'react-native'
 import { Input, Icon } from 'react-native-elements'
 import firebase from 'firebase'
 import 'firebase/auth'
@@ -11,6 +18,8 @@ import {
   responsiveFontSize,
 } from 'react-native-responsive-dimensions'
 import { LinearGradient } from 'expo-linear-gradient'
+import { colors } from '../app/common/theme'
+
 export default function Login({ navigation }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -46,13 +55,180 @@ export default function Login({ navigation }) {
   }
 
   return (
-    <View style={{ flex: 1 }}>
-      <LinearGradient
+    <View style={{ flex: 1, backgroundColor: colors.LIGHTGRAY }}>
+      {/* <LinearGradient
         colors={['#82c582', '#60bd90', '#50ba94']}
         style={styles.container}
-      >
-        <View style={{flex:1}}>
-          <Text>Login Screen</Text>
+      > */}
+      <View style={{ flex: 1 }}>
+        <View
+          style={{
+            flex: 1,
+            // backgroundColor: 'red',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+          }}
+        >
+          <View
+            style={{
+              width: '100%',
+              backgroundColor: colors.WHITE,
+              height: 60,
+              flexDirection: 'row',
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                width: '50%',
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderColor:colors.GREEN,
+                borderBottomWidth:4
+              }}
+            >
+              <Text style={{fontSize:20, color:colors.DARKGRAY}}>Login</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                width: '50%',
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderColor:colors.GREEN,
+                borderBottomWidth:4
+              }}
+            >
+              <Text>Sign Up</Text>
+            </TouchableOpacity>
+          </View>
+          {/* <Text
+            style={{
+              fontSize: 30,
+              borderBottomWidth: 4,
+              borderColor: colors.GREEN,
+              // backgroundColor:colors.WHITE,
+              width:"50%",
+              textAlign:"center"
+            }}
+          >
+            Log In
+          </Text> */}
+        </View>
+        <View
+          style={{
+            flex: 3,
+            // backgroundColor: 'yellow',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <View
+            style={{
+              width: '90%',
+              justifyContent: 'center',
+              marginBottom: '10%',
+            }}
+          >
+            <Text
+              style={{
+                fontWeight: 'bold',
+                fontSize: 16,
+                marginBottom: '5%',
+                color: colors.BLACK,
+              }}
+            >
+              Username
+            </Text>
+            <TextInput
+              style={{
+                backgroundColor: colors.WHITE,
+                height: 50,
+                borderRadius: 100,
+                paddingLeft: 15,
+                paddingRight: 15,
+              }}
+              onChangeText={setEmail}
+            />
+          </View>
+          <View
+            style={{
+              width: '90%',
+              justifyContent: 'center',
+            }}
+          >
+            <Text
+              style={{
+                fontWeight: 'bold',
+                fontSize: 16,
+                marginBottom: '5%',
+                color: colors.BLACK,
+              }}
+            >
+              Password
+            </Text>
+            <View
+              style={{
+                width: '100%',
+                flexDirection: 'row',
+                backgroundColor: colors.WHITE,
+                height: 50,
+                borderRadius: 100,
+                paddingLeft: 15,
+                paddingRight: 15,
+                alignItems: 'center',
+              }}
+            >
+              <TextInput
+                style={{
+                  // backgroundColor: colors.WHITE,
+                  // height: 50,
+                  // borderRadius: 100,
+                  // paddingLeft: 15,
+                  // paddingRight: 15,
+                  width: '90%',
+                }}
+                onChangeText={setPassword}
+                secureTextEntry={!showPassword}
+              />
+              <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                <Icon
+                  size={24}
+                  type="ionicon"
+                  name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View
+            style={{ width: '90%', alignItems: 'flex-end', marginTop: '3%' }}
+          >
+            <TouchableOpacity>
+              <Text style={{ color: colors.DARKGRAY }}>Forgot Password?</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View
+          style={{
+            flex: 1,
+            //  backgroundColor: 'red',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <TouchableOpacity
+            onPress={() => login()}
+            style={{
+              width: '80%',
+              backgroundColor: colors.GREEN,
+              height: 50,
+              justifyContent: 'center',
+              alignItems: 'center',
+              borderRadius: 100,
+            }}
+          >
+            <Text style={{ color: colors.WHITE, fontSize: 18 }}>Login</Text>
+          </TouchableOpacity>
+        </View>
+        {/* <Text>Login Screen</Text>
           <Input placeholder="Email" label="Email" onChangeText={setEmail} />
 
           <Input
@@ -71,34 +247,34 @@ export default function Login({ navigation }) {
             }
           />
         <Button title="Register Screen" onPress={()=> navigation.navigate("Register")} />
-          <Button title="Login" onPress={() => login()} />
-        </View>
+          <Button title="Login" onPress={() => login()} /> */}
+      </View>
 
-        {/* Error Message Modal */}
-        <Modal
-          isVisible={isModalVisible}
-          animationIn="fadeInUp"
-          animationOut="fadeOutDown"
-          hasBackdrop={false}
-          animationInTiming={1000}
-          animationOutTiming={1000}
-          style={{ flex: 1, justifyContent: 'flex-end' }}
-        >
-          <View style={styles.modalContainer}>
-            <View style={{ marginRight: 10 }}>
-              <Icon
-                type="material"
-                name="error-outline"
-                size={24}
-                color="white"
-              />
-            </View>
-            <Text style={{ color: 'white', fontWeight: 'bold' }}>
-              {modalMessage}
-            </Text>
+      {/* Error Message Modal */}
+      <Modal
+        isVisible={isModalVisible}
+        animationIn="fadeInUp"
+        animationOut="fadeOutDown"
+        hasBackdrop={false}
+        animationInTiming={1000}
+        animationOutTiming={1000}
+        style={{ flex: 1, justifyContent: 'flex-end' }}
+      >
+        <View style={styles.modalContainer}>
+          <View style={{ marginRight: 10 }}>
+            <Icon
+              type="material"
+              name="error-outline"
+              size={24}
+              color="white"
+            />
           </View>
-        </Modal>
-      </LinearGradient>
+          <Text style={{ color: 'white', fontWeight: 'bold' }}>
+            {modalMessage}
+          </Text>
+        </View>
+      </Modal>
+      {/* </LinearGradient> */}
     </View>
   )
 }
