@@ -63,19 +63,19 @@ export default function Register({ navigation }) {
       .auth()
       .createUserWithEmailAndPassword(email, password)
       .then((user) => {
-        console.log(user);
-        // firebase
-        //   .auth()
-        //   .collection("users")
-        //   .doc(user.user.uid)
-        //   .set({
-        //     emailVerified: user.user.emailVerified,
-        //     email: user.user.email,
-        //     phoneNumber: user.user.phoneNumber,
-        //     photoURL: user.user.photoURL,
-        //     created: user.user.metadata.creationTime,
-        //     displayName: user.user.email.split("@")[0],
-        //   });
+        //console.log(user);
+        firebase
+          .auth()
+          .collection("users")
+          .doc(user.user.uid)
+          .set({
+            emailVerified: user.user.emailVerified,
+            email: user.user.email,
+            phoneNumber: user.user.phoneNumber,
+            photoURL: user.user.photoURL,
+            created: user.user.metadata.creationTime,
+            displayName: user.user.email.split("@")[0],
+          });
         console.log("done");
       });
   };

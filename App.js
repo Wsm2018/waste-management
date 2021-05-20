@@ -8,6 +8,7 @@ import Login from "./auth/Login";
 import Register from "./auth/Register";
 import Home from "./app/Home";
 import Details from "./app/Details";
+import ScheduleManagement from "./app/ScheduleManagement";
 //import Forgot from "./auth/Forgot";
 import db from "./db";
 LogBox.ignoreAllLogs();
@@ -46,10 +47,20 @@ const DetailsStack = createStackNavigator(
   }
 );
 
+const ScheduleManagementStack = createStackNavigator(
+  {
+    ScheduleManagement,
+  },
+  {
+    headerMode: null,
+  }
+);
+
 const TabNavigator = createMaterialBottomTabNavigator(
   {
     Home: HomeStack,
     Details: DetailsStack,
+    ScheduleMng:ScheduleManagementStack
   },
   {
     // barStyle: {
