@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Button, TouchableOpacity, StyleSheet, TextInput, Image } from "react-native";
+import {
+  View,
+  Text,
+  Button,
+  TouchableOpacity,
+  StyleSheet,
+  TextInput,
+  Image,
+} from "react-native";
+
 import { Input, Icon } from "react-native-elements";
 import firebase from "firebase";
 import "firebase/auth";
@@ -10,8 +19,9 @@ import {
   responsiveWidth,
   responsiveFontSize,
 } from "react-native-responsive-dimensions";
+
 // import LinearGradient from 'react-native-linear-gradient';
-import { LinearGradient } from 'expo-linear-gradient';
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function Register({ navigation }) {
   const [email, setEmail] = useState("");
@@ -63,10 +73,7 @@ export default function Register({ navigation }) {
       .auth()
       .createUserWithEmailAndPassword(email, password)
       .then((user) => {
-        //console.log(user);
-        firebase
-          .auth()
-          .collection("users")
+        db.collection("users")
           .doc(user.user.uid)
           .set({
             emailVerified: user.user.emailVerified,
@@ -77,13 +84,26 @@ export default function Register({ navigation }) {
             displayName: user.user.email.split("@")[0],
           });
         console.log("done");
+      })
+      .catch((error) => {
+        if (error.code === "auth/email-already-in-use") {
+          setModalMessage("That email address is already in use!");
+          setIsModalVisible(true);
+        }
+        if (error.code === "auth/invalid-email") {
+          setModalMessage("That email address is invalid!");
+          setIsModalVisible(true);
+        }
       });
   };
 
   return (
-    <View style={{flex:1}}>
-      <LinearGradient colors={['#4ff085', '#85ffae', '#c7fcd9']} style={styles.container}>
-      {/* <Image
+    <View style={{ flex: 1 }}>
+      <LinearGradient
+        colors={["#4c669f", "#3b5998", "#192f6a"]}
+        style={styles.container}
+      >
+        {/* <Image
         style={{
           aspectRatio:1/1,
           flex:0.5,
@@ -91,83 +111,59 @@ export default function Register({ navigation }) {
         }}
         source={require('../assets/bg1.png')}
       /> */}
-      <View style={{flex:1}}>
-        <View style={{flex:0.7,justifyContent:'flex-end',alignItems:'center'}}>
-          <Text style={{fontSize:25,color:'#005c1f'}}>Register Screen</Text>
-        </View>
+        <Text>Register Screen</Text>
+        <Input placeholder="Email" label="Email" onChangeText={setEmail} />
 
-        <View style={{flex:5.3,justifyContent:'center'}}>
-          <Input 
-          labelStyle={{color:'#005c1f'}}
-            placeholderTextColor={'#005c1f'}
-            placeholder="Email" 
-            label="Email" 
-            onChangeText={setEmail} />
+        <Input
+          placeholder="Password"
+          label="Password"
+          secureTextEntry={!showPassword}
+          onChangeText={setPassword}
+          rightIcon={
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+              <Icon
+                size={24}
+                type="ionicon"
+                name={showPassword ? "eye-off-outline" : "eye-outline"}
+              />
+            </TouchableOpacity>
+          }
+        />
 
-          <Input
-            
-            placeholder="Password"
-            label="Password"
-            secureTextEntry={!showPassword}
-            onChangeText={setPassword}
-            labelStyle={{color:'#005c1f'}}
-            placeholderTextColor={'#005c1f'}
-            rightIcon={
-              <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                <Icon
-                  size={24}
-                  type="ionicon"
-                  name={showPassword ? "eye-off-outline" : "eye-outline"}
-                />
-              </TouchableOpacity>
-            }
-          />
-          
-          <Button color={'#005c1f'} title="Already Have an Account? Login" onPress={()=>navigation.navigate("Login")}/>
-        </View>
+        <Text>
+          Already have an account ?
+          <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+            <Text>Log In</Text>
+          </TouchableOpacity>
+        </Text>
 
-    
-        <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
-              
-              <TouchableOpacity 
-              style={{justifyContent:'center',
-                alignItems:'center',
-                backgroundColor:'#a6edbe',
-                width:'90%',
-                borderRadius:20,
-                height:'80%'}} 
-                onPress={() => validate()} >
-                  <Text  style={{fontSize:25,color:'#005c1f'}}>Register</Text>
-                </TouchableOpacity>
-
-              {/* <View style={{backgroundColor:'red',width:'100%',height:'70%'}}>
-              </View> */}
-        </View>
-
-      </View>
-      <Modal
-        isVisible={isModalVisible}
-        animationIn="fadeInUp"
-        animationOut="fadeOutDown"
-        hasBackdrop={false}
-        animationInTiming={1000}
-        animationOutTiming={1000}
-        style={{ flex: 1, justifyContent: "flex-end" }}
-      >
-        <View style={styles.modalContainer}>
-          <View style={{ marginRight: 10 }}>
-            <Icon
-              type="material"
-              name="error-outline"
-              size={24}
-              color="white"
-            />
+        <Button title="Login" onPress={() => validate()} />
+        <Modal
+          isVisible={isModalVisible}
+          animationIn="fadeInUp"
+          animationOut="fadeOutDown"
+          hasBackdrop={false}
+          animationInTiming={1000}
+          animationOutTiming={1000}
+          style={{ flex: 1, justifyContent: "flex-end" }}
+        >
+          <View style={styles.modalContainer}>
+            <View style={{ marginRight: 10 }}>
+              <Icon
+                type="material"
+                name="error-outline"
+                size={24}
+                color="white"
+              />
+            </View>
+            <Text style={{ color: "white", fontWeight: "bold" }}>
+              {modalMessage}
+            </Text>
           </View>
           <Text style={{ color: "white", fontWeight: "bold" }}>
             {modalMessage}
           </Text>
-        </View>
-      </Modal>
+        </Modal>
       </LinearGradient>
     </View>
   );
@@ -177,7 +173,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     // flexDirection: 'column',
-    justifyContent: 'center',
+    justifyContent: "center",
   },
 
   modalContainer: {
