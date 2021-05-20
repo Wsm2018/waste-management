@@ -5,11 +5,14 @@ import firebase from "firebase";
 import "firebase/auth";
 import "firebase/firestore";
 import Modal from "react-native-modal";
+import Constants from "expo-constants";
+
 import {
   responsiveHeight,
   responsiveWidth,
   responsiveFontSize,
 } from "react-native-responsive-dimensions";
+import { StatusBar } from "react-native";
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
@@ -45,8 +48,36 @@ export default function Login({ navigation }) {
     }
   };
 
+  const RenderModal = () => {
+    return (
+      <Modal
+        isVisible={isModalVisible}
+        animationIn="fadeInUp"
+        animationOut="fadeOutDown"
+        hasBackdrop={false}
+        animationInTiming={1000}
+        animationOutTiming={1000}
+        style={{ flex: 1, justifyContent: "flex-end" }}
+      >
+        <View style={styles.modalContainer}>
+          <View style={{ marginRight: 10 }}>
+            <Icon
+              type="material"
+              name="error-outline"
+              size={24}
+              color="white"
+            />
+          </View>
+          <Text style={{ color: "white", fontWeight: "bold" }}>
+            {modalMessage}
+          </Text>
+        </View>
+      </Modal>
+    );
+  };
+
   return (
-    <View>
+    <View style={styles.container}>
       <Text>Login Screen</Text>
       <Input placeholder="Email" label="Email" onChangeText={setEmail} />
 
@@ -97,6 +128,7 @@ export default function Login({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginTop: Constants.statusBarHeight,
     // flexDirection: 'column',
     // justifyContent: 'center',
   },
