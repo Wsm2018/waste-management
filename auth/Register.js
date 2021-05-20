@@ -98,74 +98,68 @@ export default function Register({ navigation }) {
   };
 
   return (
-    <View style={{ flex: 1 }}>
-      <LinearGradient
-        colors={["#4c669f", "#3b5998", "#192f6a"]}
-        style={styles.container}
-      >
-        {/* <Image
-        style={{
-          aspectRatio:1/1,
-          flex:0.5,
-          alignSelf:"center"
-        }}
-        source={require('../assets/bg1.png')}
-      /> */}
-        <Text>Register Screen</Text>
-        <Input placeholder="Email" label="Email" onChangeText={setEmail} />
+    <View></View>
+    // <View style={{flex:1}}>
+    //   <LinearGradient colors={['#82c582', '#60bd90', '#50ba94']} style={styles.container}>
+    //   {/* <Image
+    //     style={{
+    //       aspectRatio:1/1,
+    //       flex:0.5,
+    //       alignSelf:"center"
+    //     }}
+    //     source={require('../assets/bg1.png')}
+    //   /> */}
+    //     <Text>Register Screen</Text>
+    //     <Input placeholder="Email" label="Email" onChangeText={setEmail} />
 
-        <Input
-          placeholder="Password"
-          label="Password"
-          secureTextEntry={!showPassword}
-          onChangeText={setPassword}
-          rightIcon={
-            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-              <Icon
-                size={24}
-                type="ionicon"
-                name={showPassword ? "eye-off-outline" : "eye-outline"}
-              />
-            </TouchableOpacity>
-          }
-        />
+    //     <Input
+    //       placeholder="Password"
+    //       label="Password"
+    //       secureTextEntry={!showPassword}
+    //       onChangeText={setPassword}
+    //       rightIcon={
+    //         <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+    //           <Icon
+    //             size={24}
+    //             type="ionicon"
+    //             name={showPassword ? "eye-off-outline" : "eye-outline"}
+    //           />
+    //         </TouchableOpacity>
+    //       }
+    //     />
 
-        <Text>
-          Already have an account ?
-          <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-            <Text>Log In</Text>
-          </TouchableOpacity>
-        </Text>
+    //     <Text>
+    //       Already have an account ?
+    //       <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+    //         <Text>Log In</Text>
+    //       </TouchableOpacity>
+    //     </Text>
 
-        <Button title="Login" onPress={() => validate()} />
-        <Modal
-          isVisible={isModalVisible}
-          animationIn="fadeInUp"
-          animationOut="fadeOutDown"
-          hasBackdrop={false}
-          animationInTiming={1000}
-          animationOutTiming={1000}
-          style={{ flex: 1, justifyContent: "flex-end" }}
-        >
-          <View style={styles.modalContainer}>
-            <View style={{ marginRight: 10 }}>
-              <Icon
-                type="material"
-                name="error-outline"
-                size={24}
-                color="white"
-              />
-            </View>
-            <Text style={{ color: "white", fontWeight: "bold" }}>
-              {modalMessage}
-            </Text>
-          </View>
-          <Text style={{ color: "white", fontWeight: "bold" }}>
-            {modalMessage}
-          </Text>
-        </Modal>
-      </LinearGradient>
-    </View>
+    //   <Button title="Regitser" onPress={() => validate()} />
+    //   <Modal
+    //     isVisible={isModalVisible}
+    //     animationIn="fadeInUp"
+    //     animationOut="fadeOutDown"
+    //     hasBackdrop={false}
+    //     animationInTiming={1000}
+    //     animationOutTiming={1000}
+    //     style={{ flex: 1, justifyContent: "flex-end" }}
+    //   >
+    //     <View style={styles.modalContainer}>
+    //       <View style={{ marginRight: 10 }}>
+    //         <Icon
+    //           type="material"
+    //           name="error-outline"
+    //           size={24}
+    //           color="white"
+    //         />
+    //       </View>
+    //       <Text style={{ color: "white", fontWeight: "bold" }}>
+    //         {modalMessage}
+    //       </Text>
+    //     </Modal>
+    //   </LinearGradient>
+    // </View>
   );
 }
 
