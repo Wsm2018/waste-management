@@ -7,12 +7,13 @@ import {
     responsiveWidth,
     responsiveFontSize,
   } from "react-native-responsive-dimensions";
-  import * as Animatable from 'react-native-animatable';
-
+import * as Animatable from 'react-native-animatable';
+import { colors } from '../app/common/theme';
+  
 export default function Welcome({ navigation }) {
   return (
-    <View style={{ flex: 1}}>
-      <LinearGradient colors={['#82c582', '#60bd90', '#50ba94']} style={styles.container}>
+    <View style={styles.container}>
+      {/* <LinearGradient colors={['#82c582', '#60bd90', '#50ba94']} style={styles.container}> */}
       {/* <LinearGradient colors={['#a6bd8d', '#6b9351', '#3a6230']} style={styles.container}> */}
           <View style={styles.topBody}>
           </View>
@@ -55,7 +56,9 @@ export default function Welcome({ navigation }) {
               </View>       
           </View>
 
-      </LinearGradient>
+
+      {/* </LinearGradient> */}
+
     </View>
   );
 }
@@ -65,6 +68,7 @@ const styles = StyleSheet.create({
       flex: 1,
       // flexDirection: 'column',
       justifyContent: 'center',
+      backgroundColor:colors.GREEN
     },
   
     modalContainer: {
