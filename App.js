@@ -7,7 +7,10 @@ import Welcome from "./auth/Welcome";
 import Login from "./auth/Login";
 import Register from "./auth/Register";
 import Home from "./app/Home";
+
 import Details from "./app/Details";
+import Forgot from "./auth/Forgot";
+
 import db from "./db";
 LogBox.ignoreAllLogs();
 import { createAppContainer, createSwitchNavigator } from "react-navigation";
@@ -15,13 +18,17 @@ import { createStackNavigator } from "react-navigation-stack";
 import { createMaterialBottomTabNavigator } from "react-navigation-material-bottom-tabs";
 import { responsiveScreenHeight } from "react-native-responsive-dimensions";
 
-const AuthNavigator = createStackNavigator({
-  Welcome,
-  Register,
-  Login,  
-},{
-  headerMode:null
-}
+const AuthNavigator = createStackNavigator(
+  {
+    // Welcome,
+
+    Forgot,
+    Register,
+    Login,
+  },
+  {
+    headerMode: null,
+  }
 );
 
 const AuthContainer = createAppContainer(AuthNavigator);
