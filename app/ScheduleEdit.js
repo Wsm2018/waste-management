@@ -13,7 +13,7 @@ import {
   responsiveFontSize,
 } from 'react-native-responsive-dimensions'
 import { LinearGradient } from 'expo-linear-gradient'
-export default function ScheduleManagement({ navigation }) {
+export default function ScheduleEdit({ navigation }) {
   const [email, setEmail] = useState('')
   
   let Schedules = [
@@ -49,7 +49,7 @@ export default function ScheduleManagement({ navigation }) {
                   <Paragraph><Text>crew {s.crew}</Text></Paragraph>
                 </View>
                 <View>
-                  <Button onPress={()=>navigation.navigate("ScheduleEdit")} color={colors.GREEN} title="Manage" />
+                  <Button color={colors.GREEN} title="Manage" />
                 </View>
               </View>
               </Card.Content>
