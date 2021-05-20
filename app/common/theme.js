@@ -7,12 +7,3 @@ export const colors = {
     GRAY:'#D8D8D8',
     DARKGRAY: '#969696'
   }
-  import ScheduleManagement from "./app/ScheduleManagement";
-  const ScheduleManagementStack = createStackNavigator(
-    {
-      ScheduleManagement,
-    },
-    {
-      headerMode: null,
-    }
-  );
