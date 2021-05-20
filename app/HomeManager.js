@@ -5,9 +5,9 @@ import 'firebase/auth'
 import MapView from 'react-native-maps'
 import { colors } from './common/theme'
 import { Icon } from 'react-native-elements'
-import { customMapStyle} from './common/mapStyle'
+import { customMapStyle } from './common/mapStyle'
 
-export default function HomeManager({ navigation }) {
+export default function HomeManager(props) {
   const latitudeDelta = 0.0922
   const longitudeDelta = 0.0421
   const latitude = 25.286106
@@ -15,6 +15,7 @@ export default function HomeManager({ navigation }) {
 
   return (
     <View style={{ flex: 1 }}>
+      {console.log("-------------", props.navigation)}
       <MapView
         style={{ flex: 1 }}
         showsUserLocation={true}
@@ -39,6 +40,7 @@ export default function HomeManager({ navigation }) {
         }}
       >
         <TouchableOpacity
+        onPress={() => props.navigation.openDrawer()}
           style={{
             height: 55,
             backgroundColor: colors.GREEN,
@@ -57,12 +59,7 @@ export default function HomeManager({ navigation }) {
             elevation: 5,
           }}
         >
-          <Icon
-                    name="menu"
-                    type="feather"
-                    color={colors.WHITE}
-                    size={25}
-                  />
+          <Icon name="menu" type="feather" color={colors.WHITE} size={25} />
         </TouchableOpacity>
       </View>
 
@@ -81,6 +78,7 @@ export default function HomeManager({ navigation }) {
       >
         <View>
           <TouchableOpacity
+            onPress={() => props.navigation.navigate('Report')}
             style={{
               height: 55,
               backgroundColor: colors.GREEN,
@@ -99,16 +97,12 @@ export default function HomeManager({ navigation }) {
               elevation: 5,
             }}
           >
-            <Icon
-                    name="flag"
-                    type="ionicon"
-                    color={colors.WHITE}
-                    size={28}
-                  />
+            <Icon name="flag" type="ionicon" color={colors.WHITE} size={28} />
           </TouchableOpacity>
         </View>
         <View>
           <TouchableOpacity
+            onPress={() => firebase.auth().signOut()}
             style={{
               height: 55,
               backgroundColor: colors.GREEN,
@@ -128,11 +122,11 @@ export default function HomeManager({ navigation }) {
             }}
           >
             <Icon
-                    name="chatbubble-ellipses-sharp"
-                    type="ionicon"
-                    color={colors.WHITE}
-                    size={28}
-                  />
+              name="chatbubble-ellipses-sharp"
+              type="ionicon"
+              color={colors.WHITE}
+              size={28}
+            />
           </TouchableOpacity>
         </View>
       </View>

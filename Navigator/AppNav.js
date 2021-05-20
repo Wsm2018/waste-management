@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { StyleSheet, LogBox } from "react-native";
 import Home from "../app/Home";
 import Details from "../app/Details";
+import Report from "../app/Report";
 import { createAppContainer, createSwitchNavigator } from "react-navigation";
 import { createStackNavigator } from "react-navigation-stack";
 import { createDrawerNavigator } from "react-navigation-drawer";
@@ -10,6 +11,7 @@ import { createDrawerNavigator } from "react-navigation-drawer";
 const HomeStack = createStackNavigator(
   {
     Home,
+    Report
   },
   {
     headerMode: null,

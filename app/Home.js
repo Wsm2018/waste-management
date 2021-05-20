@@ -5,6 +5,7 @@ import "firebase/auth";
 import  HomeManager from './HomeManager';
 import  HomeCrew  from './HomeCrew';
 import  HomeUser  from './HomeUser';
+import { TouchableOpacity } from "react-native-gesture-handler";
 // import { HomeManager, HomeCrew, HomeUser } from './';
 
 
@@ -20,10 +21,16 @@ export default function Home({ navigation }) {
 
   return (
     userType === manager ?
-      <HomeManager /> :
+      <HomeManager navigation={navigation}/> :
       userType === crew ?
         <HomeCrew />
         :
         <HomeUser />
+    // <View style={{justifyContent:"center", alignItems:"center", flex:1}}>
+    //   <TouchableOpacity onPress={()=> navigation.navigate('Report')}>
+    //   <Text >GO</Text>
+    //   </TouchableOpacity>
+      
+    // </View>
   );
 }
