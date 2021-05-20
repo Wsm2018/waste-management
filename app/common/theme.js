@@ -7,3 +7,4 @@ export const colors = {
     GRAY:'#D8D8D8',
     DARKGRAY: '#969696'   
   }
+

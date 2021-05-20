@@ -56,7 +56,9 @@ export default function Welcome({ navigation }) {
               </View>       
           </View>
 
+
       {/* </LinearGradient> */}
+
     </View>
   );
 }

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+
 import {
   View,
   Text,
@@ -7,6 +8,7 @@ import {
   StyleSheet,
   TextInput,
 } from 'react-native'
+
 import { Input, Icon } from 'react-native-elements'
 import firebase from 'firebase'
 import 'firebase/auth'
@@ -18,6 +20,7 @@ import {
   responsiveFontSize,
 } from 'react-native-responsive-dimensions'
 import { LinearGradient } from 'expo-linear-gradient'
+
 import { colors } from '../app/common/theme'
 
 export default function Login({ navigation }) {
@@ -55,6 +58,7 @@ export default function Login({ navigation }) {
   }
 
   return (
+
     <View style={{ flex: 1, backgroundColor: colors.LIGHTGRAY }}>
       {/* <LinearGradient
         colors={['#82c582', '#60bd90', '#50ba94']}
@@ -267,14 +271,36 @@ export default function Login({ navigation }) {
               name="error-outline"
               size={24}
               color="white"
+
             />
+            <Button color={'#005c1f'} title="Forgot Password" onPress={()=>navigation.navigate("Forgot")}/>
+            <Button color={'#005c1f'} title="New User? Register" onPress={()=>navigation.navigate("Register")}/>
           </View>
+
+          <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
+            
+            <TouchableOpacity 
+            style={{justifyContent:'center',
+              alignItems:'center',
+              backgroundColor:'#a6edbe',
+              width:'90%',
+              borderRadius:20,
+              height:'80%'}} 
+              onPress={() => login()} >
+                <Text  style={{fontSize:25,color:'#005c1f'}}>Login</Text>
+              </TouchableOpacity>
+
+            {/* <View style={{backgroundColor:'red',width:'100%',height:'70%'}}>
+            </View> */}
+          </View>
+
           <Text style={{ color: 'white', fontWeight: 'bold' }}>
             {modalMessage}
           </Text>
         </View>
       </Modal>
       {/* </LinearGradient> */}
+
     </View>
   )
 }
