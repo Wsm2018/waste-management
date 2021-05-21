@@ -40,16 +40,18 @@ export default function ScheduleManagement({ navigation }) {
           <View style={{flex:5.3,justifyContent:'center'}}>
           
           {Schedules.map((s,i)=>(
-            <Card style={{elevation:0}}>
+            <Card key={i}style={{elevation:0}}>
               <Card.Content>
               <View style={{padding:10,borderRadius:20,flexDirection:'row',alignItems:'center',justifyContent:'space-around', borderWidth:1,borderColor:colors.GREEN}}>
-                <View>
+                <View style={{flex:2}}>
                   <Title>Schedule {s.number}</Title>
                   <Paragraph><Text>zone {s.zone}</Text></Paragraph>
                   <Paragraph><Text>crew {s.crew}</Text></Paragraph>
                 </View>
-                <View>
-                  <Button onPress={()=>navigation.navigate("ScheduleEdit")} color={colors.GREEN} title="Manage" />
+                <View style={{flex:1}}>
+                  <TouchableOpacity style={{borderRadius:10,backgroundColor:colors.GREEN,width:'100%',padding:10,alignItems:'center'}} onPress={()=>navigation.navigate("ScheduleEdit")}>
+                    <Text style={{color:colors.WHITE}}>Manage</Text>
+                  </TouchableOpacity>
                 </View>
               </View>
               </Card.Content>
