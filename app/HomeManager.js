@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, Button, TouchableOpacity } from 'react-native'
+import { View, Text, Button, TouchableOpacity, StatusBar } from 'react-native'
 import firebase from 'firebase'
 import 'firebase/auth'
 import MapView from 'react-native-maps'
@@ -15,7 +15,12 @@ export default function HomeManager(props) {
 
   return (
     <View style={{ flex: 1 }}>
-      {console.log("-------------", props.navigation)}
+      {/* <StatusBar 
+      // hidden={true} 
+      // barStyle={"default"}
+      // showHideTransition={"fade"}
+      /> */}
+      {/* {console.log("-------------", props.navigation)} */}
       <MapView
         style={{ flex: 1 }}
         showsUserLocation={true}
@@ -102,7 +107,7 @@ export default function HomeManager(props) {
         </View>
         <View>
           <TouchableOpacity
-            onPress={() => firebase.auth().signOut()}
+            onPress={() => props.navigation.navigate('Chat')}
             style={{
               height: 55,
               backgroundColor: colors.GREEN,

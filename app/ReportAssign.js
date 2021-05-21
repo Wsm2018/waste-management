@@ -29,9 +29,10 @@ import { LinearGradient } from 'expo-linear-gradient'
 
 import { colors } from './common/theme'
 
-export default function Report(props) {
-  const [screenView, setScreenView] = useState(true)
-  const [reports, setReports] = useState([
+export default function ReportAssign(props) {
+  const [email, setEmail] = useState('')
+
+  const [crew, setCrew] = useState([
     {
       id: 1,
     },
@@ -77,18 +78,8 @@ export default function Report(props) {
           },
         }}
         centerComponent={
-          <Text style={{ fontSize: 20, color: colors.WHITE }}>Reports</Text>
+          <Text style={{ fontSize: 20, color: colors.WHITE }}>Report Assign</Text>
         }
-        rightComponent={{
-          icon: screenView ? 'history' :'format-list-bulleted',
-          type: 'material',
-          color: colors.WHITE,
-          size: 30,
-          component: TouchableWithoutFeedback,
-          onPress: () => {
-            setScreenView(!screenView)
-          },
-        }}
         // containerStyle={styles.headerStyle}
         // innerContainerStyles={styles.inrContStyle}
         // statusBarProps={{ barStyle: "light-content" }}
@@ -111,12 +102,12 @@ export default function Report(props) {
       >
         <View style={{ flex: 1, justifyContent: 'flex-end' }}>
           <Text style={{ fontSize: 25, color: colors.BLACK }}>
-            {screenView ? "Pending Reports" : "Reports History"}
+            Available Crew
           </Text>
         </View>
         <View style={{ flex: 10 }}>
-          {screenView ? <ScrollView>
-            {reports.map((item, index) => (
+          <ScrollView>
+            {crew.map((item, index) => (
               <View
                 style={{
                   width: '100%',
@@ -137,13 +128,13 @@ export default function Report(props) {
                 }}
               >
                 <View style={{ width: '75%', justifyContent:"space-evenly", paddingLeft:10}}>
-                  <Text style={{fontWeight:"bold", color:colors.black, fontSize:16}}>Report {index}</Text>
-                  <Text style={{ color:colors.DARKGRAY}}>Wakra, Qatar</Text>
-                  <Text style={{ color:colors.DARKGRAY}}>Status - Date</Text>
+                  <Text style={{fontWeight:"bold", color:colors.black, fontSize:16}}>Crew ID</Text>
+                  <Text style={{ color:colors.DARKGRAY}}>Driver - Awatif</Text>
+                  <Text style={{ color:colors.DARKGRAY}}>Collectors - Jose & Wasim</Text>
                 </View>
                 <View style={{ width: '25%' }}>
                   <TouchableOpacity
-                  onPress={()=>props.navigation.navigate('ReportDetail')}
+                  onPress={()=>props.navigation.navigate('Home')}
                     style={{
                       width: '100%',
                       backgroundColor: colors.GREEN,
@@ -154,61 +145,13 @@ export default function Report(props) {
                       borderBottomRightRadius:10
                     }}
                   >
-                    <Text style={{color:colors.WHITE,}}>Details</Text>
+                    <Text style={{color:colors.WHITE,}}>Assign</Text>
                   </TouchableOpacity>
                 </View>
               </View>
             ))}
             <View style={{ height: 50 }}></View>
-          </ScrollView> : 
-          <ScrollView>
-          {reports.map((item, index) => (
-            <View
-              style={{
-                width: '100%',
-                backgroundColor: colors.WHITE,
-                minHeight: 100,
-                marginTop: 10,
-                flexDirection: 'row',
-                borderRadius: 10,
-                shadowColor: '#000',
-                shadowOffset: {
-                  width: 0,
-                  height: 1,
-                },
-                shadowOpacity: 0.25,
-                shadowRadius: 1,
-
-                elevation: 1,
-              }}
-            >
-              <View style={{ width: '100%', justifyContent:"space-evenly", paddingLeft:10}}>
-                <Text style={{fontWeight:"bold", color:colors.black, fontSize:16}}>Report {index}</Text>
-                <Text style={{ color:colors.DARKGRAY}}>Wakra, Qatar</Text>
-                <Text style={{ color:colors.DARKGRAY}}>Crew ID</Text>
-                <Text style={{ color:colors.DARKGRAY}}>Complete - Date</Text>
-              </View>
-              {/* <View style={{ width: '25%' }}>
-                <TouchableOpacity
-                onPress={()=>props.navigation.navigate('ReportDetail')}
-                  style={{
-                    width: '100%',
-                    backgroundColor: colors.GREEN,
-                    minHeight: 100,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    borderTopRightRadius:10,
-                    borderBottomRightRadius:10
-                  }}
-                >
-                  <Text style={{color:colors.WHITE,}}>Details</Text>
-                </TouchableOpacity>
-              </View> */}
-            </View>
-          ))}
-          <View style={{ height: 50 }}></View>
-        </ScrollView>
-          }
+          </ScrollView>
         </View>
       </View>
       {/* </TouchableWithoutFeedback> */}
