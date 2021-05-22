@@ -109,7 +109,7 @@ export default function HomeUser(props) {
       <View
         style={{
           flex: 1,
-          // backgroundColor: 'red',
+          // backgroundColor: colors.WHITE,
           width: '100%',
           // alignSelf: 'center',
           alignItems: 'center',
@@ -118,7 +118,7 @@ export default function HomeUser(props) {
         <View
           style={{
             // backgroundColor: 'red',
-            flex: 1,
+            flex: 1.1,
             width: '100%',
             alignItems: 'center',
             justifyContent: 'center',
@@ -134,7 +134,7 @@ export default function HomeUser(props) {
             footerStyle={{height:0, backgroundColor:colors.TRANSPARENT}}
           />
         </View>
-        <View style={{ flex: 0.1, width: '100%' }}>{/* Empty */}</View>
+        <View style={{ flex: 0.3, width: '100%' }}>{/* Empty */}</View>
         <View
           style={{
             backgroundColor: colors.WHITE,
