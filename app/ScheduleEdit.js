@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, Button, TouchableOpacity, StyleSheet, } from 'react-native'
-import { Input, Icon,CheckBox } from 'react-native-elements';
+import { View, Text, Button, TouchableOpacity, StyleSheet,TouchableWithoutFeedback } from 'react-native'
+import { Input, Icon,CheckBox,Header } from 'react-native-elements';
 
 import { Avatar, Card, Title, Paragraph } from 'react-native-paper';
 import firebase from 'firebase'
@@ -50,9 +50,24 @@ export default function ScheduleEdit({ navigation }) {
     <View style={{ flex: 1, backgroundColor:colors.WHITE }}>
       
         <View style={{flex:1}}>
-          <View style={{flex:0.7,justifyContent:'flex-end',alignItems:'center'}}>
-            <Text style={{fontSize:25,color:colors.GREEN}}>Schedule</Text>
-          </View>
+        <Header
+              
+                leftComponent={{
+                    icon: "arrow-back-outline",
+                    type: "ionicon",
+                    color: colors.GREEN,
+                    size: 30,
+                    component: TouchableWithoutFeedback,
+                    onPress: () => {
+                      navigation.goBack();
+                    },
+                }}
+                centerComponent={
+                    <Text style={styles.headerTitleStyle}>Schedule Edit</Text>
+                }
+                containerStyle={styles.headerStyle}
+                innerContainerStyles={{ marginLeft: 10, marginRight: 10 }}
+            />
 
           <View style={{flex:5.3,justifyContent:'space-evenly',alignItems:'center'}}>
 
@@ -135,6 +150,15 @@ export default function ScheduleEdit({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  headerStyle: {
+    backgroundColor: 'transparent',
+    borderBottomWidth: 0,
+  },
+  headerTitleStyle: {
+      color: colors.GREEN,
+      fontFamily: "Roboto-Bold",
+      fontSize: 20,
+  },
   container: {
     flex: 1,
     // flexDirection: 'column',

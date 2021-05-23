@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, Button, TouchableOpacity, StyleSheet } from 'react-native'
-import { Input, Icon } from 'react-native-elements'
+import { View, Text, Button, TouchableOpacity, StyleSheet,TouchableWithoutFeedback } from 'react-native'
+import { Input, Icon,Header } from 'react-native-elements'
 import { Avatar, Card, Title, Paragraph } from 'react-native-paper';
 import firebase from 'firebase'
 import 'firebase/auth'
@@ -31,14 +31,27 @@ export default function ScheduleManagement({ navigation }) {
 
   return (
     <View style={{ flex: 1, backgroundColor:colors.WHITE }}>
-      
+        <Header
+                backgroundColor={colors.DARKGRAY}
+                leftComponent={{
+                    icon: "md-menu",
+                    type: "ionicon",
+                    color: colors.GREEN,
+                    size: 30,
+                    component: TouchableWithoutFeedback,
+                    onPress: () => {
+                      navigation.toggleDrawer();
+                    },
+                }}
+                centerComponent={
+                    <Text style={styles.headerTitleStyle}>Schedule</Text>
+                }
+                containerStyle={styles.headerStyle}
+                innerContainerStyles={{ marginLeft: 10, marginRight: 10 }}
+            />
         <View style={{flex:1}}>
-          <View style={{flex:0.7,justifyContent:'flex-end',alignItems:'center'}}>
-            <Text style={{fontSize:25,color:colors.GREEN}}>Schedule</Text>
-          </View>
-
-          <View style={{flex:5.3,justifyContent:'center'}}>
           
+          <View style={{flex:5.3,justifyContent:'center'}}>
           {Schedules.map((s,i)=>(
             <Card key={i}style={{elevation:0}}>
               <Card.Content>
@@ -74,11 +87,20 @@ export default function ScheduleManagement({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    // flexDirection: 'column',
-    // justifyContent: 'center',
-  },
+    headerStyle: {
+      backgroundColor: 'transparent',
+      borderBottomWidth: 0,
+    },
+    headerTitleStyle: {
+        color: colors.GREEN,
+        fontFamily: "Roboto-Bold",
+        fontSize: 20,
+    },
+    container: {
+      flex: 1,
+      // flexDirection: 'column',
+      // justifyContent: 'center',
+    },
 
   modalContainer: {
     flex: 1,

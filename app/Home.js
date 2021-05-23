@@ -20,7 +20,7 @@ export default function Home({ navigation }) {
 
   return (
     userType === manager ?
-      <HomeManager /> :
+      <HomeManager navigation={navigation}/> :
       userType === crew ?
         <HomeCrew />
         :

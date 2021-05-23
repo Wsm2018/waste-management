@@ -6,8 +6,9 @@ import MapView from 'react-native-maps'
 import { colors } from './common/theme'
 import { Icon } from 'react-native-elements'
 import { customMapStyle} from './common/mapStyle'
+import { NavigationActions } from 'react-navigation';
 
-export default function HomeManager({ navigation }) {
+export default function HomeManager({ props }) {
   const latitudeDelta = 0.0922
   const longitudeDelta = 0.0421
   const latitude = 25.286106
@@ -53,16 +54,17 @@ export default function HomeManager({ navigation }) {
             },
             shadowOpacity: 0.25,
             shadowRadius: 3.84,
-
+            
             elevation: 5,
           }}
+          onPress={() => { props.navigation.toggleDrawer(); }}
         >
           <Icon
-                    name="menu"
-                    type="feather"
-                    color={colors.WHITE}
-                    size={25}
-                  />
+              name="menu"
+              type="feather"
+              color={colors.WHITE}
+              size={25}
+            />
         </TouchableOpacity>
       </View>
 
