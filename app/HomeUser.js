@@ -84,26 +84,26 @@ export default function HomeUser(props) {
         centerComponent={
           <Text style={{ fontSize: 20, color: colors.WHITE }}>Home</Text>
         }
-        // rightComponent={{
-        //   icon: screenView ? 'history' :'format-list-bulleted',
-        //   type: 'material',
-        //   color: colors.WHITE,
-        //   size: 30,
-        //   component: TouchableWithoutFeedback,
-        //   onPress: () => {
-        //     setScreenView(!screenView)
-        //   },
-        // }}
-        // containerStyle={styles.headerStyle}
-        // innerContainerStyles={styles.inrContStyle}
-        // statusBarProps={{ barStyle: "light-content" }}
-        // barStyle="light-content"
-        // containerStyle={
-        // {
-        // justifyContent: 'space-around',
-        // height: 80,
-        // }
-        // }
+      // rightComponent={{
+      //   icon: screenView ? 'history' :'format-list-bulleted',
+      //   type: 'material',
+      //   color: colors.WHITE,
+      //   size: 30,
+      //   component: TouchableWithoutFeedback,
+      //   onPress: () => {
+      //     setScreenView(!screenView)
+      //   },
+      // }}
+      // containerStyle={styles.headerStyle}
+      // innerContainerStyles={styles.inrContStyle}
+      // statusBarProps={{ barStyle: "light-content" }}
+      // barStyle="light-content"
+      // containerStyle={
+      // {
+      // justifyContent: 'space-around',
+      // height: 80,
+      // }
+      // }
       />
       {/* <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}> */}
       <View
@@ -130,8 +130,8 @@ export default function HomeUser(props) {
             renderCloseIcon={() => null}
             renderIcon={() => null}
             progressBarDirection="fromLeft"
-            renderFooter={()=>null}
-            footerStyle={{height:0, backgroundColor:colors.TRANSPARENT}}
+            renderFooter={() => null}
+            footerStyle={{ height: 0, backgroundColor: colors.TRANSPARENT }}
           />
         </View>
         <View style={{ flex: 0.3, width: '100%' }}>{/* Empty */}</View>
@@ -176,7 +176,17 @@ export default function HomeUser(props) {
                 alignSelf: 'center',
               }}
             >
-              <Text>About Us</Text>
+              <Text style={{fontSize:16, textAlign:"justify"}}>
+                Our Smart Waste Management App is mobile application for smartphones which permits
+                residents to see and utilize real-time information from our servers that degree fill-levels
+                in trash bins. This application advises individuals of the nearest-available trash bins
+                and empowers them to be more ecologically dependable for disposal.
+              </Text>
+              <Text style={{fontSize:16, textAlign:"justify", marginTop:15}}>
+                By giving real-time input through the app, Qatari residents can report any issues
+                and in this way offer assistance diminish flooding and chaotic trash bins,
+                making the city greener, cleaner and free of trash.
+                </Text>
             </View>
           </ScrollView>
         </View>

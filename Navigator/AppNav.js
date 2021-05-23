@@ -6,6 +6,10 @@ import Details from "../app/Details";
 import Report from "../app/Report";
 import ReportDetail from "../app/ReportDetail";
 import ReportAssign from "../app/ReportAssign";
+import Priority from "../app/Priority";
+import PriorityAssign from "../app/PriorityAssign";
+import ScheduleMap from "../app/ScheduleMap";
+import Chat from "../app/Chat";
 import { createAppContainer, createSwitchNavigator } from "react-navigation";
 import { createStackNavigator } from "react-navigation-stack";
 import { createDrawerNavigator } from "react-navigation-drawer";
@@ -15,7 +19,11 @@ const HomeStack = createStackNavigator(
     Home,
     Report,
     ReportDetail,
-    ReportAssign
+    ReportAssign,
+    Priority,
+    PriorityAssign,
+    ScheduleMap,
+    Chat
   },
   {
     headerMode: null,

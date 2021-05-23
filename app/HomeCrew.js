@@ -118,7 +118,7 @@ export default function HomeCrew(props) {
             </Text>
           </View>
           <TouchableOpacity
-            onPress={() => props.navigation.navigate('MapCrew')}
+            onPress={() => props.navigation.navigate('ScheduleMap')}
             style={{
               flex: 2,
               minHeight: 100,
@@ -158,7 +158,7 @@ export default function HomeCrew(props) {
             </View>
             <View style={{ width: '25%' }}>
               <TouchableOpacity
-                onPress={() => props.navigation.navigate('MapCrew')}
+                onPress={() => props.navigation.navigate('ScheduleMap')}
                 style={{
                   width: '100%',
                   backgroundColor: colors.GREEN,

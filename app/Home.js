@@ -9,9 +9,9 @@ import  HomeUser  from './HomeUser';
 
 
 export default function Home({ navigation }) {
-  // const [userType, setUserType] = useState("Manager");
+  const [userType, setUserType] = useState("Manager");
   // const [userType, setUserType] = useState("Crew");
-  const [userType, setUserType] = useState("User");
+  // const [userType, setUserType] = useState("User");
 
 
   const manager = "Manager"
