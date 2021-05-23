@@ -54,8 +54,8 @@ export default function HomeManager(props) {
       id: 1,
       priority: "low",
       location: {
-        lat: 25.286106-0.02,
-        lng: 51.5348170-0.03
+        lat: 25.286106 - 0.02,
+        lng: 51.5348170 - 0.03
       }
     },
     {
@@ -66,11 +66,11 @@ export default function HomeManager(props) {
         lng: 51.5348170 - 0.04
       }
     },
-    
+
 
   ])
 
-  
+
 
   return (
     <View style={{ flex: 1 }}>
@@ -126,7 +126,7 @@ export default function HomeManager(props) {
           </Marker>
         ))}
 
-{report && report.map((item, index) => (
+        {report && report.map((item, index) => (
           <Marker
             key={index}
             coordinate={{
@@ -138,7 +138,7 @@ export default function HomeManager(props) {
           // key={index}
           >
             <TouchableOpacity style={{
-              backgroundColor:colors.ORANGE,
+              backgroundColor: colors.ORANGE,
               aspectRatio: 1 / 1, borderRadius: 100, padding: 7
             }}>
               <Icon name="report" type="material" color={colors.WHITE} size={25} />
@@ -205,30 +205,30 @@ export default function HomeManager(props) {
 
         }}
       >
-        <View style={{marginBottom:15}}>
-        <TouchableOpacity
-              onPress={() => props.navigation.navigate('Report')}
-              // onPress={() => props.navigation.navigate('Priority')}
-              style={{
-                height: 55,
-                backgroundColor: colors.ORANGE,
-                aspectRatio: 1 / 1,
-                borderRadius: 100,
-                justifyContent: 'center',
-                alignItems: 'center',
-                shadowColor: '#000',
-                shadowOffset: {
-                  width: 0,
-                  height: 2,
-                },
-                shadowOpacity: 0.25,
-                shadowRadius: 3.84,
+        <View style={{ marginBottom: 15 }}>
+          <TouchableOpacity
+            onPress={() => props.navigation.navigate('Report')}
+            // onPress={() => props.navigation.navigate('Priority')}
+            style={{
+              height: 55,
+              backgroundColor: colors.ORANGE,
+              aspectRatio: 1 / 1,
+              borderRadius: 100,
+              justifyContent: 'center',
+              alignItems: 'center',
+              shadowColor: '#000',
+              shadowOffset: {
+                width: 0,
+                height: 2,
+              },
+              shadowOpacity: 0.25,
+              shadowRadius: 3.84,
 
-                elevation: 5,
-              }}
-            >
-              <Icon name="report" type="material" color={colors.WHITE} size={33} />
-            </TouchableOpacity>
+              elevation: 5,
+            }}
+          >
+            <Icon name="report" type="material" color={colors.WHITE} size={33} />
+          </TouchableOpacity>
         </View>
         <View style={{
           flexDirection: 'row',
