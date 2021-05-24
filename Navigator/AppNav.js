@@ -12,6 +12,8 @@ import ScheduleMap from "../app/ScheduleMap";
 import Chat from "../app/Chat";
 import ScheduleManagement from "../app/ScheduleManagement";
 import ScheduleEdit from "../app/ScheduleEdit";
+import ReportUser from "../app/ReportUser";
+import ReportUserCreate from "../app/ReportUserCreate";
 import { createAppContainer, createSwitchNavigator } from "react-navigation";
 import { createStackNavigator } from "react-navigation-stack";
 import { createDrawerNavigator } from "react-navigation-drawer";
@@ -29,6 +31,16 @@ const HomeStack = createStackNavigator(
     PriorityAssign,
     ScheduleMap,
     Chat
+  },
+  {
+    headerMode: null,
+  }
+);
+
+const ReportUserStack = createStackNavigator(
+  {
+    ReportUser,
+    ReportUserCreate
   },
   {
     headerMode: null,
@@ -60,6 +72,12 @@ export const AppStack = {
           headerShown: false,
       }
   },
+  ReportUser: {
+    screen: ReportUserStack,
+    navigationOptions: {
+        headerShown: false,
+    }
+},
 }
 
 
@@ -80,6 +98,10 @@ const DrawerRoutes = {
   'ScheduleEdit': {
     name: 'ScheduleEdit',
     screen: createStackNavigator(AppStack, { initialRouteName: 'ScheduleEdit', headerMode: 'none' })
+  },
+  'ReportUser': {
+    name: 'ReportUser',
+    screen: createStackNavigator(AppStack, { initialRouteName: 'ReportUser', headerMode: 'none' })
   },
 };
 

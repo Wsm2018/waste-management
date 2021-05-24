@@ -22,6 +22,8 @@ export default function SideMenu(props) {
         { name: 'Home', navigationName: 'Home', icon: 'home', type: 'ant-design' },
         { name: 'Details', navigationName: 'Details', icon: 'home', type: 'font-awesome' },
         { name: 'Schedule', navigationName: 'ScheduleManagement', icon: 'car-sports', type: 'material-community' },
+        { name: 'Report', navigationName: 'ReportUser', icon: 'report', type: 'material' },
+
     ];
 
     //navigation to screens from side menu
