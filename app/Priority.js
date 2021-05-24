@@ -118,6 +118,7 @@ export default function Priority(props) {
           <ScrollView>
             {priority.map((item, index) => (
               <View
+              key={index}
                 style={{
                   width: '100%',
                   backgroundColor: colors.WHITE,

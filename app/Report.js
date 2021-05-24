@@ -118,6 +118,7 @@ export default function Report(props) {
           {screenView ? <ScrollView>
             {reports.map((item, index) => (
               <View
+                key={index}
                 style={{
                   width: '100%',
                   backgroundColor: colors.WHITE,
