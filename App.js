@@ -6,7 +6,6 @@ import "firebase/auth";
 import db from "./db";
 import AuthContainer from "./Navigator/AuthNav";
 import AppContainer from "./Navigator/AppNav";
-import NavigationService from './Navigator/NavigationService';
 LogBox.ignoreAllLogs();
 
 export default function App() {

@@ -84,7 +84,7 @@ export default function Chat({ navigation }) {
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: colors.LIGHTGRAY }}
+      style={{ flex: 1, backgroundColor: colors.WHITE }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       {/* <StatusBar hidden={false} /> */}

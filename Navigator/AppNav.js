@@ -3,6 +3,13 @@ import React, { useState, useEffect } from "react";
 import { StyleSheet, LogBox } from "react-native";
 import Home from "../app/Home";
 import Details from "../app/Details";
+import Report from "../app/Report";
+import ReportDetail from "../app/ReportDetail";
+import ReportAssign from "../app/ReportAssign";
+import Priority from "../app/Priority";
+import PriorityAssign from "../app/PriorityAssign";
+import ScheduleMap from "../app/ScheduleMap";
+import Chat from "../app/Chat";
 import ScheduleManagement from "../app/ScheduleManagement";
 import ScheduleEdit from "../app/ScheduleEdit";
 import { createAppContainer, createSwitchNavigator } from "react-navigation";
@@ -12,45 +19,25 @@ import {Dimensions} from 'react-native';
 var { width, height } = Dimensions.get('window');
 import SideMenu from '../app/SideMenu';
 
-// const HomeStack = createStackNavigator(
-//   {
-//     Home,
-//   },
-//   {
-//     headerMode: null,
-//   }
-// );
-
-// const DetailsStack = createStackNavigator(
-//   {
-//     Details,
-//   },
-//   {
-//     headerMode: null,
-//   }
-// );
-
-// const ScheduleManagementStack = createStackNavigator(
-//   {
-//     ScheduleManagement,
-//   },
-//   {
-//     headerMode: null,
-//   }
-// );
-
-// const ScheduleEditStack = createStackNavigator(
-//   {
-//     ScheduleEdit,
-//   },
-//   {
-//     headerMode: null,
-//   }
-// );
+const HomeStack = createStackNavigator(
+  {
+    Home,
+    Report,
+    ReportDetail,
+    ReportAssign,
+    Priority,
+    PriorityAssign,
+    ScheduleMap,
+    Chat
+  },
+  {
+    headerMode: null,
+  }
+);
 
 export const AppStack = {
   Home: {
-    screen: Home,
+    screen: HomeStack,
     navigationOptions: {
         headerShown: false,
     }
