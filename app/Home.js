@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Button } from "react-native";
+import { View, Text, Button} from "react-native";
 import firebase from "firebase";
 import "firebase/auth";
 import  HomeManager from './HomeManager';
@@ -22,8 +22,14 @@ export default function Home({ navigation }) {
     userType === manager ?
       <HomeManager navigation={navigation}/> :
       userType === crew ?
-        <HomeCrew />
+        <HomeCrew navigation={navigation} />
         :
-        <HomeUser />
+        <HomeUser navigation={navigation} />
+    // <View style={{justifyContent:"center", alignItems:"center", flex:1}}>
+    //   <TouchableOpacity onPress={()=> navigation.navigate('Report')}>
+    //   <Text >GO</Text>
+    //   </TouchableOpacity>
+      
+    // </View>
   );
 }
