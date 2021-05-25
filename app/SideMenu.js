@@ -101,12 +101,13 @@ const styles = StyleSheet.create({
         paddingTop:height/70,
         paddingBottom:height/70,
         borderBottomColor: colors.WHITE,
-        borderBottomWidth: 1,
+        borderBottomWidth: 0.2,
         marginLeft:height/50,
         marginRight:height/50,
         flex: 1,
         paddingLeft: 10,
         paddingRight: 10,
+        minHeight:70
         // backgroundColor:"red"
     },
     viewIcon: {
@@ -130,8 +131,8 @@ const styles = StyleSheet.create({
     },
     mainViewStyle: {
         backgroundColor: colors.GREEN,
-        // height: '100%',
-        height: height,
+        height: '100%',
+        // height: height,
         //justifyContent:'space-between'
     },
     compViewStyle: {
