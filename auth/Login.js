@@ -71,45 +71,49 @@ export default function Login({ navigation }) {
   const validate = () => {
     if (registerEmail.length === 0 || registerPassword.length === 0) {
       setModalMessage(
-        "registerEmail address or registerPassword cannot be empty"
-      );
-      setIsModalVisible(true);
-      return false;
+        'registerEmail address or registerPassword cannot be empty',
+      )
+      setIsModalVisible(true)
+      return false
     }
 
     if (
       !new RegExp(
-        "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*]).{8,}$"
+        '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*]).{8,}$',
       ).test(registerPassword)
     ) {
-      setModalMessage("Enter a strong registerPassword");
-      setIsModalVisible(true);
-      return false;
+      setModalMessage('Enter a strong registerPassword')
+      setIsModalVisible(true)
+      return false
     }
 
-    signUp();
-  };
+    signUp()
+  }
 
-  const signUp = async () => {
+  const signUp = () => {
     firebase
       .auth()
       .createUserWithEmailAndPassword(registerEmail, registerPassword)
-      .then(async (user) => {
-        const userObj = user.user;
-        userObj.sendEmailVerification();
-        const req = await fetch(
-          `https://us-central1-waste-mgmt-15175.cloudfunctions.net/createUsers?user=${userObj}`
-        );
-        const res = await req.json();
+      .then((user) => {
+        db.collection("users")
+          .doc(user.user.uid)
+          .set({
+            emailVerified: user.user.emailVerified,
+            email: user.user.email,
+            phoneNumber: user.user.phoneNumber,
+            photoURL: user.user.photoURL,
+            created: user.user.metadata.creationTime,
+            displayName: user.user.email.split("@")[0],
+          });
+        console.log("done");
       })
       .catch((error) => {
-        console.log(error.code);
         if (error.code === "auth/email-already-in-use") {
-          setModalMessage("That registerEmail address is already in use!");
+          setModalMessage("That email address is already in use!");
           setIsModalVisible(true);
         }
         if (error.code === "auth/invalid-email") {
-          setModalMessage("That registerEmail address is invalid!");
+          setModalMessage("That email address is invalid!");
           setIsModalVisible(true);
         }
       });
@@ -118,10 +122,19 @@ export default function Login({ navigation }) {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: colors.LIGHTGRAY }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <View style={{ flex: 1 }} onPress={Keyboard.dismiss}>
+      <View style={{ flex: 1 }} onPress={Keyboard.dismiss}>
+        <View
+          style={{
+            flex: 1,
+            // backgroundColor: 'red',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+          }}
+        >
           <View
             style={{
               flex: 1,
@@ -130,270 +143,258 @@ export default function Login({ navigation }) {
               justifyContent: "flex-end",
             }}
           >
-            <View
-              style={{
-                width: "100%",
-                backgroundColor: colors.WHITE,
-                height: 60,
-                flexDirection: "row",
-              }}
-            >
-              <TouchableOpacity
-                style={
-                  screenView === "login"
-                    ? styles.selectedScreen
-                    : styles.unselectedScreen
-                }
-                onPress={() => setScreenView("login")}
-              >
-                <Text
-                  style={
-                    screenView === "login"
-                      ? styles.selectedText
-                      : styles.unselectedText
-                  }
-                >
-                  Login
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={
-                  screenView === "signup"
-                    ? styles.selectedScreen
-                    : styles.unselectedScreen
-                }
-                onPress={() => setScreenView("signup")}
-              >
-                <Text
-                  style={
-                    screenView === "signup"
-                      ? styles.selectedText
-                      : styles.unselectedText
-                  }
-                >
-                  Sign Up
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-          {screenView === "login" ? (
-            <View
-              style={{
-                flex: 3,
-                // backgroundColor: 'yellow',
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <View
-                style={{
-                  width: "90%",
-                  justifyContent: "center",
-                  marginBottom: "10%",
-                }}
-              >
-                <Text
-                  style={{
-                    fontWeight: "bold",
-                    fontSize: 16,
-                    marginBottom: "5%",
-                    color: colors.BLACK,
-                  }}
-                >
-                  E-mail
-                </Text>
-                <TextInput
-                  style={{
-                    backgroundColor: colors.WHITE,
-                    height: 50,
-                    borderRadius: 100,
-                    paddingLeft: 15,
-                    paddingRight: 15,
-                  }}
-                  onChangeText={setEmail}
-                  value={email}
-                />
-              </View>
-              <View
-                style={{
-                  width: "90%",
-                  justifyContent: "center",
-                }}
-              >
-                <Text
-                  style={{
-                    fontWeight: "bold",
-                    fontSize: 16,
-                    marginBottom: "5%",
-                    color: colors.BLACK,
-                  }}
-                >
-                  Password
-                </Text>
-                <View
-                  style={{
-                    width: "100%",
-                    flexDirection: "row",
-                    backgroundColor: colors.WHITE,
-                    height: 50,
-                    borderRadius: 100,
-                    paddingLeft: 15,
-                    paddingRight: 15,
-                    alignItems: "center",
-                  }}
-                >
-                  <TextInput
-                    style={{
-                      width: "90%",
-                    }}
-                    onChangeText={setPassword}
-                    secureTextEntry={!showPassword}
-                    value={password}
-                  />
-                  <TouchableOpacity
-                    onPress={() => setShowPassword(!showPassword)}
-                  >
-                    <Icon
-                      size={24}
-                      type="ionicon"
-                      name={showPassword ? "eye-off-outline" : "eye-outline"}
-                    />
-                  </TouchableOpacity>
-                </View>
-              </View>
-              <View
-                style={{
-                  width: "90%",
-                  alignItems: "flex-end",
-                  marginTop: "3%",
-                }}
-              >
-                <TouchableOpacity>
-                  <Text style={{ color: colors.DARKGRAY }}>
-                    Forgot Password?
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          ) : (
-            <View
-              style={{
-                flex: 3,
-                // backgroundColor: 'yellow',
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <View
-                style={{
-                  width: "90%",
-                  justifyContent: "center",
-                  marginBottom: "10%",
-                }}
-              >
-                <Text
-                  style={{
-                    fontWeight: "bold",
-                    fontSize: 16,
-                    marginBottom: "5%",
-                    color: colors.BLACK,
-                  }}
-                >
-                  E-mail
-                </Text>
-                <TextInput
-                  style={{
-                    backgroundColor: colors.WHITE,
-                    height: 50,
-                    borderRadius: 100,
-                    paddingLeft: 15,
-                    paddingRight: 15,
-                  }}
-                  onChangeText={setRegisterEmail}
-                  value={registerEmail}
-                />
-              </View>
-              <View
-                style={{
-                  width: "90%",
-                  justifyContent: "center",
-                }}
-              >
-                <Text
-                  style={{
-                    fontWeight: "bold",
-                    fontSize: 16,
-                    marginBottom: "5%",
-                    color: colors.BLACK,
-                  }}
-                >
-                  Password
-                </Text>
-                <View
-                  style={{
-                    width: "100%",
-                    flexDirection: "row",
-                    backgroundColor: colors.WHITE,
-                    height: 50,
-                    borderRadius: 100,
-                    paddingLeft: 15,
-                    paddingRight: 15,
-                    alignItems: "center",
-                  }}
-                >
-                  <TextInput
-                    style={{
-                      width: "90%",
-                    }}
-                    onChangeText={setRegisterPassword}
-                    secureTextEntry={!showRegisterPassword}
-                    value={registerPassword}
-                  />
-                  <TouchableOpacity
-                    onPress={() =>
-                      setShowRegisterPassword(!showRegisterPassword)
-                    }
-                  >
-                    <Icon
-                      size={24}
-                      type="ionicon"
-                      name={
-                        showRegisterPassword ? "eye-off-outline" : "eye-outline"
-                      }
-                    />
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          )}
-          <View
-            style={{
-              flex: 1,
-              //  backgroundColor: 'red',
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
             <TouchableOpacity
-              onPress={
-                screenView === "login" ? () => login() : () => validate()
+              style={
+                screenView === 'login'
+                  ? styles.selectedScreen
+                  : styles.unselectedScreen
               }
-              style={{
-                width: "80%",
-                backgroundColor: colors.GREEN,
-                height: 50,
-                justifyContent: "center",
-                alignItems: "center",
-                borderRadius: 100,
-              }}
+              onPress={() => setScreenView('login')}
             >
-              <Text style={{ color: colors.WHITE, fontSize: 18 }}>
-                {screenView === "login" ? "Login" : "Register"}
+              <Text
+                style={
+                  screenView === 'login'
+                    ? styles.selectedText
+                    : styles.unselectedText
+                }
+              >
+                Login
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={
+                screenView === 'signup'
+                  ? styles.selectedScreen
+                  : styles.unselectedScreen
+              }
+              onPress={() => setScreenView('signup')}
+            >
+              <Text
+                style={
+                  screenView === 'signup'
+                    ? styles.selectedText
+                    : styles.unselectedText
+                }
+              >
+                Sign Up
               </Text>
             </TouchableOpacity>
           </View>
         </View>
+        {screenView === 'login' ? (
+          <View
+            style={{
+              flex: 3,
+              // backgroundColor: 'yellow',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <View
+              style={{
+                width: '90%',
+                justifyContent: 'center',
+                marginBottom: '10%',
+              }}
+            >
+              <Text
+                style={{
+                  fontWeight: 'bold',
+                  fontSize: 16,
+                  marginBottom: '5%',
+                  color: colors.BLACK,
+                }}
+              >
+                E-mail
+              </Text>
+              <TextInput
+                style={{
+                  backgroundColor: colors.WHITE,
+                  height: 50,
+                  borderRadius: 100,
+                  paddingLeft: 15,
+                  paddingRight: 15,
+                }}
+                onChangeText={setEmail}
+                value={email}
+              />
+            </View>
+            <View
+              style={{
+                width: '90%',
+                justifyContent: 'center',
+              }}
+            >
+              <Text
+                style={{
+                  fontWeight: 'bold',
+                  fontSize: 16,
+                  marginBottom: '5%',
+                  color: colors.BLACK,
+                }}
+              >
+                Password
+              </Text>
+              <View
+                style={{
+                  width: '100%',
+                  flexDirection: 'row',
+                  backgroundColor: colors.WHITE,
+                  height: 50,
+                  borderRadius: 100,
+                  paddingLeft: 15,
+                  paddingRight: 15,
+                  alignItems: 'center',
+                }}
+              >
+                <TextInput
+                  style={{
+                    width: '90%',
+                  }}
+                  onChangeText={setPassword}
+                  secureTextEntry={!showPassword}
+                  value={password}
+                />
+                <TouchableOpacity
+                  onPress={() => setShowPassword(!showPassword)}
+                >
+                  <Icon
+                    size={24}
+                    type="ionicon"
+                    name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+            <View
+              style={{
+                width: '90%',
+                alignItems: 'flex-end',
+                marginTop: '3%',
+              }}
+            >
+              <TouchableOpacity>
+                <Text style={{ color: colors.DARKGRAY }}>Forgot Password?</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : (
+          <View
+            style={{
+              flex: 3,
+              // backgroundColor: 'yellow',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <View
+              style={{
+                width: '90%',
+                justifyContent: 'center',
+                marginBottom: '10%',
+              }}
+            >
+              <Text
+                style={{
+                  fontWeight: 'bold',
+                  fontSize: 16,
+                  marginBottom: '5%',
+                  color: colors.BLACK,
+                }}
+              >
+                E-mail
+              </Text>
+              <TextInput
+                style={{
+                  backgroundColor: colors.WHITE,
+                  height: 50,
+                  borderRadius: 100,
+                  paddingLeft: 15,
+                  paddingRight: 15,
+                }}
+                onChangeText={setRegisterEmail}
+                value={registerEmail}
+              />
+            </View>
+            <View
+              style={{
+                width: '90%',
+                justifyContent: 'center',
+              }}
+            >
+              <Text
+                style={{
+                  fontWeight: 'bold',
+                  fontSize: 16,
+                  marginBottom: '5%',
+                  color: colors.BLACK,
+                }}
+              >
+                Password
+              </Text>
+              <View
+                style={{
+                  width: '100%',
+                  flexDirection: 'row',
+                  backgroundColor: colors.WHITE,
+                  height: 50,
+                  borderRadius: 100,
+                  paddingLeft: 15,
+                  paddingRight: 15,
+                  alignItems: 'center',
+                }}
+              >
+                <TextInput
+                  style={{
+                    width: '90%',
+                  }}
+                  onChangeText={setRegisterPassword}
+                  secureTextEntry={!showRegisterPassword}
+                  value={registerPassword}
+                />
+                <TouchableOpacity
+                  onPress={() => setShowRegisterPassword(!showRegisterPassword)}
+                >
+                  <Icon
+                    size={24}
+                    type="ionicon"
+                    name={
+                      showRegisterPassword ? 'eye-off-outline' : 'eye-outline'
+                    }
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        )}
+        <View
+          style={{
+            flex: 1,
+            //  backgroundColor: 'red',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <TouchableOpacity
+            onPress={screenView === 'login' ? () => login() : () => validate()}
+            style={{
+              width: '80%',
+              backgroundColor: colors.GREEN,
+              height: 50,
+              justifyContent: 'center',
+              alignItems: 'center',
+              borderRadius: 100,
+            }}
+          >
+            <Text style={{ color: colors.WHITE, fontSize: 18 }}>
+              {screenView === 'login' ? 'Login' : 'Register'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+        
+      </View>
       </TouchableWithoutFeedback>
+      
 
       {/* Error Message Modal */}
 
@@ -496,4 +497,26 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: colors.DARKGRAY,
   },
-});
+  selectedScreen: {
+    width: '50%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderColor: colors.GREEN,
+    borderBottomWidth: 4,
+  },
+  unselectedScreen: {
+    width: '50%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    // borderColor: colors.GREEN,
+    // borderBottomWidth: 4,
+  },
+  selectedText: {
+    fontSize: 20,
+    color: colors.BLACK,
+  },
+  unselectedText: {
+    fontSize: 20,
+    color: colors.DARKGRAY,
+  },
+})
