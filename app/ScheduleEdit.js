@@ -84,10 +84,10 @@ export default function ScheduleEdit({ navigation }) {
             />
           </View>
 
-          <View>
+          <View style={{width:'80%'}}>
             <Text>Choose Available Driver</Text>
             <DropDownPicker
-              style={{width:'80%',borderColor:colors.GREEN}}
+              style={{width:'100%',borderColor:colors.GREEN}}
               open={open2}
               value={selectedDriver}
               items={drivers}
@@ -96,10 +96,10 @@ export default function ScheduleEdit({ navigation }) {
             />
           </View>
 
-          <View>
+          <View style={{width:'80%'}}>
             <Text>Choose First Collector</Text>
             <DropDownPicker
-              style={{width:'80%',borderColor:colors.GREEN}}
+              style={{width:'100%',borderColor:colors.GREEN}}
               open={open3}
               value={selectedFirstCollector}
               items={firstCollectors}
@@ -108,10 +108,10 @@ export default function ScheduleEdit({ navigation }) {
             />
           </View>
 
-          <View>
+          <View style={{width:'80%'}}>
             <Text>Choose Second Collector</Text>
             <DropDownPicker
-              style={{width:'80%',borderColor:colors.GREEN}}
+              style={{width:'100%',borderColor:colors.GREEN}}
               open={open4}
               value={selectedSecondCollector}
               items={secondCollectors}
@@ -127,13 +127,27 @@ export default function ScheduleEdit({ navigation }) {
               checkedIcon='check-square'
               uncheckedIcon='square'
               checked={permaChange}
-              containerStyle={{backgroundColor:colors.GREEN}}
-              textStyle={{color:colors.WHITE}}
-              checkedColor={colors.WHITE}
-              uncheckedColor={colors.WHITE}
+              textStyle={{color:colors.BLACK}}
+              checkedColor={colors.GREEN}
+              uncheckedColor={colors.GRAY}
               onPress={()=>setPermaChange(!permaChange)}
             />
           </View>
+
+          <View style={{width:'80%', alignItems:'center',height:30}}>
+            <TouchableOpacity 
+              style={{
+                width:'20%',
+                height:'100%',
+                alignItems:'center',
+                justifyContent:'center',
+                backgroundColor:colors.GREEN,
+                borderRadius:7
+              }}
+            >
+              <Text style={{color:'white'}}>Save</Text>
+            </TouchableOpacity>
+          </View> 
 
           </View>
 
