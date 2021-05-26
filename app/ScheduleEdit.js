@@ -17,30 +17,23 @@ import {
 import { LinearGradient } from 'expo-linear-gradient'
 export default function ScheduleEdit({ navigation }) {
   const [permaChange, setPermaChange] = useState(false)
-  
-  const [open1, setOpen1] = useState(true);
   const [selectedCrew, setSelectedCrew] = useState(null)
+  const [selectedDriver, setSelectedDriver] = useState(null)
+  const [selectedFirstCollector, setSelectedFirstCollector] = useState(null)
+  const [selectedSecondCollector, setSelectedSecondCollector] = useState(null)
+  
   const [crews, setCrews] = useState([
     {label: 'crew 1', value: 'apple'},
     {label: 'crew 2', value: 'banana'}
   ]);
-
-  const [open2, setOpen2] = useState(false);
-  const [selectedDriver, setSelectedDriver] = useState(null)
   const [drivers, setDrivers] = useState([
     {label: 'driver 1', value: 'apple'},
     {label: 'driver 2', value: 'banana'}
   ]);
-
-  const [open3, setOpen3] = useState(false);
-  const [selectedFirstCollector, setSelectedFirstCollector] = useState(null)
   const [firstCollectors, setFirstCollectors] = useState([
     {label: 'first Collectors 1', value: 'apple'},
     {label: 'first Collectors 2', value: 'banana'}
   ]);
-  
-  const [open4, setOpen4] = useState(false);
-  const [selectedSecondCollector, setSelectedSecondCollector] = useState(null)
   const [secondCollectors, setSecondCollectors] = useState([
     {label: 'Second Collectors 1', value: 'apple'},
     {label: 'Second Collectors 2', value: 'banana'}
