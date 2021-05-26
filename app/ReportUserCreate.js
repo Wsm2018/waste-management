@@ -26,10 +26,16 @@ import {
   responsiveFontSize,
 } from 'react-native-responsive-dimensions'
 import { LinearGradient } from 'expo-linear-gradient'
-
+import db from '../db'
 import { colors } from './common/theme'
 
 export default function ReportUserCreate(props) {
+  const [desc, setDesc] = useState("")
+
+  const submit = async () => {
+    db.collection("Reports").add({ user: firebase.auth().currentUser.uid, description: desc , date : Date()})
+    props.navigation.navigate("ReportUser")
+  };
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: colors.LIGHTGRAY }}
@@ -85,8 +91,8 @@ export default function ReportUserCreate(props) {
         >
           <View style={{ flex: 0.95, width: '90%' }}>
             <ScrollView>
-              <View style={styles.inputView}>
-                <Text style={styles.textInputHeader}>Title</Text>
+              {/* <View style={styles.inputView}>
+                <Text style={styles.textInputHeader}>Date</Text>
                 <TextInput
                   style={{
                     width: '100%',
@@ -97,7 +103,7 @@ export default function ReportUserCreate(props) {
                   }}
                   placeholder={'Enter Here'}
                 />
-              </View>
+              </View> */}
               <View style={styles.inputView}>
                 <Text style={styles.textInputHeader}>Description</Text>
                 <TextInput
@@ -108,10 +114,12 @@ export default function ReportUserCreate(props) {
                     borderRadius: 10,
                     paddingLeft: 5,
                   }}
-                  placeholder={'Enter Here'}
+                  onChangeText={setDesc}
+                  placeholder={"Enter Here"}
+                  value={desc}
                 />
               </View>
-              <View style={styles.inputView}>
+              {/* <View style={styles.inputView}>
                 <Text style={styles.textInputHeader}>Priority</Text>
                 <TextInput
                   style={{
@@ -123,7 +131,7 @@ export default function ReportUserCreate(props) {
                   }}
                   placeholder={'Enter Here'}
                 />
-              </View>
+              </View> */}
               <View style={styles.inputView}>
                 <Text style={styles.textInputHeader}>Location</Text>
                 <TextInput
@@ -133,7 +141,11 @@ export default function ReportUserCreate(props) {
                     backgroundColor: colors.WHITE,
                     borderRadius: 10,
                     paddingLeft: 5,
+                    
                   }}
+                  //onChangeText={setloc}
+                   
+                   // value={desc}
                   placeholder={'Enter Here'}
                 />
               </View>
@@ -191,7 +203,9 @@ export default function ReportUserCreate(props) {
             }}
           >
             <TouchableOpacity
-              onPress={() => props.navigation.navigate('ReportAssign')}
+             // onPress={() => props.navigation.navigate('ReportAssign')}
+             onPress={()=>submit()}
+             disabled = {!desc}
               style={{
                 backgroundColor: colors.GREEN,
                 width: '100%',
@@ -217,12 +231,12 @@ const styles = StyleSheet.create({
     // flexDirection: 'column',
     // justifyContent: 'center',
   },
-  textInputHeader:{
-    fontSize:16,
-    marginBottom:2,
-    color:colors.BLACK
+  textInputHeader: {
+    fontSize: 16,
+    marginBottom: 2,
+    color: colors.BLACK
   },
-  inputView:{
-    marginBottom:20
+  inputView: {
+    marginBottom: 20
   }
 })
