@@ -8,7 +8,7 @@ import 'firebase/auth'
 import 'firebase/firestore'
 import Modal from 'react-native-modal'
 import { colors } from './common/theme'
-import DropDownPicker from 'react-native-dropdown-picker';
+import PickerSelect from "react-native-picker-select";;
 import {
   responsiveHeight,
   responsiveWidth,
@@ -18,7 +18,7 @@ import { LinearGradient } from 'expo-linear-gradient'
 export default function ScheduleEdit({ navigation }) {
   const [permaChange, setPermaChange] = useState(false)
   
-  const [open1, setOpen1] = useState(false);
+  const [open1, setOpen1] = useState(true);
   const [selectedCrew, setSelectedCrew] = useState(null)
   const [crews, setCrews] = useState([
     {label: 'crew 1', value: 'apple'},
@@ -55,7 +55,7 @@ export default function ScheduleEdit({ navigation }) {
                 leftComponent={{
                     icon: "arrow-back-outline",
                     type: "ionicon",
-                    color: colors.GREEN,
+                    color: colors.WHITE,
                     size: 30,
                     component: TouchableWithoutFeedback,
                     onPress: () => {
@@ -69,57 +69,49 @@ export default function ScheduleEdit({ navigation }) {
                 innerContainerStyles={{ marginLeft: 10, marginRight: 10 }}
             />
 
-          <View style={{flex:5.3,justifyContent:'space-evenly',alignItems:'center'}}>
+          <View style={{flex:5.3,justifyContent:'space-around',alignItems:'center'}}>
 
-          <View style={{width:'80%'}}>
+          <View style={{width:'80%',}}>
             <Text>Choose Available Crew</Text>
-            <DropDownPicker
-              style={{width:'100%',borderColor:colors.GREEN}}
-              open={open1}
-              value={selectedCrew}
+            <View style={{padding:10,borderRadius:7,borderColor:colors.GREEN,borderWidth:1}}>
+            <PickerSelect
               items={crews}
-              setOpen={setOpen1}
-              setValue={setSelectedCrew}
-              
+              onValueChange={(value) => setSelectedCrew}
             />
+            </View>
           </View>
 
           <View style={{width:'80%'}}>
             <Text>Choose Available Driver</Text>
-            <DropDownPicker
-              style={{width:'100%',borderColor:colors.GREEN}}
-              open={open2}
-              value={selectedDriver}
+            <View style={{padding:10,borderRadius:7,borderColor:colors.GREEN,borderWidth:1}}>
+            <PickerSelect
               items={drivers}
-              setOpen={setOpen2}
-              setValue={setSelectedDriver}
+              onValueChange={(value) => selectedDriver}
             />
+            </View>
           </View>
 
           <View style={{width:'80%'}}>
             <Text>Choose First Collector</Text>
-            <DropDownPicker
-              style={{width:'100%',borderColor:colors.GREEN}}
-              open={open3}
-              value={selectedFirstCollector}
+            <View style={{padding:10,borderRadius:7,borderColor:colors.GREEN,borderWidth:1}}>
+            <PickerSelect
               items={firstCollectors}
-              setOpen={setOpen3}
-              setValue={setSelectedFirstCollector}
+              onValueChange={(value) => selectedFirstCollector}
             />
+            </View>
           </View>
 
           <View style={{width:'80%'}}>
             <Text>Choose Second Collector</Text>
-            <DropDownPicker
-              style={{width:'100%',borderColor:colors.GREEN}}
-              open={open4}
-              value={selectedSecondCollector}
+            <View style={{padding:10,borderRadius:7,borderColor:colors.GREEN,borderWidth:1}}>
+            <PickerSelect
               items={secondCollectors}
-              setOpen={setOpen4}
-              setValue={setSelectedSecondCollector}
+              onValueChange={(value) => setSelectedSecondCollector}
             />
+            </View>
           </View> 
 
+          
           <View style={styles.checkboxContainer}>
           <CheckBox
               center
@@ -134,11 +126,11 @@ export default function ScheduleEdit({ navigation }) {
             />
           </View>
 
-          <View style={{width:'80%', alignItems:'center',height:30}}>
+          
             <TouchableOpacity 
               style={{
-                width:'20%',
-                height:'100%',
+                width:'25%',
+                height:'6%',
                 alignItems:'center',
                 justifyContent:'center',
                 backgroundColor:colors.GREEN,
@@ -147,7 +139,8 @@ export default function ScheduleEdit({ navigation }) {
             >
               <Text style={{color:'white'}}>Save</Text>
             </TouchableOpacity>
-          </View> 
+          
+          
 
           </View>
 
@@ -165,13 +158,10 @@ export default function ScheduleEdit({ navigation }) {
 
 const styles = StyleSheet.create({
   headerStyle: {
-    backgroundColor: 'transparent',
-    borderBottomWidth: 0,
+    backgroundColor: colors.GREEN
   },
   headerTitleStyle: {
-      color: colors.GREEN,
-      fontFamily: "Roboto-Bold",
-      fontSize: 20,
+    fontSize: 20, color: colors.WHITE
   },
   container: {
     flex: 1,

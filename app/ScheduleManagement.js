@@ -32,11 +32,11 @@ export default function ScheduleManagement({ navigation }) {
   return (
     <View style={{ flex: 1, backgroundColor:colors.WHITE }}>
         <Header
-                backgroundColor={colors.DARKGRAY}
+                backgroundColor={colors.GREEN}
                 leftComponent={{
                     icon: "md-menu",
                     type: "ionicon",
-                    color: colors.GREEN,
+                    color: colors.WHITE,
                     size: 30,
                     component: TouchableWithoutFeedback,
                     onPress: () => {
@@ -88,13 +88,10 @@ export default function ScheduleManagement({ navigation }) {
 
 const styles = StyleSheet.create({
     headerStyle: {
-      backgroundColor: 'transparent',
-      borderBottomWidth: 0,
+      backgroundColor: colors.GREEN
     },
     headerTitleStyle: {
-        color: colors.GREEN,
-        fontFamily: "Roboto-Bold",
-        fontSize: 20,
+      fontSize: 20, color: colors.WHITE
     },
     container: {
       flex: 1,
