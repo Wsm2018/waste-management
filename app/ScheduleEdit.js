@@ -75,6 +75,7 @@ export default function ScheduleEdit({ navigation }) {
             <Text>Choose Available Crew</Text>
             <View style={{padding:10,borderRadius:7,borderColor:colors.GREEN,borderWidth:1}}>
             <PickerSelect
+              useNativeAndroidPickerStyle={false}
               items={crews}
               onValueChange={(value) => setSelectedCrew}
             />
@@ -85,6 +86,7 @@ export default function ScheduleEdit({ navigation }) {
             <Text>Choose Available Driver</Text>
             <View style={{padding:10,borderRadius:7,borderColor:colors.GREEN,borderWidth:1}}>
             <PickerSelect
+              useNativeAndroidPickerStyle={false}
               items={drivers}
               onValueChange={(value) => selectedDriver}
             />
@@ -95,6 +97,7 @@ export default function ScheduleEdit({ navigation }) {
             <Text>Choose First Collector</Text>
             <View style={{padding:10,borderRadius:7,borderColor:colors.GREEN,borderWidth:1}}>
             <PickerSelect
+              useNativeAndroidPickerStyle={false}
               items={firstCollectors}
               onValueChange={(value) => selectedFirstCollector}
             />
@@ -105,6 +108,7 @@ export default function ScheduleEdit({ navigation }) {
             <Text>Choose Second Collector</Text>
             <View style={{padding:10,borderRadius:7,borderColor:colors.GREEN,borderWidth:1}}>
             <PickerSelect
+              useNativeAndroidPickerStyle={false}
               items={secondCollectors}
               onValueChange={(value) => setSelectedSecondCollector}
             />
