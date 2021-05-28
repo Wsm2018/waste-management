@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from "react";
 
 import {
   View,
@@ -13,72 +13,106 @@ import {
   TouchableWithoutFeedback,
   StatusBar,
   ScrollView,
-} from 'react-native'
+} from "react-native";
 
-import { Input, Icon, Header } from 'react-native-elements'
-import firebase from 'firebase'
-import 'firebase/auth'
-import 'firebase/firestore'
-import Modal from 'react-native-modal'
+import { Input, Icon, Header } from "react-native-elements";
+import firebase from "firebase";
+import "firebase/auth";
+import "firebase/firestore";
+import Modal from "react-native-modal";
 import {
   responsiveHeight,
   responsiveWidth,
   responsiveFontSize,
-} from 'react-native-responsive-dimensions'
-import { LinearGradient } from 'expo-linear-gradient'
+} from "react-native-responsive-dimensions";
+import { LinearGradient } from "expo-linear-gradient";
 
-import { colors } from './common/theme'
+import { colors } from "./common/theme";
+import db from "../db";
 
 export default function PriorityAssign(props) {
-  const [email, setEmail] = useState('')
+  const [crews, setCrews] = useState([]);
+  const [users, setUsers] = useState([]);
 
-  const [crew, setCrew] = useState([
-    {
-      id: 1,
-    },
-    {
-      id: 2,
-    },
-    {
-      id: 3,
-    },
-    {
-      id: 4,
-    },
-    {
-      id: 1,
-    },
-    {
-      id: 2,
-    },
-    {
-      id: 3,
-    },
-    {
-      id: 4,
-    },
-  ])
+  const getCrew = () => {
+    const unsub = db.collection("Crews").onSnapshot((query) => {
+      let crew = [];
+      query.forEach((doc) => {
+        const data = doc.data();
+        const driver = getCrewName(data.driver);
+        const collector1 = getCrewName(data.collector1);
+        const collector2 = getCrewName(data.collector2);
+        const backupCollector1 = getCrewName(data.backupCollector1);
+        const backupCollector2 = getCrewName(data.backupCollector2);
+
+        crew.push({
+          id: doc.id,
+          driver,
+          collector1,
+          collector2,
+          backupCollector1,
+          backupCollector2,
+        });
+      });
+      setCrews([...crew]);
+    });
+    return unsub;
+  };
+
+  const getCrewName = (id) => {
+    const user = users.filter((item) => id === item.id)[0];
+    return user.firstName;
+  };
+
+  const getUser = () => {
+    const unsub = db.collection("Users").onSnapshot((query) => {
+      let user = [];
+      query.forEach((doc) => {
+        user.push({ id: doc.id, ...doc.data() });
+      });
+      setUsers([...user]);
+    });
+    return unsub;
+  };
+
+  useEffect(() => {
+    const usersUnsub = getUser();
+    return () => {
+      usersUnsub();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (users.length > 0) {
+      const crewsUnsub = getCrew();
+      return () => {
+        crewsUnsub();
+      };
+    }
+  }, [users]);
 
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: colors.LIGHTGRAY }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       {/* <StatusBar hidden={false} /> */}
       <Header
         backgroundColor={colors.GREEN}
         leftComponent={{
-          icon: 'angle-left',
-          type: 'font-awesome',
+          icon: "angle-left",
+          type: "font-awesome",
           color: colors.WHITE,
           size: 30,
           component: TouchableWithoutFeedback,
           onPress: () => {
-            props.navigation.goBack()
+            props.navigation.goBack();
           },
         }}
         centerComponent={
-          <Text style={{ fontSize: 20, color: colors.WHITE }}>Priority Assign</Text>
+          <Text style={{ fontSize: 20, color: colors.WHITE }}>
+            Priority Assign
+          </Text>
         }
         // containerStyle={styles.headerStyle}
         // innerContainerStyles={styles.inrContStyle}
@@ -96,19 +130,20 @@ export default function PriorityAssign(props) {
         style={{
           flex: 1,
           // backgroundColor: 'red',
-          width: '90%',
-          alignSelf: 'center',
+          width: "90%",
+          alignSelf: "center",
         }}
       >
-        <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+        <View style={{ flex: 1, justifyContent: "flex-end" }}>
           <Text style={{ fontSize: 25, color: colors.BLACK }}>
             Available Crew
           </Text>
         </View>
         <View style={{ flex: 10 }}>
           <ScrollView>
-            {crew.map((item, index) => (
+            {crews.map((item, index) => (
               <View
+                key={index}
                 style={{
                   width: '100%',
                   backgroundColor: colors.WHITE,
@@ -128,9 +163,9 @@ export default function PriorityAssign(props) {
                 }}
               >
                 <View style={{ width: '75%', justifyContent:"space-evenly", paddingLeft:10}}>
-                  <Text style={{fontWeight:"bold", color:colors.black, fontSize:16}}>Crew ID</Text>
-                  <Text style={{ color:colors.DARKGRAY}}>Driver - Awatif</Text>
-                  <Text style={{ color:colors.DARKGRAY}}>Collectors - Jose & Wasim</Text>
+                  <Text style={{fontWeight:"bold", color:colors.black, fontSize:16}}>Crew {index+1} </Text>
+                  <Text style={{ color:colors.DARKGRAY}}>Driver - {item.driver}</Text>
+                  <Text style={{ color:colors.DARKGRAY}}>Collectors - {`${item.collector1} & ${item.collector2}`}</Text>
                 </View>
                 <View style={{ width: '25%' }}>
                   <TouchableOpacity
@@ -156,7 +191,7 @@ export default function PriorityAssign(props) {
       </View>
       {/* </TouchableWithoutFeedback> */}
     </KeyboardAvoidingView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -165,4 +200,4 @@ const styles = StyleSheet.create({
     // flexDirection: 'column',
     // justifyContent: 'center',
   },
-})
+});
