@@ -14,7 +14,7 @@ import {
   StatusBar,
   ScrollView,
 } from "react-native";
-
+import moment from "moment";
 import { Input, Icon, Header } from "react-native-elements";
 import firebase from "firebase";
 import "firebase/auth";
@@ -29,10 +29,29 @@ import { LinearGradient } from "expo-linear-gradient";
 
 import { colors } from "./common/theme";
 import db from "../db";
+import { Alert } from "react-native";
 
 export default function PriorityAssign(props) {
   const [crews, setCrews] = useState([]);
   const [users, setUsers] = useState([]);
+  const bin = props.navigation.getParam("bin")
+
+  useEffect(() => {
+    const usersUnsub = getUser();
+    return () => {
+      usersUnsub();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (users.length > 0) {
+      const crewsUnsub = getCrew();
+      return () => {
+        crewsUnsub();
+      };
+    }
+  }, [users]);
+
 
   const getCrew = () => {
     const unsub = db.collection("Crews").onSnapshot((query) => {
@@ -75,21 +94,19 @@ export default function PriorityAssign(props) {
     return unsub;
   };
 
-  useEffect(() => {
-    const usersUnsub = getUser();
-    return () => {
-      usersUnsub();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (users.length > 0) {
-      const crewsUnsub = getCrew();
-      return () => {
-        crewsUnsub();
-      };
-    }
-  }, [users]);
+  const assignCrew = async(crew) => {
+    await db.collection("GarbageCollection").add({
+      binId: bin.id, 
+      crewId: crew.id, 
+      weight: bin.weight,
+      temp:bin.temp,
+      type: bin.type,
+      condition: bin.condition,
+      capacity: bin.capacity,
+      garbageAssginedDate:moment().format("YYYY/MM/DD HH:mm:ss")
+    })
+    Alert.alert("Bin Assigned")
+  }
 
   return (
     <KeyboardAvoidingView
@@ -169,7 +186,7 @@ export default function PriorityAssign(props) {
                 </View>
                 <View style={{ width: '25%' }}>
                   <TouchableOpacity
-                  onPress={()=>props.navigation.navigate('Home')}
+                    onPress={()=> assignCrew(item)}
                     style={{
                       width: '100%',
                       backgroundColor: colors.GREEN,
