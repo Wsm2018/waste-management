@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Button, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  Button,
+  TouchableOpacity,
+  StyleSheet,
+  TextInput,
+  Image,
+} from "react-native";
+
 import { Input, Icon } from "react-native-elements";
 import firebase from "firebase";
 import "firebase/auth";
@@ -10,6 +19,9 @@ import {
   responsiveWidth,
   responsiveFontSize,
 } from "react-native-responsive-dimensions";
+
+// import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function Register({ navigation }) {
   const [email, setEmail] = useState("");
@@ -61,69 +73,93 @@ export default function Register({ navigation }) {
       .auth()
       .createUserWithEmailAndPassword(email, password)
       .then((user) => {
-        console.log(user);
-        // firebase
-        //   .auth()
-        //   .collection("users")
-        //   .doc(user.user.uid)
-        //   .set({
-        //     emailVerified: user.user.emailVerified,
-        //     email: user.user.email,
-        //     phoneNumber: user.user.phoneNumber,
-        //     photoURL: user.user.photoURL,
-        //     created: user.user.metadata.creationTime,
-        //     displayName: user.user.email.split("@")[0],
-        //   });
+        db.collection("users")
+          .doc(user.user.uid)
+          .set({
+            emailVerified: user.user.emailVerified,
+            email: user.user.email,
+            phoneNumber: user.user.phoneNumber,
+            photoURL: user.user.photoURL,
+            created: user.user.metadata.creationTime,
+            displayName: user.user.email.split("@")[0],
+          });
         console.log("done");
+      })
+      .catch((error) => {
+        if (error.code === "auth/email-already-in-use") {
+          setModalMessage("That email address is already in use!");
+          setIsModalVisible(true);
+        }
+        if (error.code === "auth/invalid-email") {
+          setModalMessage("That email address is invalid!");
+          setIsModalVisible(true);
+        }
       });
   };
 
   return (
-    <View>
-      <Text>Register Screen</Text>
-      <Input placeholder="Email" label="Email" onChangeText={setEmail} />
+    <View></View>
+    // <View style={{flex:1}}>
+    //   <LinearGradient colors={['#82c582', '#60bd90', '#50ba94']} style={styles.container}>
+    //   {/* <Image
+    //     style={{
+    //       aspectRatio:1/1,
+    //       flex:0.5,
+    //       alignSelf:"center"
+    //     }}
+    //     source={require('../assets/bg1.png')}
+    //   /> */}
+    //     <Text>Register Screen</Text>
+    //     <Input placeholder="Email" label="Email" onChangeText={setEmail} />
 
-      <Input
-        placeholder="Password"
-        label="Password"
-        secureTextEntry={!showPassword}
-        onChangeText={setPassword}
-        rightIcon={
-          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-            <Icon
-              size={24}
-              type="ionicon"
-              name={showPassword ? "eye-off-outline" : "eye-outline"}
-            />
-          </TouchableOpacity>
-        }
-      />
+    //     <Input
+    //       placeholder="Password"
+    //       label="Password"
+    //       secureTextEntry={!showPassword}
+    //       onChangeText={setPassword}
+    //       rightIcon={
+    //         <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+    //           <Icon
+    //             size={24}
+    //             type="ionicon"
+    //             name={showPassword ? "eye-off-outline" : "eye-outline"}
+    //           />
+    //         </TouchableOpacity>
+    //       }
+    //     />
 
-      <Button title="Login" onPress={() => validate()} />
-      <Modal
-        isVisible={isModalVisible}
-        animationIn="fadeInUp"
-        animationOut="fadeOutDown"
-        hasBackdrop={false}
-        animationInTiming={1000}
-        animationOutTiming={1000}
-        style={{ flex: 1, justifyContent: "flex-end" }}
-      >
-        <View style={styles.modalContainer}>
-          <View style={{ marginRight: 10 }}>
-            <Icon
-              type="material"
-              name="error-outline"
-              size={24}
-              color="white"
-            />
-          </View>
-          <Text style={{ color: "white", fontWeight: "bold" }}>
-            {modalMessage}
-          </Text>
-        </View>
-      </Modal>
-    </View>
+    //     <Text>
+    //       Already have an account ?
+    //       <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+    //         <Text>Log In</Text>
+    //       </TouchableOpacity>
+    //     </Text>
+
+    //   <Button title="Regitser" onPress={() => validate()} />
+    //   <Modal
+    //     isVisible={isModalVisible}
+    //     animationIn="fadeInUp"
+    //     animationOut="fadeOutDown"
+    //     hasBackdrop={false}
+    //     animationInTiming={1000}
+    //     animationOutTiming={1000}
+    //     style={{ flex: 1, justifyContent: "flex-end" }}
+    //   >
+    //     <View style={styles.modalContainer}>
+    //       <View style={{ marginRight: 10 }}>
+    //         <Icon
+    //           type="material"
+    //           name="error-outline"
+    //           size={24}
+    //           color="white"
+    //         />
+    //       </View>
+    //       <Text style={{ color: "white", fontWeight: "bold" }}>
+    //         {modalMessage}
+    //       </Text>
+    //     </Modal>
+    //   </LinearGradient>
+    // </View>
   );
 }
 
@@ -131,7 +167,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     // flexDirection: 'column',
-    // justifyContent: 'center',
+    justifyContent: "center",
   },
 
   modalContainer: {

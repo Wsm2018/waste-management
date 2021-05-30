@@ -3,35 +3,25 @@ import React, { useState, useEffect } from "react";
 import { StyleSheet, LogBox } from "react-native";
 import firebase from "firebase";
 import "firebase/auth";
-import Login from "./auth/Login";
-import Register from "./auth/Register";
-import Home from "./app/Home";
 import db from "./db";
+import AuthContainer from "./Navigator/AuthNav";
+import AppContainer from "./Navigator/AppNav";
 LogBox.ignoreAllLogs();
-import { createAppContainer, createSwitchNavigator } from "react-navigation";
-import { createStackNavigator } from "react-navigation-stack";
-
-const AuthNavigator = createStackNavigator({
-  Register,
-  Login,
-});
-
-const AuthContainer = createAppContainer(AuthNavigator);
-
-const AppNavigator = createStackNavigator({
-  Home,
-});
-
-const AppContainer = createAppContainer(AppNavigator);
 
 export default function App() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(false);
 
   useEffect(() => {
     return firebase.auth().onAuthStateChanged(setUser);
   }, []);
 
-  return user ? <AppContainer /> : <AuthContainer />;
+  return user !== false ? (
+    user !== null ? (
+      <AppContainer />
+    ) : (
+      <AuthContainer />
+    )
+  ) : null;
 }
 
 const styles = StyleSheet.create({
