@@ -25,40 +25,37 @@ import {
   responsiveWidth,
   responsiveFontSize,
 } from 'react-native-responsive-dimensions'
+import db from '../db'
 import { LinearGradient } from 'expo-linear-gradient'
 
 import { colors } from './common/theme'
 
 export default function ReportAssign(props) {
   const [email, setEmail] = useState('')
+  const details = props.navigation.getParam("item", "some default value");
+  const [crew, setCrew] = useState([])
 
-  const [crew, setCrew] = useState([
-    {
-      id: 1,
-    },
-    {
-      id: 2,
-    },
-    {
-      id: 3,
-    },
-    {
-      id: 4,
-    },
-    {
-      id: 1,
-    },
-    {
-      id: 2,
-    },
-    {
-      id: 3,
-    },
-    {
-      id: 4,
-    },
-  ])
+  useEffect(() => {
 
+    db.collection("Crews").onSnapshot(querySnapshot => {
+      let r = [];
+      querySnapshot.forEach(doc => {
+        r.push({ id: doc.id, ...doc.data() });
+      });
+      setCrew([...r]);
+    })
+  })
+
+  const assign = (c) =>{
+    console.log("ahaa??",details)
+    db.collection("Reports").doc(details.id).update({
+      assignedTo:c ,
+      handledBy: firebase.auth().currentUser.uid,
+      status: "Done",
+      closingDateTime: new Date()+""
+      })
+    props.navigation.navigate('Home')
+  }
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: colors.LIGHTGRAY }}
@@ -128,13 +125,13 @@ export default function ReportAssign(props) {
                 }}
               >
                 <View style={{ width: '75%', justifyContent:"space-evenly", paddingLeft:10}}>
-                  <Text style={{fontWeight:"bold", color:colors.black, fontSize:16}}>Crew ID</Text>
-                  <Text style={{ color:colors.DARKGRAY}}>Driver - Awatif</Text>
-                  <Text style={{ color:colors.DARKGRAY}}>Collectors - Jose & Wasim</Text>
+                  <Text style={{fontWeight:"bold", color:colors.black, fontSize:16}}>{item.crewNo}</Text>
+                  {/* <Text style={{ color:colors.DARKGRAY}}>{item.driver}</Text>
+                  <Text style={{ color:colors.DARKGRAY}}>{item.collector1} & {item.collector2}</Text> */}
                 </View>
                 <View style={{ width: '25%' }}>
                   <TouchableOpacity
-                  onPress={()=>props.navigation.navigate('Home')}
+                  onPress={()=>assign(item.id)}
                     style={{
                       width: '100%',
                       backgroundColor: colors.GREEN,

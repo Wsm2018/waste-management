@@ -30,6 +30,7 @@ import db from '../db'
 
 import { colors } from './common/theme'
 
+
 export default function ReportUser(props) {
   const [screenView, setScreenView] = useState(true)
   const [reports, setReports] = useState()
@@ -42,7 +43,6 @@ export default function ReportUser(props) {
       });
       setReports([...r]);
   });
-  console.log("reports of the logged in user", reports)
   })
 
   return (
@@ -98,7 +98,7 @@ export default function ReportUser(props) {
       >
         <View style={{ flex: 1, justifyContent: 'flex-end' }}>
           <Text style={{ fontSize: 25, color: colors.BLACK }}>
-            All Reports
+            My Reports
           </Text>
         </View>
         <View style={{ flex: 10 }}>         
@@ -124,10 +124,10 @@ export default function ReportUser(props) {
               }}
             >
               <View style={{ width: '100%', justifyContent:"space-evenly", paddingLeft:10}}>
-                <Text style={{fontWeight:"bold", color:colors.black, fontSize:16}}>Report {index}</Text>
-                <Text style={{ color:colors.DARKGRAY}}>Wakra, Qatar</Text>
-                <Text style={{ color:colors.DARKGRAY}}>Crew ID</Text>
-                <Text style={{ color:colors.DARKGRAY}}>Complete - Date</Text>
+                <Text style={{fontWeight:"bold", color:colors.black, fontSize:16}}>{index + 1}. {item.title} </Text>
+                {/* <Text style={{ color:colors.DARKGRAY}}>{item.location}</Text> */}
+                <Text style={{ color:colors.DARKGRAY}}>{item.date.split("GMT")[0]}</Text>
+                <Text style={{ color:colors.DARKGRAY}}>{item.status}</Text>
               </View>
               {/* <View style={{ width: '25%' }}>
                 <TouchableOpacity
