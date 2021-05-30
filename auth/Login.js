@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from "react";
 
 import {
   View,
@@ -10,35 +10,35 @@ import {
   KeyboardAvoidingView,
   Platform,
   Keyboard,
-  TouchableWithoutFeedback
-} from 'react-native'
+  TouchableWithoutFeedback,
+} from "react-native";
 
-import { Input, Icon } from 'react-native-elements'
-import firebase from 'firebase'
-import 'firebase/auth'
-import 'firebase/firestore'
-import Modal from 'react-native-modal'
+import { Input, Icon } from "react-native-elements";
+import firebase from "firebase";
+import "firebase/auth";
+import "firebase/firestore";
+import Modal from "react-native-modal";
 import {
   responsiveHeight,
   responsiveWidth,
   responsiveFontSize,
-} from 'react-native-responsive-dimensions'
-import { LinearGradient } from 'expo-linear-gradient'
+} from "react-native-responsive-dimensions";
+import { LinearGradient } from "expo-linear-gradient";
 
-import { colors } from '../app/common/theme'
+import { colors } from "../app/common/theme";
 
 export default function Login({ navigation }) {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [isModalVisible, setIsModalVisible] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
-  const [modalMessage, setModalMessage] = useState('')
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
 
-  const [registerEmail, setRegisterEmail] = useState('')
-  const [registerPassword, setRegisterPassword] = useState('')
-  const [showRegisterPassword, setShowRegisterPassword] = useState(false)
+  const [registerEmail, setRegisterEmail] = useState("");
+  const [registerPassword, setRegisterPassword] = useState("");
+  const [showRegisterPassword, setShowRegisterPassword] = useState(false);
 
-  const [screenView, setScreenView] = useState('login')
+  const [screenView, setScreenView] = useState("login");
   /**
    * Runs if modalVisible is true
    * Shows the error message for three seconds
@@ -48,23 +48,23 @@ export default function Login({ navigation }) {
   useEffect(() => {
     if (isModalVisible) {
       const time = setTimeout(() => {
-        setIsModalVisible(false)
-      }, 3000)
+        setIsModalVisible(false);
+      }, 3000);
       return () => {
-        console.log('from here pass')
-        clearTimeout(time)
-      }
+        console.log("from here pass");
+        clearTimeout(time);
+      };
     }
-  }, [isModalVisible])
+  }, [isModalVisible]);
 
   const login = () => {
     if (email.length === 0 || password.length === 0) {
-      setModalMessage('Email or Password cannot be empty')
-      setIsModalVisible(true)
+      setModalMessage("Email or Password cannot be empty");
+      setIsModalVisible(true);
     } else {
-      firebase.auth().signInWithEmailAndPassword(email, password)
+      firebase.auth().signInWithEmailAndPassword(email, password);
     }
-  }
+  };
 
   // ---------REGISTER------------
 
@@ -137,10 +137,10 @@ export default function Login({ navigation }) {
         >
           <View
             style={{
-              width: '100%',
-              backgroundColor: colors.WHITE,
-              height: 60,
-              flexDirection: 'row',
+              flex: 1,
+              // backgroundColor: 'red',
+              alignItems: "center",
+              justifyContent: "flex-end",
             }}
           >
             <TouchableOpacity
@@ -397,6 +397,7 @@ export default function Login({ navigation }) {
       
 
       {/* Error Message Modal */}
+
       <Modal
         isVisible={isModalVisible}
         animationIn="fadeInUp"
@@ -404,7 +405,7 @@ export default function Login({ navigation }) {
         hasBackdrop={false}
         animationInTiming={1000}
         animationOutTiming={1000}
-        style={{ flex: 1, justifyContent: 'flex-end' }}
+        style={{ flex: 1, justifyContent: "flex-end" }}
       >
         <View style={styles.modalContainer}>
           <View style={{ marginRight: 10 }}>
@@ -423,10 +424,10 @@ export default function Login({ navigation }) {
               color={'#005c1f'}
               title="New User? Register"
               onPress={() => navigation.navigate('Register')}
-            /> */}
+            /> /}
           </View>
 
-          {/* <View
+          {/ <View
             style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
           >
             <TouchableOpacity
@@ -443,16 +444,17 @@ export default function Login({ navigation }) {
               <Text style={{ fontSize: 25, color: '#005c1f' }}>Login</Text>
             </TouchableOpacity>
 
-           
+
           </View> */}
 
-          <Text style={{ color: 'white', fontWeight: 'bold' }}>
-            {modalMessage}
-          </Text>
+            <Text style={{ color: "white", fontWeight: "bold" }}>
+              {modalMessage}
+            </Text>
+          </View>
         </View>
       </Modal>
     </KeyboardAvoidingView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -464,14 +466,36 @@ const styles = StyleSheet.create({
 
   modalContainer: {
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: "row",
     maxHeight: responsiveHeight(8),
-    backgroundColor: 'rgba(250,0,0, 0.7)',
+    backgroundColor: "rgba(250,0,0, 0.7)",
     padding: 22,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     borderRadius: 4,
-    borderColor: 'rgba(0, 0, 0, 0.1)',
+    borderColor: "rgba(0, 0, 0, 0.1)",
+  },
+  selectedScreen: {
+    width: "50%",
+    justifyContent: "center",
+    alignItems: "center",
+    borderColor: colors.GREEN,
+    borderBottomWidth: 4,
+  },
+  unselectedScreen: {
+    width: "50%",
+    justifyContent: "center",
+    alignItems: "center",
+    // borderColor: colors.GREEN,
+    // borderBottomWidth: 4,
+  },
+  selectedText: {
+    fontSize: 20,
+    color: colors.BLACK,
+  },
+  unselectedText: {
+    fontSize: 20,
+    color: colors.DARKGRAY,
   },
   selectedScreen: {
     width: '50%',
