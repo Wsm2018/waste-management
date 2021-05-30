@@ -8,7 +8,7 @@ import 'firebase/auth'
 import 'firebase/firestore'
 import Modal from 'react-native-modal'
 import { colors } from './common/theme'
-import PickerSelect from "react-native-picker-select";;
+import DropDownPicker from 'react-native-dropdown-picker';
 import {
   responsiveHeight,
   responsiveWidth,
@@ -17,23 +17,30 @@ import {
 import { LinearGradient } from 'expo-linear-gradient'
 export default function ScheduleEdit({ navigation }) {
   const [permaChange, setPermaChange] = useState(false)
-  const [selectedCrew, setSelectedCrew] = useState(null)
-  const [selectedDriver, setSelectedDriver] = useState(null)
-  const [selectedFirstCollector, setSelectedFirstCollector] = useState(null)
-  const [selectedSecondCollector, setSelectedSecondCollector] = useState(null)
   
+  const [open1, setOpen1] = useState(false);
+  const [selectedCrew, setSelectedCrew] = useState(null)
   const [crews, setCrews] = useState([
     {label: 'crew 1', value: 'apple'},
     {label: 'crew 2', value: 'banana'}
   ]);
+
+  const [open2, setOpen2] = useState(false);
+  const [selectedDriver, setSelectedDriver] = useState(null)
   const [drivers, setDrivers] = useState([
     {label: 'driver 1', value: 'apple'},
     {label: 'driver 2', value: 'banana'}
   ]);
+
+  const [open3, setOpen3] = useState(false);
+  const [selectedFirstCollector, setSelectedFirstCollector] = useState(null)
   const [firstCollectors, setFirstCollectors] = useState([
     {label: 'first Collectors 1', value: 'apple'},
     {label: 'first Collectors 2', value: 'banana'}
   ]);
+  
+  const [open4, setOpen4] = useState(false);
+  const [selectedSecondCollector, setSelectedSecondCollector] = useState(null)
   const [secondCollectors, setSecondCollectors] = useState([
     {label: 'Second Collectors 1', value: 'apple'},
     {label: 'Second Collectors 2', value: 'banana'}
@@ -48,7 +55,7 @@ export default function ScheduleEdit({ navigation }) {
                 leftComponent={{
                     icon: "arrow-back-outline",
                     type: "ionicon",
-                    color: colors.WHITE,
+                    color: colors.GREEN,
                     size: 30,
                     component: TouchableWithoutFeedback,
                     onPress: () => {
@@ -62,53 +69,57 @@ export default function ScheduleEdit({ navigation }) {
                 innerContainerStyles={{ marginLeft: 10, marginRight: 10 }}
             />
 
-          <View style={{flex:5.3,justifyContent:'space-around',alignItems:'center'}}>
+          <View style={{flex:5.3,justifyContent:'space-evenly',alignItems:'center'}}>
 
-          <View style={{width:'80%',}}>
+          <View style={{width:'80%'}}>
             <Text>Choose Available Crew</Text>
-            <View style={{padding:10,borderRadius:7,borderColor:colors.GREEN,borderWidth:1}}>
-            <PickerSelect
-              useNativeAndroidPickerStyle={false}
+            <DropDownPicker
+              style={{width:'100%',borderColor:colors.GREEN}}
+              open={open1}
+              value={selectedCrew}
               items={crews}
-              onValueChange={(value) => setSelectedCrew}
+              setOpen={setOpen1}
+              setValue={setSelectedCrew}
+              
             />
-            </View>
           </View>
 
-          <View style={{width:'80%'}}>
+          <View>
             <Text>Choose Available Driver</Text>
-            <View style={{padding:10,borderRadius:7,borderColor:colors.GREEN,borderWidth:1}}>
-            <PickerSelect
-              useNativeAndroidPickerStyle={false}
+            <DropDownPicker
+              style={{width:'80%',borderColor:colors.GREEN}}
+              open={open2}
+              value={selectedDriver}
               items={drivers}
-              onValueChange={(value) => selectedDriver}
+              setOpen={setOpen2}
+              setValue={setSelectedDriver}
             />
-            </View>
           </View>
 
-          <View style={{width:'80%'}}>
+          <View>
             <Text>Choose First Collector</Text>
-            <View style={{padding:10,borderRadius:7,borderColor:colors.GREEN,borderWidth:1}}>
-            <PickerSelect
-              useNativeAndroidPickerStyle={false}
+            <DropDownPicker
+              style={{width:'80%',borderColor:colors.GREEN}}
+              open={open3}
+              value={selectedFirstCollector}
               items={firstCollectors}
-              onValueChange={(value) => selectedFirstCollector}
+              setOpen={setOpen3}
+              setValue={setSelectedFirstCollector}
             />
-            </View>
           </View>
 
-          <View style={{width:'80%'}}>
+          <View>
             <Text>Choose Second Collector</Text>
-            <View style={{padding:10,borderRadius:7,borderColor:colors.GREEN,borderWidth:1}}>
-            <PickerSelect
-              useNativeAndroidPickerStyle={false}
+            <DropDownPicker
+              style={{width:'80%',borderColor:colors.GREEN}}
+              open={open4}
+              value={selectedSecondCollector}
               items={secondCollectors}
-              onValueChange={(value) => setSelectedSecondCollector}
+              setOpen={setOpen4}
+              setValue={setSelectedSecondCollector}
             />
-            </View>
           </View> 
 
-          
           <View style={styles.checkboxContainer}>
           <CheckBox
               center
@@ -116,28 +127,13 @@ export default function ScheduleEdit({ navigation }) {
               checkedIcon='check-square'
               uncheckedIcon='square'
               checked={permaChange}
-              textStyle={{color:colors.BLACK}}
-              checkedColor={colors.GREEN}
-              uncheckedColor={colors.GRAY}
+              containerStyle={{backgroundColor:colors.GREEN}}
+              textStyle={{color:colors.WHITE}}
+              checkedColor={colors.WHITE}
+              uncheckedColor={colors.WHITE}
               onPress={()=>setPermaChange(!permaChange)}
             />
           </View>
-
-          
-            <TouchableOpacity 
-              style={{
-                width:'25%',
-                height:'6%',
-                alignItems:'center',
-                justifyContent:'center',
-                backgroundColor:colors.GREEN,
-                borderRadius:7
-              }}
-            >
-              <Text style={{color:'white'}}>Save</Text>
-            </TouchableOpacity>
-          
-          
 
           </View>
 
@@ -155,10 +151,13 @@ export default function ScheduleEdit({ navigation }) {
 
 const styles = StyleSheet.create({
   headerStyle: {
-    backgroundColor: colors.GREEN
+    backgroundColor: 'transparent',
+    borderBottomWidth: 0,
   },
   headerTitleStyle: {
-    fontSize: 20, color: colors.WHITE
+      color: colors.GREEN,
+      fontFamily: "Roboto-Bold",
+      fontSize: 20,
   },
   container: {
     flex: 1,

@@ -53,11 +53,11 @@ export default function ScheduleMap({navigation}) {
 
   return (
     <View style={{ flex: 1 }}>
-      <StatusBar
+      {/* <StatusBar
       // hidden={true} 
       // barStyle={"default"}
       // showHideTransition={"fade"}
-      />
+      /> */}
       {/* {console.log("-------------", props.navigation)} */}
       <MapView
         style={{ flex: 1 }}

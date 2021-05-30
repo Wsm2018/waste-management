@@ -1,0 +1,57 @@
+  const [priority, setPriority] = useState([
+    {
+      id: 1,
+      priority: "low",
+      location: {
+        lat: 25.286106,
+        lng: 51.5348170
+      }
+    },
+    {
+      id: 2,
+      priority: "medium",
+      location: {
+        lat: 25.286106 + 0.01,
+        lng: 51.5348170 + 0.01
+      }
+    },
+    {
+      id: 3,
+      priority: "high",
+      location: {
+        lat: 25.286106 - 0.02,
+        lng: 51.5348170 - 0.02
+      }
+    },
+    {
+      id: 4,
+      priority: "high",
+      location: {
+        lat: 25.286106 - 0.03,
+        lng: 51.5348170 - 0.03
+      }
+    },
+
+  ])
+
+
+    const [report, setReport] = useState([
+    {
+      id: 1,
+      priority: "low",
+      location: {
+        lat: 25.286106 - 0.02,
+        lng: 51.5348170 - 0.03
+      }
+    },
+    {
+      id: 2,
+      priority: "medium",
+      location: {
+        lat: 25.286106 - 0.04,
+        lng: 51.5348170 - 0.04
+      }
+    },
+
+
+  ])
