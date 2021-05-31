@@ -10,8 +10,9 @@ import db from '../db'
 
 
 export default function Home({ navigation }) {
-  const [userType, setUserType] = useState("Manager");
-  // const [userType, setUserType] = useState("Crew");
+  //const [userType, setUserType] = useState("Manager");
+   const [userType, setUserType] = useState("Crew");
+  const [user, setUser] = useState();
   // const [userType, setUserType] = useState("User");
 
   //get the user role from db 
@@ -27,13 +28,13 @@ export default function Home({ navigation }) {
     setUserType(loggedInUser.data().role)
   }
   const manager = "Manager"
-  const crew = "Crew"
-  const user = "User"
+  const crew = "Worker"
+  const user1 = "User"
 
   return (
-    userType === manager ?
-      <HomeManager navigation={navigation} /> :
-      userType === crew ?
+    user && user.role === manager ?
+      <HomeManager navigation={navigation}/> :
+      user && user.role === crew ?
         <HomeCrew navigation={navigation} />
         :
         <HomeUser navigation={navigation} />
