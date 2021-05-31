@@ -3,14 +3,25 @@ import { Text, View, Image,TouchableOpacity, Platform, StatusBar,Dimensions } fr
 import { Icon } from 'react-native-elements'
 import { colors } from './common/theme';
 //make a compontent
-var { height } = Dimensions.get('window');
+var { height, width } = Dimensions.get('window');
 const SideMenuHeader = ({headerStyle}) =>{
    return (
         <View style={[styles.viewStyle,headerStyle]}>
-           
+           <View style={{backgroundColor:colors.WHITE, borderRadius:100}}>
+           <Image
+                style={{
+                aspectRatio:1/1,
+                height:height/6,
+                // width:400,
+                // alignSelf:"center"
+                
+                }}
+                source={require('../assets/user-icon.png')}
+            />  
+           </View>
             <View style={styles.headerTextStyle}>
-                <Text style={{color:colors.WHITE}}>Abubaker Nasir</Text>
-                <Text style={{color:colors.WHITE}}>Admin</Text>
+                <Text style={{color:colors.WHITE, fontWeight:"bold", fontSize:18}}>NAME</Text>
+                <Text style={{color:colors.WHITE}}>Role</Text>
             </View>
         </View>
    );
@@ -19,18 +30,20 @@ const SideMenuHeader = ({headerStyle}) =>{
 
 const styles = {
     viewStyle:{
-        backgroundColor:colors.GREEN,
+        // backgroundColor:colors.YELLOW,
         // backgroundColor:"red",
         justifyContent:'center',
         alignItems:'center',
-        height:height/4,
+        // height:height/4,
         paddingTop:Platform.OS=='ios'?20:StatusBar.currentHeight,
         borderBottomColor: colors.WHITE,
-        borderBottomWidth: 1,
+        borderBottomWidth: 0.2,
         position:'relative',
         flexDirection:'column',
         marginLeft:height/50,
         marginRight:height/50,
+        // width:width/4,
+        height:height/2.5,
     },
     textStyle:{
         fontSize:20,
