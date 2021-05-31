@@ -35,10 +35,6 @@ export default function Login({ navigation }) {
   const [showPassword, setShowPassword] = useState(false)
   const [modalMessage, setModalMessage] = useState('')
 
-  const [registerEmail, setRegisterEmail] = useState('')
-  const [registerPassword, setRegisterPassword] = useState('')
-  const [showRegisterPassword, setShowRegisterPassword] = useState(false)
-
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
   const [showRegisterPassword, setShowRegisterPassword] = useState(false);
@@ -149,56 +145,36 @@ export default function Login({ navigation }) {
 
   // ---------REGISTER------------
 
-  const validate = () => {
-    if (registerEmail.length === 0 || registerPassword.length === 0) {
-      setModalMessage(
-        'registerEmail address or registerPassword cannot be empty',
-      )
-      setIsModalVisible(true)
-      return false
-    }
+ 
 
-    if (
-      !new RegExp(
-        '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*]).{8,}$',
-      ).test(registerPassword)
-    ) {
-      setModalMessage('Enter a strong registerPassword')
-      setIsModalVisible(true)
-      return false
-    }
-
-    signUp()
-  }
-
-  const signUp = () => {
-    firebase
-      .auth()
-      .createUserWithEmailAndPassword(registerEmail, registerPassword)
-      .then((user) => {
-        db.collection("users")
-          .doc(user.user.uid)
-          .set({
-            emailVerified: user.user.emailVerified,
-            email: user.user.email,
-            phoneNumber: user.user.phoneNumber,
-            photoURL: user.user.photoURL,
-            created: user.user.metadata.creationTime,
-            displayName: user.user.email.split("@")[0],
-          });
-        console.log("done");
-      })
-      .catch((error) => {
-        if (error.code === "auth/email-already-in-use") {
-          setModalMessage("That email address is already in use!");
-          setIsModalVisible(true);
-        }
-        if (error.code === "auth/invalid-email") {
-          setModalMessage("That email address is invalid!");
-          setIsModalVisible(true);
-        }
-      });
-  };
+  // const signUp = () => {
+  //   firebase
+  //     .auth()
+  //     .createUserWithEmailAndPassword(registerEmail, registerPassword)
+  //     .then((user) => {
+  //       db.collection("users")
+  //         .doc(user.user.uid)
+  //         .set({
+  //           emailVerified: user.user.emailVerified,
+  //           email: user.user.email,
+  //           phoneNumber: user.user.phoneNumber,
+  //           photoURL: user.user.photoURL,
+  //           created: user.user.metadata.creationTime,
+  //           displayName: user.user.email.split("@")[0],
+  //         });
+  //       console.log("done");
+  //     })
+  //     .catch((error) => {
+  //       if (error.code === "auth/email-already-in-use") {
+  //         setModalMessage("That email address is already in use!");
+  //         setIsModalVisible(true);
+  //       }
+  //       if (error.code === "auth/invalid-email") {
+  //         setModalMessage("That email address is invalid!");
+  //         setIsModalVisible(true);
+  //       }
+  //     });
+  // };
 
   return (
     <KeyboardAvoidingView
