@@ -16,7 +16,6 @@ import { LinearGradient } from 'expo-linear-gradient'
 import db from "../db";
 import moment from "moment";
 
-
 export default function ScheduleManagement({ navigation }) {
   const [email, setEmail] = useState('')
   const [crews, setCrews] = useState()

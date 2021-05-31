@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, Button, TouchableOpacity, StatusBar } from "react-native";
 import db from "../db";
-import MapView, { Marker, Callout } from "react-native-maps";
+import { Marker, Callout } from "react-native-maps";
+import MapView from "react-native-map-clustering";
 import { colors } from "./common/theme";
 import { Icon } from "react-native-elements";
 import { customMapStyle } from "./common/mapStyle";
@@ -176,8 +177,12 @@ export default function HomeManager(props) {
                       : item.capacity === 2
                       ? colors.YELLOW
                       : colors.GREEN,
-                  aspectRatio: 1 / 1,
+                  aspectRatio: 1/1,
                   borderRadius: 100,
+                  // borderTopRightRadius:100,
+                  // borderTopLeftRadius:100,
+                  // borderBottomRightRadius:1000,
+                  // borderBottomLeftRadius:1000,
                   padding: 7,
                 }}
               >
@@ -186,7 +191,7 @@ export default function HomeManager(props) {
                   name="trashcan"
                   type="octicon"
                   color={colors.WHITE}
-                  size={25}
+                  size={22}
                 />
               </TouchableOpacity>
               <Callout
@@ -346,8 +351,10 @@ export default function HomeManager(props) {
             }}
           >
             <Icon
-              name="report"
-              type="material"
+              // name="report"
+              // type="material"
+              name="delete-alert-outline"
+              type="material-community"              
               color={colors.WHITE}
               size={33}
             />
@@ -383,10 +390,12 @@ export default function HomeManager(props) {
               }}
             >
               <Icon
-                name="trashcan"
-                type="octicon"
+                // name="trashcan"
+                // type="octicon"
+                name="format-list-text"
+                type="material-community"
                 color={colors.WHITE}
-                size={28}
+                size={30}
               />
             </TouchableOpacity>
           </View>

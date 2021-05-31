@@ -26,37 +26,124 @@ import {
   responsiveFontSize,
 } from 'react-native-responsive-dimensions'
 import { LinearGradient } from 'expo-linear-gradient'
+import db from "../db";
+import moment from "moment";
 
 import { colors } from './common/theme'
 
 export default function HomeCrew(props) {
   const [screenView, setScreenView] = useState(true)
-  const [schedule, setSchedule] = useState([
-    {
-      id: 1,
-    },
-    {
-      id: 2,
-    },
-    {
-      id: 3,
-    },
-    {
-      id: 4,
-    },
-    {
-      id: 1,
-    },
-    {
-      id: 2,
-    },
-    {
-      id: 3,
-    },
-    {
-      id: 4,
-    },
-  ])
+
+  const [user, setUser] = useState();
+  const [crew, setCrew] = useState();
+  const [schedules, setSchedules] = useState();
+  const [municipalities, setMunicipalities] = useState();
+  const [districts, setDistricts] = useState();
+  const [districtLocation, setDistrictLocation] = useState();
+
+  useEffect(() => {
+    console.log("uid", firebase.auth().currentUser.uid);
+    db.collection("Users")
+      .doc(firebase.auth().currentUser.uid)
+      .get()
+      .then((doc) => {
+        const user = { id: doc.id, ...doc.data() };
+        setUser(user);
+        console.log("USERS", user);
+      });
+  }, []);
+
+  useEffect(() => {
+    let firstSch
+    db.collection("Crews").onSnapshot((querySnapshot) => {
+      const tempCrews = [];
+      querySnapshot.forEach((doc) => {
+        tempCrews.push({ id: doc.id, ...doc.data() });
+      });
+      console.log(" Current tempCrews: ", tempCrews);
+      const userId = firebase.auth().currentUser.uid
+      let tempCrew = tempCrews.filter(crew =>
+        crew.collector1 == userId
+        || crew.collector2 == userId
+        || crew.driver == userId
+        || crew.backupCollector1 == userId
+        || crew.backupCollector2 == userId
+        || crew.backupDriver == userId
+      )[0]
+
+      db.collection("Users")
+        .onSnapshot((querySnapshot) => {
+          querySnapshot.forEach((uDoc) => {
+            if (uDoc.data().id === tempCrew.driver)
+              tempCrew.driverName = uDoc.data().firstName
+
+            else if (uDoc.data().id === tempCrew.collector1)
+              tempCrew.collector1Name = uDoc.data().firstName
+
+            else if (uDoc.data().id === tempCrew.collector2)
+              tempCrew.collector2Name = uDoc.data().firstName
+
+            else if (uDoc.data().id === tempCrew.backupDriver)
+              tempCrew.backupDriverName = uDoc.data().firstName
+
+            else if (uDoc.data().id === tempCrew.backupCollector1)
+              tempCrew.backupCollector1Name = uDoc.data().firstName
+
+            else if (uDoc.data().id === tempCrew.backupCollector2)
+              tempCrew.backupCollector2Name = uDoc.data().firstName
+          });
+          setCrew(tempCrew);
+          console.log(" Current crew with names--: ", tempCrew);
+        });
+
+
+      db.collection("Crews")
+        .doc(tempCrew.id)
+        .collection("Schedules").orderBy("dateTime")
+        .onSnapshot((querySnapshot) => {
+          const tempSchedules = [];
+          querySnapshot.forEach((docP) => {
+            tempSchedules.push({ id: docP.id, ...docP.data() });
+          });
+          setSchedules([...tempSchedules]);
+          console.log("schedules: ", tempSchedules)
+          firstSch = tempSchedules[0]
+        });
+
+      db.collection("Municipalities").onSnapshot((querySnapshot) => {
+        const tempMunicipalities = [];
+        querySnapshot.forEach((doc) => {
+          tempMunicipalities.push({ id: doc.id, ...doc.data() });
+        });
+        // console.log(" Current tempMunicipalities: ", tempMunicipalities);
+        setMunicipalities([...tempMunicipalities]);
+      });
+
+      db.collection("Districts").onSnapshot((querySnapshot) => {
+        const tempDistricts = [];
+        querySnapshot.forEach((doc) => {
+          tempDistricts.push({ id: doc.id, ...doc.data() });
+        });
+        // console.log(" Current promotion: ", tempDistricts);
+        setDistricts([...tempDistricts]);
+        const dis = tempDistricts.filter(d => d.id === firstSch.districtId)[0]
+        setDistrictLocation(dis.location)
+        console.log("tempDistricts[0].location", dis.location.U, dis.location.k)
+      });
+
+    });
+  }, []);
+
+  const getDistrict = (itemDId) => {
+    const dis = districts && districts.length > 0 && districts.filter(d => d.id === itemDId)[0]
+    const theName = dis ? dis.name + ", " + getMunicipality(dis.municipalityId) : ""
+    return theName
+  }
+  const getMunicipality = (itemMId) => {
+    const mun = municipalities && municipalities.length > 0 && municipalities.filter(m => m.id === itemMId)[0]
+    const theName = mun ? mun.name : ""
+    return theName
+  }
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: colors.LIGHTGRAY }}
@@ -78,26 +165,26 @@ export default function HomeCrew(props) {
         centerComponent={
           <Text style={{ fontSize: 20, color: colors.WHITE }}>Schedule</Text>
         }
-        // rightComponent={{
-        //   icon: screenView ? 'history' :'format-list-bulleted',
-        //   type: 'material',
-        //   color: colors.WHITE,
-        //   size: 30,
-        //   component: TouchableWithoutFeedback,
-        //   onPress: () => {
-        //     setScreenView(!screenView)
-        //   },
-        // }}
-        // containerStyle={styles.headerStyle}
-        // innerContainerStyles={styles.inrContStyle}
-        // statusBarProps={{ barStyle: "light-content" }}
-        // barStyle="light-content"
-        // containerStyle={
-          // {
-            // justifyContent: 'space-around',
-            // height: 80,
-          // }
-        // }
+      // rightComponent={{
+      //   icon: screenView ? 'history' :'format-list-bulleted',
+      //   type: 'material',
+      //   color: colors.WHITE,
+      //   size: 30,
+      //   component: TouchableWithoutFeedback,
+      //   onPress: () => {
+      //     setScreenView(!screenView)
+      //   },
+      // }}
+      // containerStyle={styles.headerStyle}
+      // innerContainerStyles={styles.inrContStyle}
+      // statusBarProps={{ barStyle: "light-content" }}
+      // barStyle="light-content"
+      // containerStyle={
+      // {
+      // justifyContent: 'space-around',
+      // height: 80,
+      // }
+      // }
       />
       {/* <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}> */}
       <View
@@ -117,8 +204,8 @@ export default function HomeCrew(props) {
               Next:
             </Text>
           </View>
-          <TouchableOpacity
-            onPress={() => props.navigation.navigate('ScheduleMap')}
+          {crew &&schedules && schedules.length > 0 && <TouchableOpacity
+            onPress={() => props.navigation.navigate('ScheduleMap', { disLong: districtLocation.k, disLat: districtLocation.U })}
             style={{
               flex: 2,
               minHeight: 100,
@@ -150,15 +237,19 @@ export default function HomeCrew(props) {
                   fontSize: 16,
                 }}
               >
-                Date
+                {moment(schedules[0].dateTime.toDate()).format("LLL")}
               </Text>
-              <Text style={{ color: colors.DARKGRAY }}>Wakra, Qatar</Text>
-              <Text style={{ color: colors.DARKGRAY }}>Status</Text>
-              <Text style={{ color: colors.DARKGRAY }}>Priority</Text>
+
+              <Text style={{ color: colors.DARKERGRAY }}>
+                {getDistrict(schedules[0].districtId)}
+              </Text>
+              <Text style={{ color: colors.DARKERGRAY }}>Driver: {`(${schedules[0].driver})`} {schedules[0].driver === "main" ? crew.driverName : crew.backupDriverName}</Text>
+              <Text style={{ color: colors.DARKERGRAY }}>Collector 1: {`(${schedules[0].collector1})`} {schedules[0].collector1 === "main" ? crew.collector1Name : crew.backupCollector1Name}</Text>
+              <Text style={{ color: colors.DARKERGRAY }}>Collector 2: {`(${schedules[0].collector2})`} {schedules[0].collector2 === "main" ? crew.collector2Name : crew.backupCollector2Name}</Text>
             </View>
             <View style={{ width: '25%' }}>
               <TouchableOpacity
-                onPress={() => props.navigation.navigate('ScheduleMap')}
+                onPress={() => props.navigation.navigate('ScheduleMap', { disLong: districtLocation.k, disLat: districtLocation.U })}
                 style={{
                   width: '100%',
                   backgroundColor: colors.GREEN,
@@ -177,7 +268,7 @@ export default function HomeCrew(props) {
                 />
               </TouchableOpacity>
             </View>
-          </TouchableOpacity>
+          </TouchableOpacity>}
           <View style={{ flex: 1 }}>{/* Empty */}</View>
         </View>
 
@@ -192,7 +283,7 @@ export default function HomeCrew(props) {
             </Text>
           </View>
           <ScrollView>
-            {schedule.map((item, index) => (
+            {schedules && schedules.length > 0 && schedules.map((item, index) => (
               <View
                 style={{
                   width: '100%',
@@ -211,6 +302,7 @@ export default function HomeCrew(props) {
 
                   elevation: 1,
                 }}
+                key={item.id}
               >
                 <View
                   style={{
@@ -226,13 +318,15 @@ export default function HomeCrew(props) {
                       fontSize: 16,
                     }}
                   >
-                    Date {index}
+                    {moment(item.dateTime.toDate()).format("LLL")}
                   </Text>
-                  <Text style={{ color: colors.DARKGRAY }}>Time</Text>
-                  <Text style={{ color: colors.DARKGRAY }}>Wakra, Qatar</Text>
-                  <Text style={{ color: colors.DARKGRAY }}>
-                    Priority - Type
+
+                  <Text style={{ color: colors.DARKERGRAY }}>
+                    {getDistrict(item.districtId)}
                   </Text>
+                  <Text style={{ color: colors.DARKERGRAY }}>Driver: {`(${item.driver})`} {item.driver === "main" ? crew.driverName : crew.backupDriverName}</Text>
+                  <Text style={{ color: colors.DARKERGRAY }}>Collector 1: {`(${item.collector1})`} {item.collector1 === "main" ? crew.collector1Name : crew.backupCollector1Name}</Text>
+                  <Text style={{ color: colors.DARKERGRAY }}>Collector 2: {`(${item.collector2})`} {item.collector2 === "main" ? crew.collector2Name : crew.backupCollector2Name}</Text>
                 </View>
               </View>
             ))}
