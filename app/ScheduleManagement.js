@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, Button, TouchableOpacity, StyleSheet, TouchableWithoutFeedback } from 'react-native'
+import { View, Text, Button, TouchableOpacity, StyleSheet, TouchableWithoutFeedback,ScrollView } from 'react-native'
 import { Input, Icon, Header } from 'react-native-elements'
 import { Avatar, Card, Title, Paragraph } from 'react-native-paper';
 import firebase from 'firebase'
@@ -89,63 +89,98 @@ export default function ScheduleManagement({ navigation }) {
   ]
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.WHITE }}>
+    <View style={{ flex: 1,backgroundColor: colors.LIGHTGRAY }}>
       <Header
-        backgroundColor={colors.DARKGRAY}
+        backgroundColor={colors.GREEN}
         leftComponent={{
-          icon: "md-menu",
-          type: "ionicon",
-          color: colors.GREEN,
+          icon: 'angle-left',
+          type: 'font-awesome',
+          color: colors.WHITE,
           size: 30,
           component: TouchableWithoutFeedback,
           onPress: () => {
-            navigation.toggleDrawer();
+            props.navigation.goBack()
           },
         }}
         centerComponent={
-          <Text style={styles.headerTitleStyle}>Schedules</Text>
+          <Text style={{ fontSize: 20, color: colors.WHITE }}>Schedule</Text>
         }
-        containerStyle={styles.headerStyle}
-        innerContainerStyles={{ marginLeft: 10, marginRight: 10 }}
+        rightComponent={{
+          icon: 'add' ,
+          type: 'material',
+          color: colors.WHITE,
+          size: 30,
+          component: TouchableWithoutFeedback,
+          onPress: () => {navigation.navigate("ScheduleEdit")},
+        }}
+        // containerStyle={styles.headerStyle}
+        // innerContainerStyles={styles.inrContStyle}
+        // statusBarProps={{ barStyle: "light-content" }}
+        // barStyle="light-content"
+        containerStyle={
+          {
+            // justifyContent: 'space-around',
+            // height: 80,
+          }
+        }
       />
-      <View style={{ flex: 1 }}>
-        <View style={{ flex: 1 }}>
-          <TouchableOpacity style={{ borderRadius: 10, backgroundColor: colors.GREEN, width: '100%', padding: 10, alignItems: 'center' }} onPress={() => navigation.navigate("ScheduleEdit")}>
-            <Text style={{ color: colors.WHITE }}>Add</Text>
-          </TouchableOpacity>
-        </View>
 
-        <View style={{ flex: 5.3, justifyContent: 'center' }}>
-          {/* <Text onPress={console.log("crews on click---",crews)}>{crews &&crews.map((crew, index) => (crew.crewNo))} hello </Text> */}
+      
+      <ScrollView>
+      <View
+        style={{
+          flex: 1,
+          // backgroundColor: 'red',
+          width: '90%',
+          alignSelf: 'center',
+        }}
+      >
+        <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+          <Text style={{ fontSize: 25, color: colors.BLACK,marginTop:15 }}>
+            All Schedules
+          </Text>
+        </View>
+        <View style={{ flex: 10 }}>
+          <ScrollView>
           {crews && crews.length > 0 && crews.map((crew, index) => (
-            crew.schedules.map((item, i) => (
-              <Card key={i} style={{ elevation: 0 }}>
-                <Card.Content>
-                  <View style={{ padding: 10, borderRadius: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', borderWidth: 1, borderColor: colors.GREEN }}>
-                    <View style={{ flex: 2 }}>
-                      <Title>CrewNo.{crew.crewNo} - {moment(item.dateTime.toDate()).format("LL")}</Title>
-                      <Paragraph><Text>zone  {getDistrict(item.districtId)}</Text></Paragraph>
-                      <Paragraph><Text style={{ color: colors.DARKERGRAY }}>Driver: {item.driver}, </Text>
-                        <Text style={{ color: colors.DARKERGRAY }}>Collector 1: {item.collector1}, </Text>
-                        <Text style={{ color: colors.DARKERGRAY }}>Collector 2: {item.collector2}</Text>
-                      </Paragraph>
-                    </View>
-                  </View>
-                </Card.Content>
-
-              </Card>))
-          ))}
-
-
-        </View>
-
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-
-
+            crew.schedules.map((item, index) => (
+            <View
+              style={{
+                width: '100%',
+                backgroundColor: colors.WHITE,
+                minHeight: 100,
+                marginTop: 20,
+                padding:5,
+                flexDirection: 'row',
+                borderRadius: 10,
+                shadowColor: '#000',
+                shadowOffset: {
+                  width: 0,
+                  height: 1,
+                },
+                shadowOpacity: 0.25,
+                shadowRadius: 1,
+                elevation: 1,
+              }}
+            >
+              <View style={{ width: '100%', justifyContent:"space-evenly", paddingLeft:10}}>
+                <Text style={{fontWeight:"bold", color:colors.black, fontSize:16}}>CrewNo.{crew.crewNo} - {moment(item.dateTime.toDate()).format("LL")}</Text>
+                <Text style={{ color:colors.DARKGRAY}}>zone  {getDistrict(item.districtId)}</Text>
+                <Text style={{ color:colors.DARKGRAY}}>Driver: {item.driver}, </Text>
+                <Text style={{ color:colors.DARKGRAY}}>Collector 1: {item.collector1},</Text>
+                <Text style={{ color:colors.DARKGRAY}}>Collector 2: {item.collector2}</Text>
+              </View>
+              
+            </View>
+          ))))}
+          <View style={{ height: 50 }}></View>
+        </ScrollView>
+        
         </View>
       </View>
 
 
+      </ScrollView>
 
     </View>
   )
@@ -153,12 +188,10 @@ export default function ScheduleManagement({ navigation }) {
 
 const styles = StyleSheet.create({
   headerStyle: {
-    backgroundColor: 'transparent',
-    borderBottomWidth: 0,
+    backgroundColor: colors.GREEN
   },
   headerTitleStyle: {
-    color: colors.GREEN,
-    fontSize: 20,
+    fontSize: 20, color: colors.WHITE
   },
   container: {
     flex: 1,
