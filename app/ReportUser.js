@@ -26,37 +26,24 @@ import {
   responsiveFontSize,
 } from 'react-native-responsive-dimensions'
 import { LinearGradient } from 'expo-linear-gradient'
+import db from '../db'
 
 import { colors } from './common/theme'
 
+
 export default function ReportUser(props) {
   const [screenView, setScreenView] = useState(true)
-  const [reports, setReports] = useState([
-    {
-      id: 1,
-    },
-    {
-      id: 2,
-    },
-    {
-      id: 3,
-    },
-    {
-      id: 4,
-    },
-    {
-      id: 1,
-    },
-    {
-      id: 2,
-    },
-    {
-      id: 3,
-    },
-    {
-      id: 4,
-    },
-  ])
+  const [reports, setReports] = useState()
+
+  useEffect(()=>{
+    db.collection("Reports").where("user", "==", firebase.auth().currentUser.uid).onSnapshot(querySnapshot => {
+      let r = [];
+      querySnapshot.forEach(doc => {
+          r.push({ id: doc.id, ...doc.data() });
+      });
+      setReports([...r]);
+  });
+  })
 
   return (
     <KeyboardAvoidingView
@@ -111,12 +98,12 @@ export default function ReportUser(props) {
       >
         <View style={{ flex: 1, justifyContent: 'flex-end' }}>
           <Text style={{ fontSize: 25, color: colors.BLACK }}>
-            All Reports
+            My Reports
           </Text>
         </View>
         <View style={{ flex: 10 }}>         
           <ScrollView>
-          {reports.map((item, index) => (
+          {reports ? reports.map((item, index) => (
             <View
               style={{
                 width: '100%',
@@ -137,10 +124,10 @@ export default function ReportUser(props) {
               }}
             >
               <View style={{ width: '100%', justifyContent:"space-evenly", paddingLeft:10}}>
-                <Text style={{fontWeight:"bold", color:colors.black, fontSize:16}}>Report {index}</Text>
-                <Text style={{ color:colors.DARKGRAY}}>Wakra, Qatar</Text>
-                <Text style={{ color:colors.DARKGRAY}}>Crew ID</Text>
-                <Text style={{ color:colors.DARKGRAY}}>Complete - Date</Text>
+                <Text style={{fontWeight:"bold", color:colors.black, fontSize:16}}>{index + 1}. {item.title} </Text>
+                {/* <Text style={{ color:colors.DARKGRAY}}>{item.location}</Text> */}
+                <Text style={{ color:colors.DARKGRAY}}>{item.date.split("GMT")[0]}</Text>
+                <Text style={{ color:colors.DARKGRAY}}>{item.status}</Text>
               </View>
               {/* <View style={{ width: '25%' }}>
                 <TouchableOpacity
@@ -159,7 +146,7 @@ export default function ReportUser(props) {
                 </TouchableOpacity>
               </View> */}
             </View>
-          ))}
+          )) : null}
           <View style={{ height: 50 }}></View>
         </ScrollView>
           

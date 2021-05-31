@@ -15,7 +15,7 @@ import {
   ScrollView,
 } from 'react-native'
 
-import { Input, Icon, Header } from 'react-native-elements'
+import { CheckBox ,Input, Icon, Header } from 'react-native-elements'
 import firebase from 'firebase'
 import 'firebase/auth'
 import 'firebase/firestore'
@@ -26,10 +26,58 @@ import {
   responsiveFontSize,
 } from 'react-native-responsive-dimensions'
 import { LinearGradient } from 'expo-linear-gradient'
-
+import db from '../db'
 import { colors } from './common/theme'
+import * as Permissions from "expo-permissions";
+import * as Location from "expo-location";
+//import * as ImagePicker from "expo-image-picker";
 
 export default function ReportUserCreate(props) {
+  const [desc, setDesc] = useState("")
+  const [title, setTitle] = useState("")
+  const [image, setImage] = useState(null);
+  const [permissions, SetHasCameraPermission] = useState(null);
+  const [location , setLocation]= useState()
+  const [ useLocation , setUseLocation] = useState(true)
+  const [process , setProcess] = useState(false)
+  // useEffect(() => {
+  //  // getPermission();
+  //   handleLocation()
+  // }, []);
+
+  // useEffect(()=>{
+
+  // },[location])
+ 
+  const submit = async () => {
+    console.log("loc",location)
+    db.collection("Reports").add({ user: firebase.auth().currentUser.uid, description: desc , date : Date(), title, status:"Pending"})
+    // await db.collection("Reports").add({ 
+    //   user: firebase.auth().currentUser.uid,
+    //    description: desc ,
+    //     date : Date(),
+    //     handledBy: null,
+    //     status: "Pending",
+    //     image: "",
+    //     location : useLocation?  location : null,
+    //     title
+    //   })
+    props.navigation.navigate("ReportUser")
+  };
+
+  
+
+  // const handleLocation = async () => {
+  //   let { status } = await Permissions.askAsync(Permissions.LOCATION);
+  //   if (status !== "granted") {
+  //     alert("Permission Denied");
+  //   } else {
+  //     const locations = await Location.getCurrentPositionAsync({});
+  //     //console.log("location",locations)
+  //     setLocation(locations);
+  //   }
+  // };
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: colors.LIGHTGRAY }}
@@ -95,7 +143,9 @@ export default function ReportUserCreate(props) {
                     borderRadius: 10,
                     paddingLeft: 5,
                   }}
-                  placeholder={'Enter Here'}
+                  onChangeText={setTitle}
+                  placeholder={"Enter Here"}
+                  value={title}
                 />
               </View>
               <View style={styles.inputView}>
@@ -108,10 +158,12 @@ export default function ReportUserCreate(props) {
                     borderRadius: 10,
                     paddingLeft: 5,
                   }}
-                  placeholder={'Enter Here'}
+                  onChangeText={setDesc}
+                  placeholder={"Enter Here"}
+                  value={desc}
                 />
               </View>
-              <View style={styles.inputView}>
+              {/* <View style={styles.inputView}>
                 <Text style={styles.textInputHeader}>Priority</Text>
                 <TextInput
                   style={{
@@ -123,33 +175,26 @@ export default function ReportUserCreate(props) {
                   }}
                   placeholder={'Enter Here'}
                 />
-              </View>
+              </View> */}
               <View style={styles.inputView}>
-                <Text style={styles.textInputHeader}>Location</Text>
-                <TextInput
-                  style={{
-                    width: '100%',
-                    height: 50,
-                    backgroundColor: colors.WHITE,
-                    borderRadius: 10,
-                    paddingLeft: 5,
-                  }}
-                  placeholder={'Enter Here'}
-                />
+                <Text style={styles.textInputHeader}>Use My Current Location</Text>
+                <CheckBox
+          checked={useLocation}
+          onPress={()=>setUseLocation(!useLocation)}
+          //style={styles.checkbox}
+        />
               </View>
-              <View style={styles.inputView}>
-                <Text style={styles.textInputHeader}>Attachment</Text>
-                <TextInput
-                  style={{
-                    width: '100%',
-                    height: 50,
-                    backgroundColor: colors.WHITE,
-                    borderRadius: 10,
-                    paddingLeft: 5,
-                  }}
-                  placeholder={'Enter Here'}
+              {/* <View style={styles.inputView}>
+                <Text style={styles.textInputHeader}>Image</Text>
+               
+                {image && <Image source={{ uri: image }} />}
+                <Button
+                  buttonStyle={{ backgroundColor: "#B0C4DE" }}
+                  titleStyle={{ alignItems: "center", color: "#263c5a" }}
+                  title="Choose file"
+                  onPress={() => _pickImage()}
                 />
-              </View>
+              </View> */}
             </ScrollView>
           </View>
         </View>
@@ -191,7 +236,9 @@ export default function ReportUserCreate(props) {
             }}
           >
             <TouchableOpacity
-              onPress={() => props.navigation.navigate('ReportAssign')}
+             // onPress={() => props.navigation.navigate('ReportAssign')}
+             onPress={()=>submit() || setProcess(true)}
+             disabled = {!desc}
               style={{
                 backgroundColor: colors.GREEN,
                 width: '100%',
@@ -201,7 +248,7 @@ export default function ReportUserCreate(props) {
                 borderRadius: 10,
               }}
             >
-              <Text style={{ color: colors.WHITE }}>Submit Report</Text>
+              <Text style={{ color: colors.WHITE }}>{!process? "Submit": "Processing Please Wait"}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -217,12 +264,12 @@ const styles = StyleSheet.create({
     // flexDirection: 'column',
     // justifyContent: 'center',
   },
-  textInputHeader:{
-    fontSize:16,
-    marginBottom:2,
-    color:colors.BLACK
+  textInputHeader: {
+    fontSize: 16,
+    marginBottom: 2,
+    color: colors.BLACK
   },
-  inputView:{
-    marginBottom:20
+  inputView: {
+    marginBottom: 20
   }
 })
