@@ -10,9 +10,9 @@ import db from '../db'
 
 
 export default function Home({ navigation }) {
-  // const [userType, setUserType] = useState("Manager");
-  const [userType, setUserType] = useState("Crew");
-  // const [userType, setUserType] = useState("User");
+  // const [userType, setUserType] = useState({role:"Manager"});
+  const [userType, setUserType] = useState({role:"Worker"});
+  // const [userType, setUserType] = useState({role:"User"});
 
   //get the user role from db 
   useEffect(() => {
@@ -28,15 +28,15 @@ export default function Home({ navigation }) {
   }
   const manager = "Manager"
   const crew = "Worker"
-  const user1 = "User"
+  // const user1 = "User"
 
   return (
-    user && user.role === manager ?
+      userType && userType.role === manager ?
       <HomeManager navigation={navigation}/> :
-        user && user.role === crew ?
-        <HomeCrew navigation={navigation} />
-        :
-        <HomeUser navigation={navigation} />
+      userType && userType.role === crew ?
+      <HomeCrew navigation={navigation} />
+      :
+      <HomeUser navigation={navigation} />
     // <View style={{justifyContent:"center", alignItems:"center", flex:1}}>
     //   <TouchableOpacity onPress={()=> navigation.navigate('Report')}>
     //   <Text >GO</Text>

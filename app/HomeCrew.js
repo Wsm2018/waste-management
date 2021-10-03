@@ -26,7 +26,6 @@ import {
   responsiveFontSize,
 } from 'react-native-responsive-dimensions'
 import { LinearGradient } from 'expo-linear-gradient'
-import db from "../db";
 import moment from "moment";
 
 import { colors } from './common/theme'
