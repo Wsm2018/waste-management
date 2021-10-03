@@ -26,10 +26,15 @@ import {
   responsiveFontSize,
 } from 'react-native-responsive-dimensions'
 import { LinearGradient } from 'expo-linear-gradient'
-
+import MapView , {Marker} from "react-native-maps";
 import { colors } from './common/theme'
 
 export default function ReportDetail(props) {
+  const item = props.navigation.getParam("item", "some default value");
+  
+  useEffect(()=>{
+    console.log("kkk", item.location)
+  },[])
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: colors.LIGHTGRAY }}
@@ -87,12 +92,42 @@ export default function ReportDetail(props) {
             <Text style={{ fontSize: 25, color: colors.BLACK }}>
               Report Details
             </Text>
-            <Text style={{ fontSize: 18, color: colors.BLACK }}>
-              Wakra
+            <Text style={{ fontSize: 22, color: colors.BLACK }}>
+              {item.title}
             </Text>
             <Text style={{ fontSize: 18, color: colors.BLACK }}>
-              Attachments
+              {/* {item.location} */}
             </Text>
+            <Text style={{ fontSize: 18, color: colors.BLACK }}>
+              {item.description}
+            </Text>
+
+            
+              {
+                item.location ?
+                <MapView style={{ flex: 0.5 }}>
+                <Marker coordinate={{
+                  latitude : item.location.coords.latitude,
+                  longitude : item.location.coords.longitude
+                }}><Text>Report Location</Text>
+                </Marker>
+                </MapView>
+                :
+                null
+              }
+      {/* {
+        locations.map( l =>
+          l.latitude ? 
+          <Marker coordinate={{
+            latitude : l.latitude,
+            longitude : l.longitude
+          }}><Text>{l.displayName}</Text>
+          </Marker>
+          :
+          null
+          )
+      } */}
+      
           </View>
         </View>
         <View
@@ -133,7 +168,7 @@ export default function ReportDetail(props) {
             }}
           >
             <TouchableOpacity
-            onPress={()=>props.navigation.navigate('ReportAssign')}
+            onPress={()=>props.navigation.navigate('ReportAssign',{item})}
               style={{
                 backgroundColor: colors.GREEN,
                 width: '100%',

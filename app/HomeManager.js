@@ -401,7 +401,7 @@ export default function HomeManager(props) {
           </View>
           <View>
             <TouchableOpacity
-              onPress={() => props.navigation.navigate("Chat")}
+              onPress={() => props.navigation.navigate('ChatList')}
               style={{
                 height: 55,
                 backgroundColor: colors.GREEN,

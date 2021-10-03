@@ -7,11 +7,17 @@ import { colors } from './common/theme'
 import { Icon } from 'react-native-elements'
 import { customMapStyle } from './common/mapStyle'
 
-export default function ScheduleMap({navigation}) {
+export default function ScheduleMap(props) {
   const latitudeDelta = 0.0922
   const longitudeDelta = 0.0421
-  const latitude = 25.286106
-  const longitude = 51.5348170
+  const latitude = props.navigation.getParam("disLat");
+  const longitude = props.navigation.getParam("disLong");
+
+  useEffect(() => {
+    console.log("disLat", props.navigation.getParam("disLat"));
+    console.log("disLong", props.navigation.getParam("disLong"));
+    
+  }, []);
 
   const [priority, setPriority] = useState([
     {
@@ -117,7 +123,7 @@ export default function ScheduleMap({navigation}) {
         }}
       >
         <TouchableOpacity
-          onPress={() => navigation.goBack()}
+          onPress={() => props.navigation.goBack()}
           style={{
             height: 55,
             backgroundColor: colors.GREEN,
