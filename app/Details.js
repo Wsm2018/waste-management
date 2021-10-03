@@ -49,8 +49,8 @@ export default function Details({ navigation }) {
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <Text>Details</Text>
       <Button title="Logout" onPress={() => firebase.auth().signOut()} />
-      <Text>Bin Generation</Text>
-      <Button title="Generate Bin" onPress={() => generate()} />
+      {/* <Text>Bin Generation</Text>
+      <Button title="Generate Bin" onPress={() => generate()} /> */}
     </View>
   );
 }

@@ -9,8 +9,8 @@ import  HomeUser  from './HomeUser';
 
 
 export default function Home({ navigation }) {
-  const [userType, setUserType] = useState("Manager");
-  // const [userType, setUserType] = useState("Crew");
+  // const [userType, setUserType] = useState("Manager");
+  const [userType, setUserType] = useState("Crew");
   // const [userType, setUserType] = useState("User");
 
 
@@ -22,7 +22,7 @@ export default function Home({ navigation }) {
     userType === manager ?
       <HomeManager navigation={navigation}/> :
       userType === crew ?
-        <HomeCrew navigation={navigation} />
+        <HomeCrew navigation={navigation}/>
         :
         <HomeUser navigation={navigation} />
     // <View style={{justifyContent:"center", alignItems:"center", flex:1}}>

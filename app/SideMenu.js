@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Text,
     View,
@@ -14,16 +14,49 @@ import { Icon } from 'react-native-elements';
 import { NavigationActions } from 'react-navigation';
 import SideMenuHeader from './SideMenuHeader';
 import { colors } from './common/theme';
+import firebase from "firebase";
+import "firebase/auth";
+import "firebase/firestore";
+import db from "../db"
+
 var { width, height } = Dimensions.get('window');
 
+
+{/* <Button title="Logout" onPress={() => firebase.auth().signOut()} /> */}
+
 export default function SideMenu(props) {
+
+    const [user, setUser] = useState(null);
+
+    const fetchUser = async () => {
+        // console.log("FETCH USR - ", firebase.auth().currentUser.uid)
+        var docRef = await db.collection("Users").doc(firebase.auth().currentUser.uid);
+
+        docRef.get().then((doc) => {
+            if (doc.exists) {
+                // console.log("Document data:", doc.id);
+                setUser({id: doc.id, ...doc.data()})
+            } else {
+                // doc.data() will be undefined in this case
+                console.log("No such document!");
+            }
+        }).catch((error) => {
+            console.log("Error getting document:", error);
+        });
+      };
+    
+
+    useEffect(() => {
+        // console.log("-----")
+        fetchUser()
+    }, []);
 
     const sideMenuList = [
         { name: 'Home', navigationName: 'Home', icon: 'home', type: 'ant-design' },
         { name: 'Details', navigationName: 'Details', icon: 'home', type: 'font-awesome' },
         { name: 'Schedule', navigationName: 'ScheduleManagement', icon: 'car-sports', type: 'material-community' },
         { name: 'Report', navigationName: 'ReportUser', icon: 'report', type: 'material' },
-
+        { name: 'Logout', icon: 'logout', type: 'material' },
     ];
 
     //navigation to screens from side menu
@@ -37,7 +70,7 @@ export default function SideMenu(props) {
     return (
         <View style={styles.mainViewStyle}>
             
-            <SideMenuHeader headerStyle={styles.myHeader}></SideMenuHeader>
+            <SideMenuHeader headerStyle={styles.myHeader} user={user&&user}></SideMenuHeader>
             <View style={styles.compViewStyle}>
                 {/* <View style={[styles.vertialLine, { height: (width <= 320) ? width / 1.53 : width / 1.68 }]}></View> */}
                 
@@ -49,10 +82,12 @@ export default function SideMenu(props) {
                         renderItem={({ item, index }) => {
                             
                                 return (
+                                    item.name === "Logout" ? 
                                     <TouchableOpacity
                                         onPress={
-                                            navigateToScreen(item.navigationName)
+                                            ()=> firebase.auth().signOut()
                                         }
+                                        
                                         // style={
                                         //     [styles.menuItemView, { marginTop: (index == sideMenuList.length - 1) ? width / 10 : 0 }]
                                         // }
@@ -68,7 +103,29 @@ export default function SideMenu(props) {
                                             />
                                         </View>
                                         <Text style={styles.menuName}>{item.name}</Text>
-                                    </TouchableOpacity>
+                                    </TouchableOpacity> 
+                                    :
+                                    <TouchableOpacity
+                                        onPress={
+                                            navigateToScreen(item.navigationName)
+                                        }
+                                        
+                                        // style={
+                                        //     [styles.menuItemView, { marginTop: (index == sideMenuList.length - 1) ? width / 10 : 0 }]
+                                        // }
+                                        style={[styles.menuItemView]}
+                                    >
+                                        <View style={styles.viewIcon}>
+                                            <Icon
+                                                name={item.icon}
+                                                type={item.type}
+                                                color={colors.WHITE}
+                                                size={18}
+                                                containerStyle={styles.iconStyle}
+                                            />
+                                        </View>
+                                        <Text style={styles.menuName}>{item.name}</Text>
+                                    </TouchableOpacity> 
                                 )
                             }
                         

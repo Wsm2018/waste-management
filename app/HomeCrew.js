@@ -14,7 +14,7 @@ import {
   StatusBar,
   ScrollView,
 } from 'react-native'
-
+import db from "../db"
 import { Input, Icon, Header } from 'react-native-elements'
 import firebase from 'firebase'
 import 'firebase/auth'
@@ -31,32 +31,8 @@ import { colors } from './common/theme'
 
 export default function HomeCrew(props) {
   const [screenView, setScreenView] = useState(true)
-  const [schedule, setSchedule] = useState([
-    {
-      id: 1,
-    },
-    {
-      id: 2,
-    },
-    {
-      id: 3,
-    },
-    {
-      id: 4,
-    },
-    {
-      id: 1,
-    },
-    {
-      id: 2,
-    },
-    {
-      id: 3,
-    },
-    {
-      id: 4,
-    },
-  ])
+  const [schedule, setSchedule] = useState(null)
+  
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: colors.LIGHTGRAY }}
@@ -192,8 +168,9 @@ export default function HomeCrew(props) {
             </Text>
           </View>
           <ScrollView>
-            {schedule.map((item, index) => (
+            {schedule && schedule.map((item, index) => (
               <View
+                key={index}
                 style={{
                   width: '100%',
                   backgroundColor: colors.WHITE,
