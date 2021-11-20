@@ -14,7 +14,6 @@ import {
   StatusBar,
   ScrollView,
 } from 'react-native'
-
 import { CheckBox ,Input, Icon, Header } from 'react-native-elements'
 import firebase from 'firebase'
 import 'firebase/auth'
@@ -29,6 +28,10 @@ import { LinearGradient } from 'expo-linear-gradient'
 import db from '../db'
 import { colors } from './common/theme'
 import * as Permissions from "expo-permissions";
+
+import { customMapStyle } from "./common/mapStyle";
+import { Marker, Callout } from "react-native-maps";
+import MapView from "react-native-map-clustering";
 import * as Location from "expo-location";
 //import * as ImagePicker from "expo-image-picker";
 
@@ -37,20 +40,31 @@ export default function ReportUserCreate(props) {
   const [title, setTitle] = useState("")
   const [image, setImage] = useState(null);
   const [permissions, SetHasCameraPermission] = useState(null);
-  const [location , setLocation]= useState()
+  
   const [ useLocation , setUseLocation] = useState(true)
   const [process , setProcess] = useState(false)
-  // useEffect(() => {
-  //  // getPermission();
-  //   handleLocation()
-  // }, []);
+
+  const latitudeDelta = 0.0922;
+  const longitudeDelta = 0.0421;
+  const latitude = 25.286106;
+  const longitude = 51.534817;
+  const [location , setLocation]= useState()
+  const [municipalities, setMunicipalities] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [bins, setBins] = useState([]);
+
+
+  useEffect(() => {
+   // getPermission();
+    handleLocation()
+  }, []);
 
   // useEffect(()=>{
 
   // },[location])
  
   const submit = async () => {
-    console.log("loc",location)
+    //console.log("loc",location)
     db.collection("Reports").add({ user: firebase.auth().currentUser.uid, description: desc , date : Date(), title, status:"Pending"})
     // await db.collection("Reports").add({ 
     //   user: firebase.auth().currentUser.uid,
@@ -67,16 +81,31 @@ export default function ReportUserCreate(props) {
 
   
 
-  // const handleLocation = async () => {
-  //   let { status } = await Permissions.askAsync(Permissions.LOCATION);
-  //   if (status !== "granted") {
-  //     alert("Permission Denied");
-  //   } else {
-  //     const locations = await Location.getCurrentPositionAsync({});
-  //     //console.log("location",locations)
-  //     setLocation(locations);
-  //   }
-  // };
+   const handleLocation = async () => {
+        let { status } = await Permissions.askAsync(Permissions.LOCATION);
+    if (status !== "granted") {
+      alert("Permission Denied");
+    } else {
+      // const locations = await Location.getCurrentPositionAsync({});
+      // //console.log("location",locations)
+      // setLocation(locations);
+
+      // navigator.geolocation.watchPosition((position) => {
+      //   // Create the object to update this.state.mapRegion through the onRegionChange function
+      //   let region = {
+      //     latitude:       position.coords.latitude,
+      //     longitude:      position.coords.longitude,
+      //     latitudeDelta:  0.00922*1.5,
+      //    longitudeDelta: 0.00421*1.5
+      //   }
+      //   setLocation(region)
+    //  })
+    }
+    
+    
+console.log("the locatiooonnnnnn ", location)
+ 
+   };
 
   return (
     <KeyboardAvoidingView
@@ -101,10 +130,7 @@ export default function ReportUserCreate(props) {
             Report an Issue
           </Text>
         }
-        // containerStyle={styles.headerStyle}
-        // innerContainerStyles={styles.inrContStyle}
-        // statusBarProps={{ barStyle: "light-content" }}
-        // barStyle="light-content"
+        
         containerStyle={
           {
             // justifyContent: 'space-around',
@@ -121,137 +147,91 @@ export default function ReportUserCreate(props) {
           alignSelf: 'center',
         }}
       >
-        <View style={{ flex: 0.5 }}></View>
-        <View
-          style={{
-            flex: 10,
-            // backgroundColor: colors.WHITE,
-            borderRadius: 5,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <View style={{ flex: 0.95, width: '90%' }}>
-            <ScrollView>
-              <View style={styles.inputView}>
-                <Text style={styles.textInputHeader}>Title</Text>
-                <TextInput
-                  style={{
-                    width: '100%',
-                    height: 50,
-                    backgroundColor: colors.WHITE,
-                    borderRadius: 10,
-                    paddingLeft: 5,
-                  }}
-                  onChangeText={setTitle}
-                  placeholder={"Enter Here"}
-                  value={title}
-                />
-              </View>
-              <View style={styles.inputView}>
-                <Text style={styles.textInputHeader}>Description</Text>
-                <TextInput
-                  style={{
-                    width: '100%',
-                    height: 50,
-                    backgroundColor: colors.WHITE,
-                    borderRadius: 10,
-                    paddingLeft: 5,
-                  }}
-                  onChangeText={setDesc}
-                  placeholder={"Enter Here"}
-                  value={desc}
-                />
-              </View>
-              {/* <View style={styles.inputView}>
-                <Text style={styles.textInputHeader}>Priority</Text>
-                <TextInput
-                  style={{
-                    width: '100%',
-                    height: 50,
-                    backgroundColor: colors.WHITE,
-                    borderRadius: 10,
-                    paddingLeft: 5,
-                  }}
-                  placeholder={'Enter Here'}
-                />
-              </View> */}
-              <View style={styles.inputView}>
-                <Text style={styles.textInputHeader}>Use My Current Location</Text>
-                <CheckBox
-          checked={useLocation}
-          onPress={()=>setUseLocation(!useLocation)}
-          //style={styles.checkbox}
-        />
-              </View>
-              {/* <View style={styles.inputView}>
-                <Text style={styles.textInputHeader}>Image</Text>
-               
-                {image && <Image source={{ uri: image }} />}
-                <Button
-                  buttonStyle={{ backgroundColor: "#B0C4DE" }}
-                  titleStyle={{ alignItems: "center", color: "#263c5a" }}
-                  title="Choose file"
-                  onPress={() => _pickImage()}
-                />
-              </View> */}
-            </ScrollView>
-          </View>
-        </View>
-        <View
-          style={{
-            flex: 2,
-            flexDirection: 'row',
-            justifyContent: 'space-evenly',
-            alignItems: 'center',
-          }}
-        >
-          {/* <View
-            style={{
-              width: '45%',
-              height: 50,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <TouchableOpacity
-              style={{
-                backgroundColor: colors.GRAY,
-                width: '100%',
-                height: '100%',
-                justifyContent: 'center',
-                alignItems: 'center',
-                borderRadius: 10,
+      
+      <MapView
+        style={{ flex: 1 }}
+        showsUserLocation={true}
+        provider="google"
+        // initialRegion={{
+        //   latitude: latitude,
+        //   longitude: longitude,
+        //   latitudeDelta,
+        //   longitudeDelta,
+        // }}
+        customMapStyle={customMapStyle}
+        
+        // userInterfaceStyle={"dark"}
+      >
+        {/* {bins &&
+          bins.map((item, index) => (
+            <Marker
+              key={index}
+              coordinate={{
+                latitude: item.location.U,
+                longitude: item.location.k,
               }}
+
+              // redraw
+              // key={index}
             >
-              <Text style={{ color: colors.BLACK }}>Ignore</Text>
-            </TouchableOpacity>
-          </View> */}
-          <View
-            style={{
-              width: '45%',
-              height: 50,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <TouchableOpacity
-             // onPress={() => props.navigation.navigate('ReportAssign')}
-             onPress={()=>submit() || setProcess(true)}
-             disabled = {!desc}
-              style={{
-                backgroundColor: colors.GREEN,
-                width: '100%',
-                height: '100%',
-                justifyContent: 'center',
-                alignItems: 'center',
-                borderRadius: 10,
-              }}
-            >
-              <Text style={{ color: colors.WHITE }}>{!process? "Submit": "Processing Please Wait"}</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+              <TouchableOpacity
+                style={{
+                  backgroundColor:
+                    item.capacity === 3
+                      ? colors.RED
+                      : item.capacity === 2
+                      ? colors.YELLOW
+                      : colors.GREEN,
+                  aspectRatio: 1/1,
+                  borderRadius: 100,
+                  padding: 7,
+                }}
+              >
+              
+                <Icon
+                  name="trashcan"
+                  type="octicon"
+                  color={colors.WHITE}
+                  size={22}
+                />
+              </TouchableOpacity>
+              <Callout
+                tooltip
+                // onPress={() => changeBin(item, index)}
+                // style={{}}
+                onPress={() =>
+                  props.navigation.navigate("PriorityAssign", { bin: item })
+                }
+              >
+                <View
+                  style={{
+                    padding: 3,
+                  }}
+                >
+                  <TouchableOpacity
+                    // onPress={() => props.navigation.navigate("ReportAssign")}
+                    // onPress={() => calloutPress()}
+                    style={{
+                      backgroundColor: colors.GREEN,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      width: 80,
+                      height: 40,
+                      borderRadius: 10,
+                    }}
+                  >
+                    <Text style={{ color: colors.WHITE }}>Assign</Text>
+                  </TouchableOpacity>
+                </View>
+              </Callout>
+            </Marker>
+          ))} */}
+
+       
+      </MapView>
+      {/* )} */}
+          
+       
       </View>
       {/* </TouchableWithoutFeedback> */}
     </KeyboardAvoidingView>
