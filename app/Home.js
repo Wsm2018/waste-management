@@ -11,12 +11,12 @@ import db from '../db'
 
 export default function Home({ navigation }) {
   // const [userType, setUserType] = useState({role:"Manager"});
-  const [userType, setUserType] = useState({role:"Worker"});
-  // const [userType, setUserType] = useState({role:"User"});
+  // const [userType, setUserType] = useState({role:"Worker"});
+  const [userType, setUserType] = useState(null);
 
   //get the user role from db 
   useEffect(() => {
-    // getUserType()
+    getUserType()
   })
   //get the user role from db
   const getUserType = async () => {
@@ -24,7 +24,7 @@ export default function Home({ navigation }) {
       .collection("Users")
       .doc(firebase.auth().currentUser.uid)
       .get();
-    setUserType(loggedInUser.data().role)
+    setUserType(loggedInUser.data())
   }
   const manager = "Manager"
   const crew = "Worker"
