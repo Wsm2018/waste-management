@@ -198,6 +198,7 @@ export default function Login({ navigation }) {
               // backgroundColor: 'red',
               alignItems: "center",
               justifyContent: "flex-end",
+              flexDirection:"row"
             }}
           >
             <TouchableOpacity

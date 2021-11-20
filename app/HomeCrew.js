@@ -14,7 +14,7 @@ import {
   StatusBar,
   ScrollView,
 } from 'react-native'
-
+import db from "../db"
 import { Input, Icon, Header } from 'react-native-elements'
 import firebase from 'firebase'
 import 'firebase/auth'
@@ -26,7 +26,6 @@ import {
   responsiveFontSize,
 } from 'react-native-responsive-dimensions'
 import { LinearGradient } from 'expo-linear-gradient'
-import db from "../db";
 import moment from "moment";
 
 import { colors } from './common/theme'
@@ -285,6 +284,7 @@ export default function HomeCrew(props) {
           <ScrollView>
             {schedules && schedules.length > 0 && schedules.map((item, index) => (
               <View
+                key={index}
                 style={{
                   width: '100%',
                   backgroundColor: colors.WHITE,

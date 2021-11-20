@@ -1,12 +1,17 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Text, View, Image,TouchableOpacity, Platform, StatusBar,Dimensions } from 'react-native';
 import { Icon } from 'react-native-elements'
 import { colors } from './common/theme';
+
 //make a compontent
 var { height, width } = Dimensions.get('window');
-const SideMenuHeader = ({headerStyle}) =>{
+
+
+
+const SideMenuHeader = ({headerStyle, user}) =>{
    return (
         <View style={[styles.viewStyle,headerStyle]}>
+            {/* {console.log("FIREBASE", firebase.auth().currentUser.uid)} */}
            <View style={{backgroundColor:colors.WHITE, borderRadius:100}}>
            <Image
                 style={{
@@ -20,8 +25,8 @@ const SideMenuHeader = ({headerStyle}) =>{
             />  
            </View>
             <View style={styles.headerTextStyle}>
-                <Text style={{color:colors.WHITE, fontWeight:"bold", fontSize:18}}>NAME</Text>
-                <Text style={{color:colors.WHITE}}>Role</Text>
+                <Text style={{color:colors.WHITE, fontWeight:"bold", fontSize:18}}>{user? user.firstName : "loading.."}</Text>
+                <Text style={{color:colors.WHITE}}>{user? user.role : "loading.."}</Text>
             </View>
         </View>
    );
