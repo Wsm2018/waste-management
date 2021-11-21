@@ -14,7 +14,10 @@ import {
   StatusBar,
   ScrollView,
 } from 'react-native'
-import { CheckBox ,Input, Icon, Header } from 'react-native-elements'
+import MapView from 'react-native-maps';
+import { Marker, Callout } from "react-native-maps";
+import { customMapStyle } from "./common/mapStyle";
+import { CheckBox, Input, Icon, Header } from 'react-native-elements'
 import firebase from 'firebase'
 import 'firebase/auth'
 import 'firebase/firestore'
@@ -27,45 +30,61 @@ import {
 import { LinearGradient } from 'expo-linear-gradient'
 import db from '../db'
 import { colors } from './common/theme'
-import * as Permissions from "expo-permissions";
-
-import { customMapStyle } from "./common/mapStyle";
-import { Marker, Callout } from "react-native-maps";
-import MapView from "react-native-map-clustering";
 import * as Location from "expo-location";
+
+
 //import * as ImagePicker from "expo-image-picker";
 
+// user location done
+// get all trash bins
+// use geolib distance thingy
 export default function ReportUserCreate(props) {
   const [desc, setDesc] = useState("")
   const [title, setTitle] = useState("")
   const [image, setImage] = useState(null);
   const [permissions, SetHasCameraPermission] = useState(null);
-  
-  const [ useLocation , setUseLocation] = useState(true)
-  const [process , setProcess] = useState(false)
+  const [location, setLocation] = useState(null)
+  const [process, setProcess] = useState(false)
+  const [bins, setBins] = useState(null)
 
-  const latitudeDelta = 0.0922;
-  const longitudeDelta = 0.0421;
-  const latitude = 25.286106;
-  const longitude = 51.534817;
-  const [location , setLocation]= useState()
-  const [municipalities, setMunicipalities] = useState([]);
-  const [districts, setDistricts] = useState([]);
-  const [bins, setBins] = useState([]);
 
 
   useEffect(() => {
-   // getPermission();
     handleLocation()
+    getbins()
   }, []);
 
-  // useEffect(()=>{
 
-  // },[location])
- 
+  const handleLocation = async () => {
+
+    let per = await Location.requestPermissionsAsync()
+    if (per.granted) {
+      const location = await Location.getCurrentPositionAsync();
+      console.log("user location ", location);
+      const userLocation = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      };
+      setLocation(userLocation)
+    }
+  }
+
+
+  const getbins = async() =>{
+    db.collection("Bins").onSnapshot(querySnapshot => {
+      let b = [];
+      querySnapshot.forEach(doc => {
+          b.push({ id: doc.id, ...doc.data() });
+      });
+      setBins([...b]);
+    })
+  }
+
+
+
   const submit = async () => {
-    //console.log("loc",location)
-    db.collection("Reports").add({ user: firebase.auth().currentUser.uid, description: desc , date : Date(), title, status:"Pending"})
+    console.log("loc", location)
+    db.collection("Reports").add({ user: firebase.auth().currentUser.uid, description: desc, date: Date(), title, status: "Pending" })
     // await db.collection("Reports").add({ 
     //   user: firebase.auth().currentUser.uid,
     //    description: desc ,
@@ -79,33 +98,8 @@ export default function ReportUserCreate(props) {
     props.navigation.navigate("ReportUser")
   };
 
-  
 
-   const handleLocation = async () => {
-        let { status } = await Permissions.askAsync(Permissions.LOCATION);
-    if (status !== "granted") {
-      alert("Permission Denied");
-    } else {
-      // const locations = await Location.getCurrentPositionAsync({});
-      // //console.log("location",locations)
-      // setLocation(locations);
 
-      // navigator.geolocation.watchPosition((position) => {
-      //   // Create the object to update this.state.mapRegion through the onRegionChange function
-      //   let region = {
-      //     latitude:       position.coords.latitude,
-      //     longitude:      position.coords.longitude,
-      //     latitudeDelta:  0.00922*1.5,
-      //    longitudeDelta: 0.00421*1.5
-      //   }
-      //   setLocation(region)
-    //  })
-    }
-    
-    
-console.log("the locatiooonnnnnn ", location)
- 
-   };
 
   return (
     <KeyboardAvoidingView
@@ -130,7 +124,10 @@ console.log("the locatiooonnnnnn ", location)
             Report an Issue
           </Text>
         }
-        
+        // containerStyle={styles.headerStyle}
+        // innerContainerStyles={styles.inrContStyle}
+        // statusBarProps={{ barStyle: "light-content" }}
+        // barStyle="light-content"
         containerStyle={
           {
             // justifyContent: 'space-around',
@@ -147,91 +144,122 @@ console.log("the locatiooonnnnnn ", location)
           alignSelf: 'center',
         }}
       >
-      
-      <MapView
-        style={{ flex: 1 }}
-        showsUserLocation={true}
-        provider="google"
-        // initialRegion={{
-        //   latitude: latitude,
-        //   longitude: longitude,
-        //   latitudeDelta,
-        //   longitudeDelta,
-        // }}
-        customMapStyle={customMapStyle}
-        
-        // userInterfaceStyle={"dark"}
-      >
-        {/* {bins &&
-          bins.map((item, index) => (
-            <Marker
-              key={index}
-              coordinate={{
-                latitude: item.location.U,
-                longitude: item.location.k,
-              }}
-
-              // redraw
-              // key={index}
+        <View style={{ flex: 0.5 }}></View>
+        <View
+          style={{
+            flex: 10,
+            // backgroundColor: colors.WHITE,
+            borderRadius: 5,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <View style={{ flex: 0.95, width: '90%' }}>
+            <MapView
+              style={{ flex: 1 }}
+              showsUserLocation={true}
+              provider="google"
+              // initialRegion={{
+              //   latitude: latitude,
+              //   longitude: longitude,
+              //   latitudeDelta,
+              //   longitudeDelta,
+              // }}
+              customMapStyle={customMapStyle}
+            // userInterfaceStyle={"dark"}
             >
-              <TouchableOpacity
-                style={{
-                  backgroundColor:
-                    item.capacity === 3
-                      ? colors.RED
-                      : item.capacity === 2
-                      ? colors.YELLOW
-                      : colors.GREEN,
-                  aspectRatio: 1/1,
-                  borderRadius: 100,
-                  padding: 7,
-                }}
-              >
-              
-                <Icon
-                  name="trashcan"
-                  type="octicon"
-                  color={colors.WHITE}
-                  size={22}
-                />
-              </TouchableOpacity>
-              <Callout
-                tooltip
-                // onPress={() => changeBin(item, index)}
-                // style={{}}
-                onPress={() =>
-                  props.navigation.navigate("PriorityAssign", { bin: item })
-                }
-              >
-                <View
-                  style={{
-                    padding: 3,
-                  }}
-                >
-                  <TouchableOpacity
-                    // onPress={() => props.navigation.navigate("ReportAssign")}
-                    // onPress={() => calloutPress()}
-                    style={{
-                      backgroundColor: colors.GREEN,
-                      justifyContent: "center",
-                      alignItems: "center",
-                      width: 80,
-                      height: 40,
-                      borderRadius: 10,
-                    }}
-                  >
-                    <Text style={{ color: colors.WHITE }}>Assign</Text>
-                  </TouchableOpacity>
-                </View>
-              </Callout>
-            </Marker>
-          ))} */}
 
-       
-      </MapView>
-      {/* )} */}
-          
-       
+              {location &&
+                <Marker
+                  //key={index}
+                  coordinate={{
+                    latitude: location.latitude,
+                    longitude: location.longitude,
+                  }}
+
+                // redraw
+                // key={index}
+                >
+
+                </Marker>
+              }
+
+              {/* {
+                bins &&
+             
+                  bins.map((item, index))=>(
+                    <Marker
+                    coordinate={{
+                      latitude: item.location.latitude,
+                      longitude: item.location.longitude,
+                    }}>
+
+                    </Marker>
+
+                  )
+               
+                
+              } */}
+
+            </MapView>
+
+
+          </View>
+        </View>
+        <View
+          style={{
+            flex: 2,
+            flexDirection: 'row',
+            justifyContent: 'space-evenly',
+            alignItems: 'center',
+          }}
+        >
+          {/* <View
+            style={{
+              width: '45%',
+              height: 50,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                backgroundColor: colors.GRAY,
+                width: '100%',
+                height: '100%',
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderRadius: 10,
+              }}
+            >
+              <Text style={{ color: colors.BLACK }}>Ignore</Text>
+            </TouchableOpacity>
+          </View> */}
+          <View
+            style={{
+              width: '45%',
+              height: 50,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <TouchableOpacity
+              // onPress={() => props.navigation.navigate('ReportAssign')}
+              onPress={() => submit()}
+              disabled={!desc}
+              style={{
+                backgroundColor: colors.GREEN,
+                width: '100%',
+                height: '100%',
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderRadius: 10,
+              }}
+            >
+              <Text style={{ color: colors.WHITE }}>{!process ? "Submit" : "Processing Please Wait"}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </View>
       {/* </TouchableWithoutFeedback> */}
     </KeyboardAvoidingView>
