@@ -31,7 +31,7 @@ import { LinearGradient } from 'expo-linear-gradient'
 import db from '../db'
 import { colors } from './common/theme'
 import * as Location from "expo-location";
-
+import { getDistance, getPreciseDistance } from 'geolib';
 
 //import * as ImagePicker from "expo-image-picker";
 
@@ -42,8 +42,9 @@ export default function ReportUserCreate(props) {
   const [desc, setDesc] = useState("")
   const [title, setTitle] = useState("")
   const [image, setImage] = useState(null);
-  const [permissions, SetHasCameraPermission] = useState(null);
-  const [location, setLocation] = useState(null)
+  // const [permissions, SetHasCameraPermission] = useState(null);
+  const [userLocation, setUserLocation] = useState(null)
+  const [closeBins, setCloseBins] = useState(null)
   const [process, setProcess] = useState(false)
   const [bins, setBins] = useState(null)
 
@@ -58,32 +59,63 @@ export default function ReportUserCreate(props) {
   const handleLocation = async () => {
 
     let per = await Location.requestPermissionsAsync()
+    console.log("hello", per)
     if (per.granted) {
-      const location = await Location.getCurrentPositionAsync();
-      console.log("user location ", location);
-      const userLocation = {
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
+      console.log("jhbvwdejhkqvfc", per)
+      const l = await Location.getCurrentPositionAsync();
+      console.log("user location ", l);
+      const location = {
+        latitude: l.coords.latitude,
+        longitude: l.coords.longitude,
       };
-      setLocation(userLocation)
+
+      console.log("hvvvv", location)
+      setUserLocation(location)
+
     }
   }
 
 
-  const getbins = async() =>{
+  const getbins = async () => {
+
+    console.log("74")
     db.collection("Bins").onSnapshot(querySnapshot => {
       let b = [];
       querySnapshot.forEach(doc => {
-          b.push({ id: doc.id, ...doc.data() });
+        b.push({ id: doc.id, ...doc.data() });
       });
       setBins([...b]);
     })
+
+  }
+
+  useEffect(() => {
+
+    if (bins && userLocation) {
+      console.log("filtering bins")
+      let cb = bins.filter(b =>
+        getDistance(
+          { latitude: b.location.latitude, longitude: b.location.longitude },
+          { latitude: userLocation.latitude, longitude: userLocation.longitude })
+        <= 500
+      )
+
+      console.log("remaining bins", cb)
+      setCloseBins(cb)
+
+    }
+
+  }, [bins, userLocation])
+
+
+  const getRadius = () => {
+
   }
 
 
 
   const submit = async () => {
-    console.log("loc", location)
+    //console.log("loc", location)
     db.collection("Reports").add({ user: firebase.auth().currentUser.uid, description: desc, date: Date(), title, status: "Pending" })
     // await db.collection("Reports").add({ 
     //   user: firebase.auth().currentUser.uid,
@@ -154,27 +186,29 @@ export default function ReportUserCreate(props) {
             justifyContent: 'center',
           }}
         >
+
           <View style={{ flex: 0.95, width: '90%' }}>
             <MapView
               style={{ flex: 1 }}
               showsUserLocation={true}
+              region
               provider="google"
-              // initialRegion={{
-              //   latitude: latitude,
-              //   longitude: longitude,
-              //   latitudeDelta,
-              //   longitudeDelta,
-              // }}
+              region={{
+                latitude: userLocation ? userLocation.latitude : 25.3548,
+                longitude: userLocation ? userLocation.longitude : 51.1839,
+                latitudeDelta: 0.08,
+                longitudeDelta: 0.08,
+              }}
               customMapStyle={customMapStyle}
             // userInterfaceStyle={"dark"}
             >
 
-              {location &&
+              {/* {userLocation &&
                 <Marker
                   //key={index}
                   coordinate={{
-                    latitude: location.latitude,
-                    longitude: location.longitude,
+                    latitude: userLocation.latitude,
+                    longitude: userLocation.longitude,
                   }}
 
                 // redraw
@@ -182,29 +216,30 @@ export default function ReportUserCreate(props) {
                 >
 
                 </Marker>
-              }
-
-              {/* {
-                bins &&
-             
-                  bins.map((item, index))=>(
-                    <Marker
-                    coordinate={{
-                      latitude: item.location.latitude,
-                      longitude: item.location.longitude,
-                    }}>
-
-                    </Marker>
-
-                  )
-               
-                
               } */}
+
+
+              {closeBins ? closeBins.map((item, index) => (
+                <Marker
+                  key={index}
+                  coordinate={{
+                    latitude: item.location.latitude,
+                    longitude: item.location.longitude,
+                  }}>
+
+                </Marker>
+
+              ))
+
+                :
+                null
+              }
 
             </MapView>
 
 
           </View>
+
         </View>
         <View
           style={{
