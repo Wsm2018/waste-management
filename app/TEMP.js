@@ -30,6 +30,7 @@ import db from '../db'
 import { colors } from './common/theme'
 import * as Permissions from "expo-permissions";
 import * as Location from "expo-location";
+import Image1 from '../assets/greenMarker.png'
 //import * as ImagePicker from "expo-image-picker";
 
 export default function ReportUserCreate(props) {

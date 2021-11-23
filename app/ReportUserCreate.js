@@ -32,14 +32,14 @@ import db from '../db'
 import { colors } from './common/theme'
 import * as Location from "expo-location";
 import { getDistance, getPreciseDistance } from 'geolib';
-
+import selectedMarker from '../assets/greenMarker.png'
 //import * as ImagePicker from "expo-image-picker";
 
 // user location done
 // get all trash bins
 // use geolib distance thingy
 export default function ReportUserCreate(props) {
-  const [desc, setDesc] = useState("")
+  const [description, setDesc] = useState("")
   const [title, setTitle] = useState("")
   const [image, setImage] = useState(null);
   // const [permissions, SetHasCameraPermission] = useState(null);
@@ -47,6 +47,7 @@ export default function ReportUserCreate(props) {
   const [closeBins, setCloseBins] = useState(null)
   const [process, setProcess] = useState(false)
   const [bins, setBins] = useState(null)
+  const [selectedBin, setSelectedBin] = useState(null)
 
 
 
@@ -59,9 +60,9 @@ export default function ReportUserCreate(props) {
   const handleLocation = async () => {
 
     let per = await Location.requestPermissionsAsync()
-    console.log("hello", per)
+
     if (per.granted) {
-      console.log("jhbvwdejhkqvfc", per)
+
       const l = await Location.getCurrentPositionAsync();
       console.log("user location ", l);
       const location = {
@@ -69,16 +70,14 @@ export default function ReportUserCreate(props) {
         longitude: l.coords.longitude,
       };
 
-      console.log("hvvvv", location)
+      console.log("setting user location")
       setUserLocation(location)
-
     }
   }
 
 
   const getbins = async () => {
-
-    console.log("74")
+    console.log("getting bins")
     db.collection("Bins").onSnapshot(querySnapshot => {
       let b = [];
       querySnapshot.forEach(doc => {
@@ -93,6 +92,7 @@ export default function ReportUserCreate(props) {
 
     if (bins && userLocation) {
       console.log("filtering bins")
+      //db.collection("Reports").add({ user: firebase.auth().currentUser.uid, description: "blaaa blaa blaaa" , date : Date(), title, status:"Pending" , location: bins[0] , closingDateTime: null , handeldBy: null , collector1:null, collector2:null, driver: null})
       let cb = bins.filter(b =>
         getDistance(
           { latitude: b.location.latitude, longitude: b.location.longitude },
@@ -100,7 +100,7 @@ export default function ReportUserCreate(props) {
         <= 500
       )
 
-      console.log("remaining bins", cb)
+      // console.log("remaining bins", cb)
       setCloseBins(cb)
 
     }
@@ -108,32 +108,26 @@ export default function ReportUserCreate(props) {
   }, [bins, userLocation])
 
 
-  const getRadius = () => {
-
-  }
-
-
-
   const submit = async () => {
     //console.log("loc", location)
-    db.collection("Reports").add({ user: firebase.auth().currentUser.uid, description: desc, date: Date(), title, status: "Pending" })
-    // await db.collection("Reports").add({ 
-    //   user: firebase.auth().currentUser.uid,
-    //    description: desc ,
-    //     date : Date(),
-    //     handledBy: null,
-    //     status: "Pending",
-    //     image: "",
-    //     location : useLocation?  location : null,
-    //     title
-    //   })
+    db.collection("Reports").add({
+      user: firebase.auth().currentUser.uid,
+      description,
+      date: Date(),
+      status: "Pending",
+      location: selectedBin,
+      closingDateTime: null,
+      handeldBy: null
+    })
     props.navigation.navigate("ReportUser")
   };
 
 
 
 
+
   return (
+
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: colors.LIGHTGRAY }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -167,121 +161,86 @@ export default function ReportUserCreate(props) {
           }
         }
       />
-      {/* <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}> */}
-      <View
-        style={{
-          flex: 1,
-          // backgroundColor: 'red',
-          width: '90%',
-          alignSelf: 'center',
-        }}
-      >
-        <View style={{ flex: 0.5 }}></View>
-        <View
-          style={{
-            flex: 10,
-            // backgroundColor: colors.WHITE,
-            borderRadius: 5,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
 
-          <View style={{ flex: 0.95, width: '90%' }}>
-            <MapView
-              style={{ flex: 1 }}
-              showsUserLocation={true}
-              region
-              provider="google"
-              region={{
-                latitude: userLocation ? userLocation.latitude : 25.3548,
-                longitude: userLocation ? userLocation.longitude : 51.1839,
-                latitudeDelta: 0.08,
-                longitudeDelta: 0.08,
-              }}
-              customMapStyle={customMapStyle}
-            // userInterfaceStyle={"dark"}
-            >
-
-              {/* {userLocation &&
-                <Marker
-                  //key={index}
-                  coordinate={{
-                    latitude: userLocation.latitude,
-                    longitude: userLocation.longitude,
+      {/* <View style={{flex: 2, backgroundColor: "red"}}></View> */}
+      <View style={{flex: 1, backgroundColor: "green", marginLeft:"auto" , marginRight:"auto" , 
+      width: "80%" }}>
+      <View style={styles.inputView}>
+                <Text style={styles.textInputHeader}>Description</Text>
+                <TextInput
+                  style={{
+                    width: '100%',
+                    height: 50,
+                    backgroundColor: colors.WHITE,
+                    borderRadius: 10,
+                    paddingLeft: 5,
                   }}
-
-                // redraw
-                // key={index}
-                >
-
-                </Marker>
-              } */}
-
-
-              {closeBins ? closeBins.map((item, index) => (
-                <Marker
-                  key={index}
-                  coordinate={{
-                    latitude: item.location.latitude,
-                    longitude: item.location.longitude,
-                  }}>
-
-                </Marker>
-
-              ))
-
-                :
-                null
-              }
-
-            </MapView>
-
-
-          </View>
-
-        </View>
-        <View
-          style={{
-            flex: 2,
-            flexDirection: 'row',
-            justifyContent: 'space-evenly',
-            alignItems: 'center',
-          }}
-        >
-          {/* <View
-            style={{
-              width: '45%',
-              height: 50,
-              justifyContent: 'center',
-              alignItems: 'center',
+                  onChangeText={setDesc}
+                  placeholder={"Enter Here"}
+                  value={description}
+                />
+              </View>
+      </View>
+      <View style={{flex: 2, backgroundColor: "blue" , width:"70%" , marginLeft:"auto" , marginRight:"auto"}}>
+      <MapView
+            style={{ flex: 1 }}
+            showsUserLocation={true}
+            region
+            provider="google"
+            region={{
+              latitude: userLocation ? userLocation.latitude : 25.3548,
+              longitude: userLocation ? userLocation.longitude : 51.1839,
+              latitudeDelta: 0.08,
+              longitudeDelta: 0.08,
             }}
+            customMapStyle={customMapStyle}
+          // userInterfaceStyle={"dark"}
           >
-            <TouchableOpacity
-              style={{
-                backgroundColor: colors.GRAY,
-                width: '100%',
-                height: '100%',
-                justifyContent: 'center',
-                alignItems: 'center',
-                borderRadius: 10,
-              }}
-            >
-              <Text style={{ color: colors.BLACK }}>Ignore</Text>
-            </TouchableOpacity>
-          </View> */}
-          <View
+
+            {closeBins ? closeBins.map((item, index) => (
+
+              <Marker
+                key={index}
+                coordinate={{
+                  latitude: item.location.latitude,
+                  longitude: item.location.longitude,
+                }}
+                //image= {selectedMarker}
+                pinColor={'#4682B4'}
+              >
+                <Callout>
+                  <TouchableOpacity
+                    onPress={() => setSelectedBin(item)}
+                  //  onPress={()=>console.log("choooosing bin ------------------------")}
+                  ><Text>Select Bin</Text>
+                  </TouchableOpacity>
+
+                </Callout>
+              </Marker>
+
+            ))
+
+              :
+              null
+            }
+
+          </MapView>
+
+      </View>
+      <View style={{flex: 1, backgroundColor: "yellow"}}>
+      <View
             style={{
               width: '45%',
               height: 50,
               justifyContent: 'center',
               alignItems: 'center',
+              marginTop:"auto" , marginBottom:"auto" , marginLeft:"auto" , marginRight:"auto"
             }}
           >
             <TouchableOpacity
               // onPress={() => props.navigation.navigate('ReportAssign')}
               onPress={() => submit()}
-              disabled={!desc}
+              disabled={!description}
               style={{
                 backgroundColor: colors.GREEN,
                 width: '100%',
@@ -294,10 +253,78 @@ export default function ReportUserCreate(props) {
               <Text style={{ color: colors.WHITE }}>{!process ? "Submit" : "Processing Please Wait"}</Text>
             </TouchableOpacity>
           </View>
-        </View>
       </View>
+
+
+      {/* <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}> */}
+      {/* <View
+        style={{
+          flex: 1,
+          // backgroundColor: 'red',
+          width: '90%',
+          alignSelf: 'center',
+        }}
+      >
+        
+
+               */}
+
+
+      {/* <View style={styles.inputView}>
+              <Text style={styles.textInputHeader}>Image</Text>
+             
+              {image && <Image source={{ uri: image }} />}
+              <Button
+                buttonStyle={{ backgroundColor: "#B0C4DE" }}
+                titleStyle={{ alignItems: "center", color: "#263c5a" }}
+                title="Choose file"
+                onPress={() => _pickImage()}
+              />
+            </View> */}
+      {/* </ScrollView>
+
+          </View>
+        </View>
+        <View style={{ flex: 1, width: '100%', height: "100%" }}>
+          
+        </View>
+        <View
+          style={{
+            flex: 2,
+            flexDirection: 'row',
+            justifyContent: 'space-evenly',
+            alignItems: 'center',
+          }} */}
+      {/* > */}
+      {/* <View
+          style={{
+            width: '45%',
+            height: 50,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <TouchableOpacity
+            style={{
+              backgroundColor: colors.GRAY,
+              width: '100%',
+              height: '100%',
+              justifyContent: 'center',
+              alignItems: 'center',
+              borderRadius: 10,
+            }}
+          >
+            <Text style={{ color: colors.BLACK }}>Ignore</Text>
+          </TouchableOpacity>
+        </View> */}
+
+      {/* 
+        </View>
+      </View> */}
       {/* </TouchableWithoutFeedback> */}
     </KeyboardAvoidingView>
+
+
   )
 }
 
@@ -309,10 +336,12 @@ const styles = StyleSheet.create({
   },
   textInputHeader: {
     fontSize: 16,
-    marginBottom: 2,
-    color: colors.BLACK
+    //marginBottom: 2,
+    color: colors.BLACK,
+    
+  
   },
   inputView: {
-    marginBottom: 20
+    marginTop:"auto" , marginBottom:"auto"
   }
 })

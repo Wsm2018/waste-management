@@ -31,6 +31,7 @@ import { colors } from './common/theme'
 
 export default function ReportDetail(props) {
   const item = props.navigation.getParam("item", "some default value");
+  const role = props.navigation.getParam("role", "some default value");
   
   useEffect(()=>{
     console.log("kkk", item.location)
@@ -130,7 +131,9 @@ export default function ReportDetail(props) {
       
           </View>
         </View>
-        <View
+        {
+          role == "Manager" &&
+<View
           style={{
             flex: 2,
             flexDirection: 'row',
@@ -182,6 +185,8 @@ export default function ReportDetail(props) {
             </TouchableOpacity>
           </View>
         </View>
+        }
+        
       </View>
       {/* </TouchableWithoutFeedback> */}
     </KeyboardAvoidingView>

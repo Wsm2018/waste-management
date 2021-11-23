@@ -29,21 +29,44 @@ import { LinearGradient } from 'expo-linear-gradient'
 import db from '../db'
 
 import { colors } from './common/theme'
+import { getRoughCompassDirection } from 'geolib'
 
 
 export default function ReportUser(props) {
   const [screenView, setScreenView] = useState(true)
   const [reports, setReports] = useState()
+  const [role , setRole] = useState(null)
 
   useEffect(()=>{
-    db.collection("Reports").where("user", "==", firebase.auth().currentUser.uid).onSnapshot(querySnapshot => {
-      let r = [];
-      querySnapshot.forEach(doc => {
-          r.push({ id: doc.id, ...doc.data() });
-      });
-      setReports([...r]);
-  });
-  })
+    //get user role
+    // if manager -> show all reports ? only user submitted reports
+    getUser()
+    
+  },[])
+
+  const getUser = async()=>{
+    const u = await db.collection("Users").doc(firebase.auth().currentUser.uid).get()
+    if( u.data().role == "Manager"){
+      setRole("Manager")
+      db.collection("Reports").onSnapshot(querySnapshot => {
+        let r = [];
+        querySnapshot.forEach(doc => {
+            r.push({ id: doc.id, ...doc.data() });
+        });
+        setReports([...r]);
+    });
+    }
+    else{
+      db.collection("Reports").where("user", "==", firebase.auth().currentUser.uid).onSnapshot(querySnapshot => {
+        let r = [];
+        querySnapshot.forEach(doc => {
+            r.push({ id: doc.id, ...doc.data() });
+        });
+        setReports([...r]);
+    });
+    }
+    //console.log("uzzzzzzzzzzeeeeeeeeeeeerrrrrrrr", firebase.auth().currentUser.uid)
+  }
 
   return (
     <KeyboardAvoidingView
@@ -123,27 +146,29 @@ export default function ReportUser(props) {
                 elevation: 1,
               }}
             >
+              <TouchableOpacity
+                onPress={()=>props.navigation.navigate('ReportDetail',{item,role})}
+                  // style={{
+                  //   width: '100%',
+                  //   backgroundColor: colors.GREEN,
+                  //   minHeight: 100,
+                  //   justifyContent: 'center',
+                  //   alignItems: 'center',
+                  //   borderTopRightRadius:10,
+                  //   borderBottomRightRadius:10
+                  // }}
+                >
               <View style={{ width: '100%', justifyContent:"space-evenly", paddingLeft:10}}>
                 <Text style={{fontWeight:"bold", color:colors.black, fontSize:16}}>{index + 1}. {item.title} </Text>
                 {/* <Text style={{ color:colors.DARKGRAY}}>{item.location}</Text> */}
                 <Text style={{ color:colors.DARKGRAY}}>{item.date.split("GMT")[0]}</Text>
                 <Text style={{ color:colors.DARKGRAY}}>{item.status}</Text>
               </View>
+              </TouchableOpacity>
               {/* <View style={{ width: '25%' }}>
-                <TouchableOpacity
-                onPress={()=>props.navigation.navigate('ReportDetail')}
-                  style={{
-                    width: '100%',
-                    backgroundColor: colors.GREEN,
-                    minHeight: 100,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    borderTopRightRadius:10,
-                    borderBottomRightRadius:10
-                  }}
-                >
+                
                   <Text style={{color:colors.WHITE,}}>Details</Text>
-                </TouchableOpacity>
+                
               </View> */}
             </View>
           )) : null}
