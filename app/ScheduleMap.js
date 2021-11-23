@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { View, Text, Button, TouchableOpacity, StatusBar } from 'react-native'
 import firebase from 'firebase'
 import 'firebase/auth'
+import db from "../db";
 import MapView, { Marker, Callout } from 'react-native-maps'
 import { colors } from './common/theme'
 import { Icon } from 'react-native-elements'
@@ -12,11 +13,33 @@ export default function ScheduleMap(props) {
   const longitudeDelta = 0.0421
   const latitude = props.navigation.getParam("disLat");
   const longitude = props.navigation.getParam("disLong");
+  const districtId = props.navigation.getParam("districtId");
+  const [bins, setBins] = useState([]);
+  const [binsCoords, setBinsCoords] = useState([]);
+
+  const fetchBins = () => {
+    const unsub = db.collection("Bins").where("districtId", "==", `${districtId}`).onSnapshot((querySnap) => {
+      let bin = [];
+      querySnap.forEach((doc) => {
+        bin.push({ id: doc.id, ...doc.data() });
+      });
+      setBins([...bin]);
+      setBinsCoords(bin.map(b => {
+        return { latitude: b.location.U, longitude: b.location.k }
+      }))
+      let t = bin.map(b => {
+        return { latitude: b.location.U, longitude: b.location.k }
+      })
+      console.log("==========bin====t=====", t)
+    });
+    return unsub;
+  };
 
   useEffect(() => {
-    console.log("disLat", props.navigation.getParam("disLat"));
-    console.log("disLong", props.navigation.getParam("disLong"));
-    
+    const unsub = fetchBins();
+    return () => {
+      unsub();
+    };
   }, []);
 
   const [priority, setPriority] = useState([
@@ -55,7 +78,7 @@ export default function ScheduleMap(props) {
 
   ])
 
- 
+
 
   return (
     <View style={{ flex: 1 }}>
@@ -111,6 +134,79 @@ export default function ScheduleMap(props) {
           </Marker>
         ))} */}
 
+        {bins &&
+          bins.map((item, index) => (
+            <Marker
+              key={index}
+              coordinate={{
+                latitude: item.location.U,
+                longitude: item.location.k,
+              }}
+
+            // redraw
+            // key={index}
+            >
+              <TouchableOpacity
+                style={{
+                  backgroundColor:
+                    item.capacity === 3
+                      ? colors.RED
+                      : item.capacity === 2
+                        ? colors.YELLOW
+                        : colors.GREEN,
+                  aspectRatio: 1 / 1,
+                  borderRadius: 100,
+                  // borderTopRightRadius:100,
+                  // borderTopLeftRadius:100,
+                  // borderBottomRightRadius:1000,
+                  // borderBottomLeftRadius:1000,
+                  padding: 7,
+                }}
+              >
+                {/* {console.log("item ", item)} */}
+                <Icon
+                  name="trashcan"
+                  type="octicon"
+                  color={colors.WHITE}
+                  size={22}
+                />
+              </TouchableOpacity>
+              <Callout
+                tooltip
+                // onPress={() => changeBin(item, index)}
+                // style={{}}
+                onPress={() =>
+                  props.navigation.navigate("PriorityAssign", { bin: item })
+                }
+              >
+                <View
+                  style={{
+                    padding: 3,
+                  }}
+                >
+                  <TouchableOpacity
+                    // onPress={() => props.navigation.navigate("ReportAssign")}
+                    // onPress={() => calloutPress()}
+                    style={{
+                      backgroundColor: colors.GREEN,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      width: 80,
+                      height: 40,
+                      borderRadius: 10,
+                    }}
+                  >
+                    <Text style={{ color: colors.WHITE }}>Assign</Text>
+                  </TouchableOpacity>
+                </View>
+              </Callout>
+            </Marker>
+          ))}
+        <MapView.Polyline
+          coordinates={binsCoords}
+          strokeWidth={4}
+          strokeColor="green"
+        />
       </MapView>
       <View
         style={{

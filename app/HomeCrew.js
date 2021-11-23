@@ -36,30 +36,30 @@ export default function HomeCrew(props) {
   const [user, setUser] = useState();
   const [crew, setCrew] = useState();
   const [schedules, setSchedules] = useState();
+  const [oldSchedules, setOldSchedules] = useState();
+  const [todaySchedules, setTodaySchedules] = useState();
   const [municipalities, setMunicipalities] = useState();
   const [districts, setDistricts] = useState();
-  const [districtLocation, setDistrictLocation] = useState();
 
   useEffect(() => {
-    console.log("uid", firebase.auth().currentUser.uid);
+    // console.log("uid", firebase.auth().currentUser.uid);
     db.collection("Users")
       .doc(firebase.auth().currentUser.uid)
       .get()
       .then((doc) => {
         const user = { id: doc.id, ...doc.data() };
         setUser(user);
-        console.log("USERS", user);
+        // console.log("USERS", user);
       });
   }, []);
 
   useEffect(() => {
-    let firstSch
     db.collection("Crews").onSnapshot((querySnapshot) => {
       const tempCrews = [];
       querySnapshot.forEach((doc) => {
         tempCrews.push({ id: doc.id, ...doc.data() });
       });
-      console.log(" Current tempCrews: ", tempCrews);
+      // console.log(" Current tempCrews: ", tempCrews);
       const userId = firebase.auth().currentUser.uid
       let tempCrew = tempCrews.filter(crew =>
         crew.collector1 == userId
@@ -92,7 +92,7 @@ export default function HomeCrew(props) {
               tempCrew.backupCollector2Name = uDoc.data().firstName
           });
           setCrew(tempCrew);
-          console.log(" Current crew with names--: ", tempCrew);
+          // console.log(" Current crew with names--: ", tempCrew);
         });
 
 
@@ -104,31 +104,40 @@ export default function HomeCrew(props) {
           querySnapshot.forEach((docP) => {
             tempSchedules.push({ id: docP.id, ...docP.data() });
           });
-          setSchedules([...tempSchedules]);
-          console.log("schedules: ", tempSchedules)
-          firstSch = tempSchedules[0]
-        });
+          const today = new Date();
+          setSchedules([...tempSchedules.filter(schedule => schedule.dateTime.toDate() > today)])
+          setOldSchedules([...tempSchedules.filter(schedule => schedule.dateTime.toDate() < today && schedule.dateTime.toDate().getDate() !== today.getDate())])
+          // console.log("old schedules: ", tempSchedules.filter(schedule => {
+          // console.log("dateTime", schedule.dateTime.toDate(), "----------", today)
+          //   return schedule.dateTime.toDate() < today}))
+          let tempTodaySchedules = [...tempSchedules.filter(schedule => schedule.dateTime.toDate().getDate() === today.getDate())]
+          db.collection("Municipalities").onSnapshot((querySnapshot) => {
+            const tempMunicipalities = [];
+            querySnapshot.forEach((doc) => {
+              tempMunicipalities.push({ id: doc.id, ...doc.data() });
+            });
+            // console.log(" Current tempMunicipalities: ", tempMunicipalities);
+            setMunicipalities([...tempMunicipalities]);
+          });
 
-      db.collection("Municipalities").onSnapshot((querySnapshot) => {
-        const tempMunicipalities = [];
-        querySnapshot.forEach((doc) => {
-          tempMunicipalities.push({ id: doc.id, ...doc.data() });
+          db.collection("Districts").onSnapshot((querySnapshot) => {
+            const tempDistricts = [];
+            querySnapshot.forEach((doc) => {
+              tempDistricts.push({ id: doc.id, ...doc.data() });
+            });
+            // console.log(" Current promotion: ", tempDistricts);
+            setDistricts([...tempDistricts]);
+            tempTodaySchedules = tempTodaySchedules.map(
+              schedule => {
+                const dis = tempDistricts.filter(d => d.id === schedule.districtId)[0].location
+                const location = { disLong: dis.k, disLat: dis.U }
+                return { ...schedule, location }
+              }
+            )
+            // console.log("tempTodaySchedules", tempTodaySchedules)
+            setTodaySchedules(tempTodaySchedules)
+          });
         });
-        // console.log(" Current tempMunicipalities: ", tempMunicipalities);
-        setMunicipalities([...tempMunicipalities]);
-      });
-
-      db.collection("Districts").onSnapshot((querySnapshot) => {
-        const tempDistricts = [];
-        querySnapshot.forEach((doc) => {
-          tempDistricts.push({ id: doc.id, ...doc.data() });
-        });
-        // console.log(" Current promotion: ", tempDistricts);
-        setDistricts([...tempDistricts]);
-        const dis = tempDistricts.filter(d => d.id === firstSch.districtId)[0]
-        setDistrictLocation(dis.location)
-        console.log("tempDistricts[0].location", dis.location.U, dis.location.k)
-      });
 
     });
   }, []);
@@ -194,81 +203,123 @@ export default function HomeCrew(props) {
           alignSelf: 'center',
         }}
       >
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1.5 }}>
           <View style={{ flex: 0.5 }}>{/* Empty */}</View>
+          <View style={{ flex: 1, justifyContent: 'space-between', alignItems: "center",  flexDirection: 'row', }}>
+            <Text
+              style={{ flex: 2,fontSize: 20, color: colors.BLACK, fontWeight: 'bold' }}
+            >
+              {crew && `Crew No. ${crew.crewNo}`}
+            </Text>
+            <TouchableOpacity
+              onPress={() => props.navigation.navigate('OldSchedules', { oldSchedules })}
+              style={{
+                flex: 2,
+                minHeight: 30,
+                borderRadius: 10,
+                backgroundColor: colors.GREEN,
+                shadowColor: '#000',
+                shadowOffset: {
+                  width: 0,
+                  height: 1,
+                },
+                shadowOpacity: 0.25,
+                shadowRadius: 1,
+                elevation: 1,
+                width: "60%",
+                justifyContent: "center",
+                alignItems: "center",
+                margin:5
+              }}
+            >
+              <Text
+                style={{ fontSize: 18, color: colors.BLACK }}
+              >
+                Completed Duties
+              </Text>
+            </TouchableOpacity>
+          </View>
           <View style={{ flex: 1, justifyContent: 'center' }}>
             <Text
               style={{ fontSize: 20, color: colors.BLACK, fontWeight: 'bold' }}
             >
-              Next:
+              Today:
             </Text>
           </View>
-          {crew &&schedules && schedules.length > 0 && <TouchableOpacity
-            onPress={() => props.navigation.navigate('ScheduleMap', { disLong: districtLocation.k, disLat: districtLocation.U })}
-            style={{
-              flex: 2,
-              minHeight: 100,
-              borderRadius: 10,
-              backgroundColor: colors.WHITE,
-              shadowColor: '#000',
-              shadowOffset: {
-                width: 0,
-                height: 1,
-              },
-              shadowOpacity: 0.25,
-              shadowRadius: 1,
+          <ScrollView>
+            {crew && todaySchedules && todaySchedules.length > 0 &&
+              todaySchedules.map((item, index) => (
+                <>
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => props.navigation.navigate('ScheduleMap', { disLong: item.location.disLong, disLat: item.location.disLat, districtId: item.districtId })}
+                    style={{
+                      flex: 1,
+                      minHeight: 100,
+                      borderRadius: 10,
+                      backgroundColor: colors.WHITE,
+                      shadowColor: '#000',
+                      shadowOffset: {
+                        width: 0,
+                        height: 1,
+                      },
+                      shadowOpacity: 0.25,
+                      shadowRadius: 1,
 
-              elevation: 1,
-              flexDirection: 'row',
-            }}
-          >
-            <View
-              style={{
-                width: '75%',
-                justifyContent: 'space-evenly',
-                paddingLeft: 10,
-              }}
-            >
-              <Text
-                style={{
-                  fontWeight: 'bold',
-                  color: colors.black,
-                  fontSize: 16,
-                }}
-              >
-                {moment(schedules[0].dateTime.toDate()).format("LLL")}
-              </Text>
+                      elevation: 1,
+                      flexDirection: 'row',
+                    }}
+                  >
+                    <View
+                      style={{
+                        width: '75%',
+                        justifyContent: 'space-evenly',
+                        paddingLeft: 10,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontWeight: 'bold',
+                          color: colors.black,
+                          fontSize: 16,
+                        }}
+                      >
+                        {moment(item.dateTime.toDate()).format("LLL")}
+                      </Text>
 
-              <Text style={{ color: colors.DARKERGRAY }}>
-                {getDistrict(schedules[0].districtId)}
-              </Text>
-              <Text style={{ color: colors.DARKERGRAY }}>Driver: {`(${schedules[0].driver})`} {schedules[0].driver === "main" ? crew.driverName : crew.backupDriverName}</Text>
-              <Text style={{ color: colors.DARKERGRAY }}>Collector 1: {`(${schedules[0].collector1})`} {schedules[0].collector1 === "main" ? crew.collector1Name : crew.backupCollector1Name}</Text>
-              <Text style={{ color: colors.DARKERGRAY }}>Collector 2: {`(${schedules[0].collector2})`} {schedules[0].collector2 === "main" ? crew.collector2Name : crew.backupCollector2Name}</Text>
-            </View>
-            <View style={{ width: '25%' }}>
-              <TouchableOpacity
-                onPress={() => props.navigation.navigate('ScheduleMap', { disLong: districtLocation.k, disLat: districtLocation.U })}
-                style={{
-                  width: '100%',
-                  backgroundColor: colors.GREEN,
-                  height: '100%',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  borderTopRightRadius: 10,
-                  borderBottomRightRadius: 10,
-                }}
-              >
-                <Icon
-                  name="doubleright"
-                  type="ant-design"
-                  color={colors.WHITE}
-                  size={25}
-                />
-              </TouchableOpacity>
-            </View>
-          </TouchableOpacity>}
-          <View style={{ flex: 1 }}>{/* Empty */}</View>
+                      <Text style={{ color: colors.DARKERGRAY }}>
+                        {getDistrict(item.districtId)}
+                      </Text>
+                      <Text style={{ color: colors.DARKERGRAY }}>Driver: {`(${item.driver})`} {item.driver === "main" ? crew.driverName : crew.backupDriverName}</Text>
+                      <Text style={{ color: colors.DARKERGRAY }}>Collector 1: {`(${item.collector1})`} {item.collector1 === "main" ? crew.collector1Name : crew.backupCollector1Name}</Text>
+                      <Text style={{ color: colors.DARKERGRAY }}>Collector 2: {`(${item.collector2})`} {item.collector2 === "main" ? crew.collector2Name : crew.backupCollector2Name}</Text>
+                    </View>
+                    <View style={{ width: '25%' }}>
+                      <TouchableOpacity
+                        onPress={() => props.navigation.navigate('ScheduleMap', { disLong: item.location.disLong, disLat: item.location.disLat, districtId: item.districtId })}
+                        style={{
+                          width: '100%',
+                          backgroundColor: colors.GREEN,
+                          height: '100%',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          borderTopRightRadius: 10,
+                          borderBottomRightRadius: 10,
+                        }}
+                      >
+                        <Icon
+                          name="doubleright"
+                          type="ant-design"
+                          color={colors.WHITE}
+                          size={25}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </TouchableOpacity>
+                  <View style={{ height: 10 }}></View>
+                </>
+              ))}
+          </ScrollView>
         </View>
 
         {/* -------WEEKLY SCHEDULE----------------------------------------------------------------------- */}
@@ -278,7 +329,7 @@ export default function HomeCrew(props) {
             <Text
               style={{ fontSize: 20, color: colors.BLACK, fontWeight: 'bold' }}
             >
-              Weekly Schedule
+              Upcoming Duties
             </Text>
           </View>
           <ScrollView>
