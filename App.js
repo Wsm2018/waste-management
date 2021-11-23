@@ -1,24 +1,12 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useState, useEffect } from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, LogBox } from "react-native";
 import firebase from "firebase";
 import "firebase/auth";
 import db from "./db";
 import AuthContainer from "./Navigator/AuthNav";
 import AppContainer from "./Navigator/AppNav";
-// LogBox.ignoreAllLogs();
-
-import { LogBox } from 'react-native';
-import _ from 'lodash';
-
-LogBox.ignoreLogs(['Warning:...']); // ignore specific logs
-LogBox.ignoreAllLogs(); // ignore all logs
-const _console = _.clone(console);
-console.warn = message => {
-if (message.indexOf('Setting a timer') <= -1) {
-   _console.warn(message);
-   }
-};
+LogBox.ignoreAllLogs();
 
 export default function App() {
   const [user, setUser] = useState(false);
