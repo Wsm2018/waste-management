@@ -24,13 +24,28 @@ export default function ScheduleMap(props) {
         bin.push({ id: doc.id, ...doc.data() });
       });
       setBins([...bin]);
-      setBinsCoords(bin.map(b => {
-        return { latitude: b.location.U, longitude: b.location.k }
-      }))
-      let t = bin.map(b => {
-        return { latitude: b.location.U, longitude: b.location.k }
+      let binLocations = bin.map(b => {
+        return `${b.location.U},${b.location.k}`
       })
-      console.log("==========bin====t=====", t)
+      new Promise(function (resolve, reject) {
+
+        fetch(
+          `https://api.tomtom.com/routing/1/calculateRoute/${binLocations.join(":")}/json?key=AVDrLKH88fjFF21wAzG5FjQ4RA704AA7`
+        )
+          .then((response) => response.json())
+          .then((res) => {
+            let finalPoints = []
+            res.routes[0].legs.forEach(leg => {
+              finalPoints = finalPoints.concat(leg.points)
+            })
+            setBinsCoords(finalPoints)
+            console.log("==========res length=========", finalPoints.length)
+            resolve()
+          })
+          .catch((error) => {
+            reject(error)
+          })
+      })
     });
     return unsub;
   };
