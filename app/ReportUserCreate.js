@@ -56,6 +56,9 @@ export default function ReportUserCreate(props) {
     getbins()
   }, []);
 
+  useEffect(()=>{
+console.log("selected biiiiiiiiiiiiiinnnnnnnn", selectedBin)
+  },[selectedBin])
 
   const handleLocation = async () => {
 
@@ -97,7 +100,7 @@ export default function ReportUserCreate(props) {
         getDistance(
           { latitude: b.location.latitude, longitude: b.location.longitude },
           { latitude: userLocation.latitude, longitude: userLocation.longitude })
-        <= 500
+        <= 2000
       )
 
       // console.log("remaining bins", cb)
@@ -198,7 +201,7 @@ export default function ReportUserCreate(props) {
           >
 
             {closeBins ? closeBins.map((item, index) => (
-
+            
               <Marker
                 key={index}
                 coordinate={{
@@ -206,17 +209,23 @@ export default function ReportUserCreate(props) {
                   longitude: item.location.longitude,
                 }}
                 //image= {selectedMarker}
-                pinColor={'#4682B4'}
+                pinColor={item == selectedBin ? '#4682B4' : "red"}
               >
-                <Callout>
-                  <TouchableOpacity
-                    onPress={() => setSelectedBin(item)}
-                  //  onPress={()=>console.log("choooosing bin ------------------------")}
-                  ><Text>Select Bin</Text>
-                  </TouchableOpacity>
+                <Callout
+                //tooltip
+                onPress={() => setSelectedBin(item)}
+                 style={{width:70 , height:50}}
+                //onPress={() =>setSelectedBin(item)}rr
+                  
+                  >
+                  
+                    <Text>Click To Select Bin</Text>
+                    
+                  
 
                 </Callout>
               </Marker>
+              
 
             ))
 
