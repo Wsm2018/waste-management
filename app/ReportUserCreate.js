@@ -56,9 +56,9 @@ export default function ReportUserCreate(props) {
     getbins()
   }, []);
 
-  useEffect(()=>{
-console.log("selected biiiiiiiiiiiiiinnnnnnnn", selectedBin)
-  },[selectedBin])
+  useEffect(() => {
+    console.log("selected biiiiiiiiiiiiiinnnnnnnn", selectedBin)
+  }, [selectedBin])
 
   const handleLocation = async () => {
 
@@ -166,102 +166,115 @@ console.log("selected biiiiiiiiiiiiiinnnnnnnn", selectedBin)
       />
 
       {/* <View style={{flex: 2, backgroundColor: "red"}}></View> */}
-      <View style={{flex: 1, backgroundColor: "green", marginLeft:"auto" , marginRight:"auto" , 
-      width: "80%" }}>
-      <View style={styles.inputView}>
-                <Text style={styles.textInputHeader}>Description</Text>
-                <TextInput
-                  style={{
-                    width: '100%',
-                    height: 50,
-                    backgroundColor: colors.WHITE,
-                    borderRadius: 10,
-                    paddingLeft: 5,
-                  }}
-                  onChangeText={setDesc}
-                  placeholder={"Enter Here"}
-                  value={description}
-                />
-              </View>
-      </View>
-      <View style={{flex: 2, backgroundColor: "blue" , width:"70%" , marginLeft:"auto" , marginRight:"auto"}}>
-      <MapView
-            style={{ flex: 1 }}
-            showsUserLocation={true}
-            region
-            provider="google"
-            region={{
-              latitude: userLocation ? userLocation.latitude : 25.3548,
-              longitude: userLocation ? userLocation.longitude : 51.1839,
-              latitudeDelta: 0.08,
-              longitudeDelta: 0.08,
-            }}
-            customMapStyle={customMapStyle}
-          // userInterfaceStyle={"dark"}
-          >
-
-            {closeBins ? closeBins.map((item, index) => (
-            
-              <Marker
-                key={index}
-                coordinate={{
-                  latitude: item.location.latitude,
-                  longitude: item.location.longitude,
-                }}
-                //image= {selectedMarker}
-                pinColor={item == selectedBin ? '#4682B4' : "red"}
-              >
-                <Callout
-                //tooltip
-                onPress={() => setSelectedBin(item)}
-                 style={{width:70 , height:50}}
-                //onPress={() =>setSelectedBin(item)}rr
-                  
-                  >
-                  
-                    <Text>Click To Select Bin</Text>
-                    
-                  
-
-                </Callout>
-              </Marker>
-              
-
-            ))
-
-              :
-              null
-            }
-
-          </MapView>
-
-      </View>
-      <View style={{flex: 1, backgroundColor: "yellow"}}>
-      <View
+      <View style={{
+        flex: 1,
+        //backgroundColor: "green",
+        marginLeft: "auto",
+        marginRight: "auto",
+        width: "80%"
+      }}>
+        <View style={styles.inputView}>
+          <Text style={styles.textInputHeader}>Description</Text>
+          <TextInput
             style={{
-              width: '45%',
+              width: '100%',
               height: 50,
+              backgroundColor: colors.WHITE,
+              borderRadius: 10,
+              paddingLeft: 5,
+            }}
+            onChangeText={setDesc}
+            placeholder={"Enter Here"}
+            value={description}
+          />
+        </View>
+      </View>
+      <View style={{
+        flex: 2,
+        //backgroundColor: "blue" ,
+        width: "70%",
+        marginLeft: "auto",
+        marginRight: "auto"
+      }}>
+        <MapView
+          style={{ flex: 1 }}
+          showsUserLocation={true}
+          region
+          provider="google"
+          region={{
+            latitude: userLocation ? userLocation.latitude : 25.3548,
+            longitude: userLocation ? userLocation.longitude : 51.1839,
+            latitudeDelta: 0.08,
+            longitudeDelta: 0.08,
+          }}
+          customMapStyle={customMapStyle}
+        // userInterfaceStyle={"dark"}
+        >
+
+          {closeBins ? closeBins.map((item, index) => (
+
+            <Marker
+              key={index}
+              coordinate={{
+                latitude: item.location.latitude,
+                longitude: item.location.longitude,
+              }}
+              //image= {selectedMarker}
+              pinColor={item == selectedBin ? '#4682B4' : "red"}
+            >
+              
+                  <Callout
+                    //tooltip
+                    onPress={() => setSelectedBin(item)}
+                    style={{ width: 70, height: 50 }}
+                  //onPress={() =>setSelectedBin(item)}rr
+
+                  >
+                    <Text>Click To Select Bin</Text>
+                  </Callout>
+               
+
+            </Marker>
+
+
+          ))
+
+            :
+            null
+          }
+
+        </MapView>
+
+      </View>
+      <View style={{
+        flex: 1,
+        //backgroundColor: "yellow"
+      }}>
+        <View
+          style={{
+            width: '45%',
+            height: 50,
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginTop: "auto", marginBottom: "auto", marginLeft: "auto", marginRight: "auto"
+          }}
+        >
+          <TouchableOpacity
+            // onPress={() => props.navigation.navigate('ReportAssign')}
+            onPress={() => submit()}
+            disabled={!description}
+            style={{
+              backgroundColor: colors.GREEN,
+              width: '100%',
+              height: '100%',
               justifyContent: 'center',
               alignItems: 'center',
-              marginTop:"auto" , marginBottom:"auto" , marginLeft:"auto" , marginRight:"auto"
+              borderRadius: 10,
             }}
           >
-            <TouchableOpacity
-              // onPress={() => props.navigation.navigate('ReportAssign')}
-              onPress={() => submit()}
-              disabled={!description}
-              style={{
-                backgroundColor: colors.GREEN,
-                width: '100%',
-                height: '100%',
-                justifyContent: 'center',
-                alignItems: 'center',
-                borderRadius: 10,
-              }}
-            >
-              <Text style={{ color: colors.WHITE }}>{!process ? "Submit" : "Processing Please Wait"}</Text>
-            </TouchableOpacity>
-          </View>
+            <Text style={{ color: colors.WHITE }}>{!process ? "Submit" : "Processing Please Wait"}</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
 
@@ -347,10 +360,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     //marginBottom: 2,
     color: colors.BLACK,
-    
-  
+
+
   },
   inputView: {
-    marginTop:"auto" , marginBottom:"auto"
+    marginTop: "auto", marginBottom: "auto"
   }
 })
