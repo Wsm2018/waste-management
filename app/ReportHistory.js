@@ -31,14 +31,14 @@ import db from '../db'
 import { colors } from './common/theme'
 import { getRoughCompassDirection } from 'geolib'
 
-export default function Report(props) {
+export default function ReportHistory(props) {
   const [screenView, setScreenView] = useState(true)
   const [reports, setReports] = useState([])
   const [role , setRole] = useState(null)
 
   useEffect(()=>{
-    getUser()
-    db.collection("Reports").where("status", "==", "Assigned").onSnapshot(querySnapshot => {
+    //getUser()
+    db.collection("Reports").where("status", "==", "Pending").onSnapshot(querySnapshot => {
       let r = [];
       querySnapshot.forEach(doc => {
           r.push({ id: doc.id, ...doc.data() });
@@ -48,12 +48,7 @@ export default function Report(props) {
 
   })
 
-  getUser = async() =>{
-    const u = await db.collection("Users").doc(firebase.auth().currentUser.uid).get()
-    if( u.data().role == "Manager"){
-      setRole("Manager")
-    }
-  }
+ 
 
 
   return (
@@ -75,7 +70,7 @@ export default function Report(props) {
           },
         }}
         centerComponent={
-          <Text style={{ fontSize: 20, color: colors.WHITE }}>Reports</Text>
+          <Text style={{ fontSize: 20, color: colors.WHITE }}>Reports History</Text>
         }
         rightComponent={{
           icon: screenView ? 'history' :'format-list-bulleted',
@@ -84,7 +79,7 @@ export default function Report(props) {
           size: 30,
           component: TouchableWithoutFeedback,
           onPress: () => {
-            props.navigation.navigate('ReportHistory')
+            console.log( "histooory")
           },
         }}
         // containerStyle={styles.headerStyle}
