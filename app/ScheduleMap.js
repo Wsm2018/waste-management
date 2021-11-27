@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, Button, TouchableOpacity, StatusBar } from 'react-native'
+import { View, Text, Button, TouchableOpacity, StatusBar, Modal , StyleSheet, Dimensions,ScrollView} from 'react-native'
 import firebase from 'firebase'
 import 'firebase/auth'
 import db from "../db";
@@ -7,6 +7,7 @@ import MapView, { Marker, Callout } from 'react-native-maps'
 import { colors } from './common/theme'
 import { Icon } from 'react-native-elements'
 import { customMapStyle } from './common/mapStyle'
+const { width, height } = Dimensions.get("window")
 
 export default function ScheduleMap(props) {
   const latitudeDelta = 0.0922
@@ -14,8 +15,10 @@ export default function ScheduleMap(props) {
   const latitude = props.navigation.getParam("disLat");
   const longitude = props.navigation.getParam("disLong");
   const districtId = props.navigation.getParam("districtId");
+  const description = props.navigation.getParam("description");
   const [bins, setBins] = useState([]);
   const [binsCoords, setBinsCoords] = useState([]);
+  const [openModal, setOpenModal] = useState(false);
 
   const fetchBins = () => {
     const unsub = db.collection("Bins").where("districtId", "==", `${districtId}`).onSnapshot((querySnap) => {
@@ -56,6 +59,48 @@ export default function ScheduleMap(props) {
       unsub();
     };
   }, []);
+
+  const descriptionModal = () => {
+    return (
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={openModal}
+      >
+        <View style={styles.detailsModalContainer}>
+          <View
+            style={styles.detailsModalInnerContainer}
+          >
+            <View style={styles.detailsContainer}>
+              <Text style={styles.detailsText}>Report Details</Text>
+
+              <View style={styles.horizontalLLine} />
+              <ScrollView
+                style={styles.scrollViewStylePhone}
+                contentContainerStyle={{ flexGrow: 1 }}
+              >
+                <View style={styles.detailsmsgContainer}>
+                  <Text style={styles.detailsMsgText} selectable>
+                    {description}
+                  </Text>
+                </View>
+              </ScrollView>
+              <View style={styles.okButtonContainer}>
+                <TouchableOpacity
+                  style={styles.okButtonStyle}
+                  onPress={() => {
+                    setOpenModal(false)
+                  }}
+                >
+                  <Text style={styles.signInTextStyle}>Close</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    )
+  }
 
   const [priority, setPriority] = useState([
     {
@@ -217,11 +262,11 @@ export default function ScheduleMap(props) {
               </Callout>
             </Marker>
           ))}
-        <MapView.Polyline
+        {bins.length > 0 && <MapView.Polyline
           coordinates={binsCoords}
           strokeWidth={4}
           strokeColor="green"
-        />
+        />}
       </MapView>
       <View
         style={{
@@ -256,6 +301,38 @@ export default function ScheduleMap(props) {
           <Icon name="angle-left" type="font-awesome" color={colors.WHITE} size={25} />
         </TouchableOpacity>
       </View>
+      {description && <View
+        style={{
+          alignSelf: 'flex-end',
+          // backgroundColor: 'red',
+          width: '20%',
+          minHeight: 60,
+          position: 'absolute',
+          top: '6%',
+        }}
+      >
+        <TouchableOpacity
+          onPress={() => setOpenModal(true)}
+          style={{
+            height: 55,
+            backgroundColor: colors.GREEN,
+            aspectRatio: 1 / 1,
+            borderRadius: 100,
+            justifyContent: 'center',
+            alignItems: 'center',
+            shadowColor: '#000',
+            shadowOffset: {
+              width: 0,
+              height: 2,
+            },
+            shadowOpacity: 0.25,
+            shadowRadius: 3.84,
+            elevation: 5,
+          }}
+        >
+          <Text style={{ color: colors.WHITE, textAlign: "center" }}>Details</Text>
+        </TouchableOpacity>
+      </View>}
 
       <View
         style={{
@@ -324,7 +401,120 @@ export default function ScheduleMap(props) {
             />
           </TouchableOpacity>
         </View>
+        {descriptionModal()}
       </View>
     </View>
   )
 }
+const styles = StyleSheet.create({
+  //details modal
+  horizontalLLine: {
+    width: width - 110,
+    height: 0.5,
+    backgroundColor: colors.BLACK,
+    alignSelf: "center",
+  },
+  okButtonContainer: {
+    flex: 1,
+    width: "85%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "center",
+  },
+  okButtonStyle: {
+    flexDirection: "row",
+    backgroundColor: "#6e6e6e",
+    alignItems: "center",
+    minHeight: 45,
+    justifyContent: "center",
+    width: "90%",
+    borderRadius: 5,
+  },
+  signInTextStyle: {
+    fontFamily: "Roboto-Bold",
+    fontSize: 25,
+    fontWeight: "700",
+    color: colors.WHITE,
+  },
+  detailsModalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    backgroundColor: "#eee",
+  },
+  detailsModalInnerContainer: {
+    height: 580,
+    width: width * 0.9,
+    backgroundColor: colors.WHITE,
+    alignItems: "center",
+    alignSelf: "center",
+    borderRadius: 7,
+  },
+  detailsModalInnerContainerPhone: {
+    height: 200,
+    width: width * 0.9,
+    backgroundColor: colors.WHITE,
+    alignItems: "center",
+    alignSelf: "center",
+    borderRadius: 7,
+  },
+  detailsContainer: {
+    flex: 2,
+    justifyContent: "space-between",
+    width: width - 80,
+  },
+  detailsText: {
+    flex: 1,
+    top: 15,
+    color: colors.BLACK,
+    fontFamily: "Roboto-Bold",
+    fontSize: 20,
+    alignSelf: "center",
+  },
+  detailsMsgText: {
+    color: colors.BLACK,
+    fontFamily: "Roboto-Regular",
+    fontSize: 17,
+    alignSelf: "stretch",
+    textAlign: "left",
+    justifyContent: "space-between",
+  },
+  scrollViewStyle: {
+    width: width - 80,
+    height: 400,
+    marginTop: 10,
+    marginBottom: 10,
+    // backgroundColor: colors.GREY.primary,
+  },
+  scrollViewStylePhone: {
+    width: width - 80,
+    height: 50,
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  detailsmsgContainer: {
+    flex: 2.5,
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+
+  //alert modal
+  alertModalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    backgroundColor: "#eee",
+  },
+  alertModalInnerContainer: {
+    height: 200,
+    width: width * 0.85,
+    backgroundColor: colors.WHITE,
+    alignItems: "center",
+    alignSelf: "center",
+    borderRadius: 7,
+  },
+  alertContainer: {
+    flex: 2,
+    justifyContent: "space-between",
+    width: width - 100,
+  },
+})

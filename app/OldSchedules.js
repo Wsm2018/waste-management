@@ -32,11 +32,13 @@ import { colors } from './common/theme'
 
 export default function HomeCrew(props) {
   const oldSchedules = props.navigation.getParam("oldSchedules");
+  const oldReports = props.navigation.getParam("oldReports");
   const [municipalities, setMunicipalities] = useState();
   const [districts, setDistricts] = useState();
   const [crew, setCrew] = useState();
 
   useEffect(() => {
+    console.log("=======old reports ========", oldReports)
     db.collection("Crews").onSnapshot((querySnapshot) => {
       const tempCrews = [];
       querySnapshot.forEach((doc) => {
@@ -171,6 +173,55 @@ export default function HomeCrew(props) {
             </Text>
           </View> */}
           <ScrollView>
+          {crew && oldReports && oldReports.length > 0 && oldReports.map((item, index) => (
+              <View
+                key={index}
+                style={{
+                  width: '100%',
+                  backgroundColor: colors.WHITE,
+                  minHeight: 150,
+                  marginTop: 10,
+                  flexDirection: 'row',
+                  borderRadius: 10,
+                  shadowColor: '#000',
+                  shadowOffset: {
+                    width: 0,
+                    height: 1,
+                  },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 1,
+                  elevation: 1,
+                  borderRightColor: colors.RED,
+                  borderRightWidth: 10
+                }}
+                key={item.id}
+              >
+                <View
+                  style={{
+                    width: '100%',
+                    justifyContent: 'space-evenly',
+                    paddingLeft: 10,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontWeight: 'bold',
+                      color: colors.black,
+                      fontSize: 16,
+                    }}
+                  >
+                    {moment(new Date(item.date)).format("LLL")}
+                  </Text>
+
+                  <Text style={{ color: colors.DARKERGRAY }}>
+                    {getDistrict(item.location.districtId)}
+                  </Text>
+                  <Text style={{ color: colors.DARKERGRAY }}>Driver: {`(${item.driver})`} {item.driver === "main" ? crew.driverName : crew.backupDriverName}</Text>
+                  <Text style={{ color: colors.DARKERGRAY }}>Collector 1: {`(${item.collector1})`} {item.collector1 === "main" ? crew.collector1Name : crew.backupCollector1Name}</Text>
+                  <Text style={{ color: colors.DARKERGRAY }}>Collector 2: {`(${item.collector2})`} {item.collector2 === "main" ? crew.collector2Name : crew.backupCollector2Name}</Text>
+                </View>
+              </View>
+            ))}
             {crew && oldSchedules && oldSchedules.length > 0 && oldSchedules.map((item, index) => (
               <View
                 key={index}

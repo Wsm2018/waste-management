@@ -38,6 +38,9 @@ export default function HomeCrew(props) {
   const [schedules, setSchedules] = useState();
   const [oldSchedules, setOldSchedules] = useState();
   const [todaySchedules, setTodaySchedules] = useState();
+  const [reports, setReports] = useState();
+  const [oldReports, setOldReports] = useState();
+  const [todayReports, setTodayReports] = useState();
   const [municipalities, setMunicipalities] = useState();
   const [districts, setDistricts] = useState();
 
@@ -93,6 +96,18 @@ export default function HomeCrew(props) {
           });
           setCrew(tempCrew);
           // console.log(" Current crew with names--: ", tempCrew);
+          db.collection("Reports").where("handeldBy", "==", `${tempCrew.id}`).onSnapshot((querySnapshot) => {
+            const tempReports = [];
+            querySnapshot.forEach((doc) => {
+              tempReports.push({ id: doc.id, ...doc.data() });
+            });
+            //console.log(" Current tempReports: ", tempReports);
+            const today = new Date();
+            setReports([...tempReports.filter(report => new Date(report.date) > today && new Date(report.date).getDate() !== today.getDate())])
+            setOldReports([...tempReports.filter(report => new Date(report.date) < today && new Date(report.date).getDate() !== today.getDate())])
+            setTodayReports([...tempReports.filter(report => new Date(report.date).getDate() === today.getDate())])
+            console.log("=========today reports====", [...tempReports.filter(report => new Date(report.date).getDate() === today.getDate())])
+          });
         });
 
 
@@ -105,7 +120,7 @@ export default function HomeCrew(props) {
             tempSchedules.push({ id: docP.id, ...docP.data() });
           });
           const today = new Date();
-          setSchedules([...tempSchedules.filter(schedule => schedule.dateTime.toDate() > today)])
+          setSchedules([...tempSchedules.filter(schedule => schedule.dateTime.toDate() > today && schedule.dateTime.toDate().getDate() !== today.getDate())])
           setOldSchedules([...tempSchedules.filter(schedule => schedule.dateTime.toDate() < today && schedule.dateTime.toDate().getDate() !== today.getDate())])
           // console.log("old schedules: ", tempSchedules.filter(schedule => {
           // console.log("dateTime", schedule.dateTime.toDate(), "----------", today)
@@ -204,15 +219,15 @@ export default function HomeCrew(props) {
         }}
       >
         <View style={{ flex: 1.5 }}>
-          <View style={{ flex: 0.5 }}>{/* Empty */}</View>
-          <View style={{ flex: 1, justifyContent: 'space-between', alignItems: "center",  flexDirection: 'row', }}>
+          <View style={{ flex: 0.2 }}>{/* Empty */}</View>
+          <View style={{ flex: 1, justifyContent: 'space-between', alignItems: "center", flexDirection: 'row', }}>
             <Text
-              style={{ flex: 2,fontSize: 20, color: colors.BLACK, fontWeight: 'bold' }}
+              style={{ flex: 2, fontSize: 20, color: colors.BLACK, fontWeight: 'bold' }}
             >
               {crew && `Crew No. ${crew.crewNo}`}
             </Text>
             <TouchableOpacity
-              onPress={() => props.navigation.navigate('OldSchedules', { oldSchedules })}
+              onPress={() => props.navigation.navigate('OldSchedules', { oldSchedules, oldReports })}
               style={{
                 flex: 2,
                 minHeight: 30,
@@ -229,7 +244,7 @@ export default function HomeCrew(props) {
                 width: "60%",
                 justifyContent: "center",
                 alignItems: "center",
-                margin:5
+                margin: 5
               }}
             >
               <Text
@@ -246,10 +261,81 @@ export default function HomeCrew(props) {
               Today:
             </Text>
           </View>
-          <ScrollView>
+          <ScrollView style={{ height: 180 }}>
+            {crew && todayReports && todayReports.length > 0 &&
+              todayReports.map((item, index) => (
+                <View key={index}>
+                  <TouchableOpacity
+                    onPress={() => props.navigation.navigate('ScheduleMap', { disLong: item.location.location.k, disLat: item.location.location.U, districtId: item.location.districtId })}
+                    style={{
+                      flex: 1,
+                      minHeight: 100,
+                      borderRadius: 10,
+                      backgroundColor: colors.WHITE,
+                      shadowColor: '#000',
+                      shadowOffset: {
+                        width: 0,
+                        height: 1,
+                      },
+                      shadowOpacity: 0.25,
+                      shadowRadius: 1,
+
+                      elevation: 1,
+                      flexDirection: 'row',
+                    }}
+                  >
+                    <View
+                      style={{
+                        width: '75%',
+                        justifyContent: 'space-evenly',
+                        paddingLeft: 10,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontWeight: 'bold',
+                          color: colors.black,
+                          fontSize: 16,
+                        }}
+                      >
+                        {moment(new Date(item.date)).format("LLL")}
+                      </Text>
+
+                      <Text style={{ color: colors.DARKERGRAY }}>
+                        {getDistrict(item.location.districtId)}
+                      </Text>
+                      <Text style={{ color: colors.DARKERGRAY }}>Driver: {`(${item.driver})`} {item.driver === "main" ? crew.driverName : crew.backupDriverName}</Text>
+                      <Text style={{ color: colors.DARKERGRAY }}>Collector 1: {`(${item.collector1})`} {item.collector1 === "main" ? crew.collector1Name : crew.backupCollector1Name}</Text>
+                      <Text style={{ color: colors.DARKERGRAY }}>Collector 2: {`(${item.collector2})`} {item.collector2 === "main" ? crew.collector2Name : crew.backupCollector2Name}</Text>
+                    </View>
+                    <View style={{ width: '25%' }}>
+                      <TouchableOpacity
+                        onPress={() => props.navigation.navigate('ScheduleMap', { disLong: item.location.location.k, disLat: item.location.location.U, districtId: item.location.districtId, description: item.description })}
+                        style={{
+                          width: '100%',
+                          backgroundColor: colors.RED,
+                          height: '100%',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          borderTopRightRadius: 10,
+                          borderBottomRightRadius: 10,
+                        }}
+                      >
+                        <Icon
+                          name="doubleright"
+                          type="ant-design"
+                          color={colors.WHITE}
+                          size={25}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </TouchableOpacity>
+                  <View style={{ height: 10 }}></View>
+                </View>
+              ))}
             {crew && todaySchedules && todaySchedules.length > 0 &&
               todaySchedules.map((item, index) => (
-                <>
+                <View key={index}>
                   <TouchableOpacity
                     key={index}
                     onPress={() => props.navigation.navigate('ScheduleMap', { disLong: item.location.disLong, disLat: item.location.disLat, districtId: item.districtId })}
@@ -317,7 +403,7 @@ export default function HomeCrew(props) {
                     </View>
                   </TouchableOpacity>
                   <View style={{ height: 10 }}></View>
-                </>
+                </View>
               ))}
           </ScrollView>
         </View>
@@ -333,6 +419,56 @@ export default function HomeCrew(props) {
             </Text>
           </View>
           <ScrollView>
+            {reports && reports.length > 0 && reports.map((item, index) => (
+              <View
+                key={index}
+                style={{
+                  width: '100%',
+                  backgroundColor: colors.WHITE,
+                  minHeight: 150,
+                  marginTop: 10,
+                  flexDirection: 'row',
+                  borderRadius: 10,
+                  shadowColor: '#000',
+                  shadowOffset: {
+                    width: 0,
+                    height: 1,
+                  },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 1,
+
+                  elevation: 1,
+                  borderRightColor: colors.RED,
+                  borderRightWidth: 20
+                }}
+                key={item.id}
+              >
+                <View
+                  style={{
+                    width: '100%',
+                    justifyContent: 'space-evenly',
+                    paddingLeft: 10,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontWeight: 'bold',
+                      color: colors.black,
+                      fontSize: 16,
+                    }}
+                  >
+                    {moment(new Date(item.date)).format("LLL")}
+                  </Text>
+
+                  <Text style={{ color: colors.DARKERGRAY }}>
+                    {getDistrict(item.location.districtId)}
+                  </Text>
+                  <Text style={{ color: colors.DARKERGRAY }}>Driver: {`(${item.driver})`} {item.driver === "main" ? crew.driverName : crew.backupDriverName}</Text>
+                  <Text style={{ color: colors.DARKERGRAY }}>Collector 1: {`(${item.collector1})`} {item.collector1 === "main" ? crew.collector1Name : crew.backupCollector1Name}</Text>
+                  <Text style={{ color: colors.DARKERGRAY }}>Collector 2: {`(${item.collector2})`} {item.collector2 === "main" ? crew.collector2Name : crew.backupCollector2Name}</Text>
+                </View>
+              </View>
+            ))}
             {schedules && schedules.length > 0 && schedules.map((item, index) => (
               <View
                 key={index}
