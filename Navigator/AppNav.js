@@ -4,6 +4,7 @@ import { StyleSheet, LogBox } from "react-native";
 import Home from "../app/Home";
 import Details from "../app/Details";
 import Report from "../app/Report";
+import ReportHistory from "../app/ReportHistory";
 import ReportDetail from "../app/ReportDetail";
 import ReportAssign from "../app/ReportAssign";
 import Priority from "../app/Priority";
@@ -34,7 +35,8 @@ const HomeStack = createStackNavigator(
     ScheduleMap,
     OldSchedules,
     Chat,
-    ChatList
+    ChatList,
+    ReportHistory
   },
   {
     headerMode: null,
