@@ -33,53 +33,56 @@ import { colors } from './common/theme'
 export default function HomeCrew(props) {
   const oldSchedules = props.navigation.getParam("oldSchedules");
   const oldReports = props.navigation.getParam("oldReports");
+  const role = props.navigation.getParam("role");
   const [municipalities, setMunicipalities] = useState();
   const [districts, setDistricts] = useState();
   const [crew, setCrew] = useState();
 
   useEffect(() => {
-    console.log("=======old reports ========", oldReports)
-    db.collection("Crews").onSnapshot((querySnapshot) => {
-      const tempCrews = [];
-      querySnapshot.forEach((doc) => {
-        tempCrews.push({ id: doc.id, ...doc.data() });
-      });
-      // console.log(" Current tempCrews: ", tempCrews);
-      const userId = firebase.auth().currentUser.uid
-      let tempCrew = tempCrews.filter(crew =>
-        crew.collector1 == userId
-        || crew.collector2 == userId
-        || crew.driver == userId
-        || crew.backupCollector1 == userId
-        || crew.backupCollector2 == userId
-        || crew.backupDriver == userId
-      )[0]
-
-      db.collection("Users")
-        .onSnapshot((querySnapshot) => {
-          querySnapshot.forEach((uDoc) => {
-            if (uDoc.data().id === tempCrew.driver)
-              tempCrew.driverName = uDoc.data().firstName
-
-            else if (uDoc.data().id === tempCrew.collector1)
-              tempCrew.collector1Name = uDoc.data().firstName
-
-            else if (uDoc.data().id === tempCrew.collector2)
-              tempCrew.collector2Name = uDoc.data().firstName
-
-            else if (uDoc.data().id === tempCrew.backupDriver)
-              tempCrew.backupDriverName = uDoc.data().firstName
-
-            else if (uDoc.data().id === tempCrew.backupCollector1)
-              tempCrew.backupCollector1Name = uDoc.data().firstName
-
-            else if (uDoc.data().id === tempCrew.backupCollector2)
-              tempCrew.backupCollector2Name = uDoc.data().firstName
-          });
-          setCrew(tempCrew);
-          // console.log(" Current crew with names--: ", tempCrew);
+    if (role !== "manager") {
+      console.log("=======old reports ========", oldReports)
+      db.collection("Crews").onSnapshot((querySnapshot) => {
+        const tempCrews = [];
+        querySnapshot.forEach((doc) => {
+          tempCrews.push({ id: doc.id, ...doc.data() });
         });
-    });
+        // console.log(" Current tempCrews: ", tempCrews);
+        const userId = firebase.auth().currentUser.uid
+        let tempCrew = tempCrews.filter(crew =>
+          crew.collector1 == userId
+          || crew.collector2 == userId
+          || crew.driver == userId
+          || crew.backupCollector1 == userId
+          || crew.backupCollector2 == userId
+          || crew.backupDriver == userId
+        )[0]
+
+        db.collection("Users")
+          .onSnapshot((querySnapshot) => {
+            querySnapshot.forEach((uDoc) => {
+              if (uDoc.data().id === tempCrew.driver)
+                tempCrew.driverName = uDoc.data().firstName
+
+              else if (uDoc.data().id === tempCrew.collector1)
+                tempCrew.collector1Name = uDoc.data().firstName
+
+              else if (uDoc.data().id === tempCrew.collector2)
+                tempCrew.collector2Name = uDoc.data().firstName
+
+              else if (uDoc.data().id === tempCrew.backupDriver)
+                tempCrew.backupDriverName = uDoc.data().firstName
+
+              else if (uDoc.data().id === tempCrew.backupCollector1)
+                tempCrew.backupCollector1Name = uDoc.data().firstName
+
+              else if (uDoc.data().id === tempCrew.backupCollector2)
+                tempCrew.backupCollector2Name = uDoc.data().firstName
+            });
+            setCrew(tempCrew);
+            // console.log(" Current crew with names--: ", tempCrew);
+          });
+      });
+    }
 
     db.collection("Municipalities").onSnapshot((querySnapshot) => {
       const tempMunicipalities = [];
@@ -127,10 +130,10 @@ export default function HomeCrew(props) {
           onPress: () => {
             props.navigation.goBack()
           },
-          containerStyle:{ marginLeft: 10,},
+          containerStyle: { marginLeft: 10, },
         }}
         centerComponent={
-          <Text style={{ fontSize: 20, color: colors.WHITE }}>Completed Duties</Text>
+          <Text style={{ fontSize: 20, color: colors.WHITE }}>{role === "manager" ? "Schedule History" : "Completed Dutie"}s</Text>
         }
       // rightComponent={{
       //   icon: screenView ? 'history' :'format-list-bulleted',
@@ -172,106 +175,158 @@ export default function HomeCrew(props) {
               Weekly oldSchedules
             </Text>
           </View> */}
-          <ScrollView>
-          {crew && oldReports && oldReports.length > 0 && oldReports.map((item, index) => (
-              <View
-                key={index}
-                style={{
-                  width: '100%',
-                  backgroundColor: colors.WHITE,
-                  minHeight: 150,
-                  marginTop: 10,
-                  flexDirection: 'row',
-                  borderRadius: 10,
-                  shadowColor: '#000',
-                  shadowOffset: {
-                    width: 0,
-                    height: 1,
-                  },
-                  shadowOpacity: 0.25,
-                  shadowRadius: 1,
-                  elevation: 1,
-                  borderRightColor: colors.RED,
-                  borderRightWidth: 10
-                }}
-                key={item.id}
-              >
+          {role === "manager" ?
+            <ScrollView>
+              {oldSchedules && oldSchedules.length > 0 && oldSchedules.map((item, index) => (
                 <View
+                  key={index}
                   style={{
                     width: '100%',
-                    justifyContent: 'space-evenly',
-                    paddingLeft: 10,
+                    backgroundColor: colors.WHITE,
+                    minHeight: 150,
+                    marginTop: 10,
+                    flexDirection: 'row',
+                    borderRadius: 10,
+                    shadowColor: '#000',
+                    shadowOffset: {
+                      width: 0,
+                      height: 1,
+                    },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 1,
+
+                    elevation: 1,
                   }}
+                  key={item.id}
                 >
-                  <Text
+                  <View
                     style={{
-                      fontWeight: 'bold',
-                      color: colors.black,
-                      fontSize: 16,
+                      width: '100%',
+                      justifyContent: 'space-evenly',
+                      paddingLeft: 10,
                     }}
                   >
-                    {moment(new Date(item.date)).format("LLL")}
-                  </Text>
+                    <Text
+                      style={{
+                        fontWeight: 'bold',
+                        color: colors.black,
+                        fontSize: 16,
+                      }}
+                    >
+                      {moment(item.dateTime).format("LLL")}
+                    </Text>
 
-                  <Text style={{ color: colors.DARKERGRAY }}>
-                    {getDistrict(item.location.districtId)}
-                  </Text>
-                  <Text style={{ color: colors.DARKERGRAY }}>Driver: {`(${item.driver})`} {item.driver === "main" ? crew.driverName : crew.backupDriverName}</Text>
-                  <Text style={{ color: colors.DARKERGRAY }}>Collector 1: {`(${item.collector1})`} {item.collector1 === "main" ? crew.collector1Name : crew.backupCollector1Name}</Text>
-                  <Text style={{ color: colors.DARKERGRAY }}>Collector 2: {`(${item.collector2})`} {item.collector2 === "main" ? crew.collector2Name : crew.backupCollector2Name}</Text>
+                    <Text style={{ color: colors.DARKERGRAY }}>
+                      {getDistrict(item.districtId)}
+                    </Text>
+                    <Text style={{ color: colors.DARKERGRAY }}>Crew No.: {item.crewNo}</Text>
+                    <Text style={{ color: colors.DARKERGRAY }}>Driver: {item.driver}</Text>
+                    <Text style={{ color: colors.DARKERGRAY }}>Collector 1: {item.collector1}</Text>
+                    <Text style={{ color: colors.DARKERGRAY }}>Collector 2: {item.collector2}</Text>
+                  </View>
                 </View>
-              </View>
-            ))}
-            {crew && oldSchedules && oldSchedules.length > 0 && oldSchedules.map((item, index) => (
-              <View
-                key={index}
-                style={{
-                  width: '100%',
-                  backgroundColor: colors.WHITE,
-                  minHeight: 150,
-                  marginTop: 10,
-                  flexDirection: 'row',
-                  borderRadius: 10,
-                  shadowColor: '#000',
-                  shadowOffset: {
-                    width: 0,
-                    height: 1,
-                  },
-                  shadowOpacity: 0.25,
-                  shadowRadius: 1,
-
-                  elevation: 1,
-                }}
-                key={item.id}
-              >
+              ))}
+            </ScrollView>
+            : <ScrollView>
+              {crew && oldReports && oldReports.length > 0 && oldReports.map((item, index) => (
                 <View
+                  key={index}
                   style={{
                     width: '100%',
-                    justifyContent: 'space-evenly',
-                    paddingLeft: 10,
+                    backgroundColor: colors.WHITE,
+                    minHeight: 150,
+                    marginTop: 10,
+                    flexDirection: 'row',
+                    borderRadius: 10,
+                    shadowColor: '#000',
+                    shadowOffset: {
+                      width: 0,
+                      height: 1,
+                    },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 1,
+                    elevation: 1,
+                    borderRightColor: colors.RED,
+                    borderRightWidth: 10
                   }}
+                  key={item.id}
                 >
-                  <Text
+                  <View
                     style={{
-                      fontWeight: 'bold',
-                      color: colors.black,
-                      fontSize: 16,
+                      width: '100%',
+                      justifyContent: 'space-evenly',
+                      paddingLeft: 10,
                     }}
                   >
-                    {moment(item.dateTime.toDate()).format("LLL")}
-                  </Text>
+                    <Text
+                      style={{
+                        fontWeight: 'bold',
+                        color: colors.black,
+                        fontSize: 16,
+                      }}
+                    >
+                      {moment(new Date(item.date)).format("LLL")}
+                    </Text>
 
-                  <Text style={{ color: colors.DARKERGRAY }}>
-                    {getDistrict(item.districtId)}
-                  </Text>
-                  <Text style={{ color: colors.DARKERGRAY }}>Driver: {`(${item.driver})`} {item.driver === "main" ? crew.driverName : crew.backupDriverName}</Text>
-                  <Text style={{ color: colors.DARKERGRAY }}>Collector 1: {`(${item.collector1})`} {item.collector1 === "main" ? crew.collector1Name : crew.backupCollector1Name}</Text>
-                  <Text style={{ color: colors.DARKERGRAY }}>Collector 2: {`(${item.collector2})`} {item.collector2 === "main" ? crew.collector2Name : crew.backupCollector2Name}</Text>
+                    <Text style={{ color: colors.DARKERGRAY }}>
+                      {getDistrict(item.location.districtId)}
+                    </Text>
+                    <Text style={{ color: colors.DARKERGRAY }}>Driver: {`(${item.driver})`} {item.driver === "main" ? crew.driverName : crew.backupDriverName}</Text>
+                    <Text style={{ color: colors.DARKERGRAY }}>Collector 1: {`(${item.collector1})`} {item.collector1 === "main" ? crew.collector1Name : crew.backupCollector1Name}</Text>
+                    <Text style={{ color: colors.DARKERGRAY }}>Collector 2: {`(${item.collector2})`} {item.collector2 === "main" ? crew.collector2Name : crew.backupCollector2Name}</Text>
+                  </View>
                 </View>
-              </View>
-            ))}
-            <View style={{ height: 50 }}></View>
-          </ScrollView>
+              ))}
+              {crew && oldSchedules && oldSchedules.length > 0 && oldSchedules.map((item, index) => (
+                <View
+                  key={index}
+                  style={{
+                    width: '100%',
+                    backgroundColor: colors.WHITE,
+                    minHeight: 150,
+                    marginTop: 10,
+                    flexDirection: 'row',
+                    borderRadius: 10,
+                    shadowColor: '#000',
+                    shadowOffset: {
+                      width: 0,
+                      height: 1,
+                    },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 1,
+
+                    elevation: 1,
+                  }}
+                  key={item.id}
+                >
+                  <View
+                    style={{
+                      width: '100%',
+                      justifyContent: 'space-evenly',
+                      paddingLeft: 10,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontWeight: 'bold',
+                        color: colors.black,
+                        fontSize: 16,
+                      }}
+                    >
+                      {moment(item.dateTime.toDate()).format("LLL")}
+                    </Text>
+
+                    <Text style={{ color: colors.DARKERGRAY }}>
+                      {getDistrict(item.districtId)}
+                    </Text>
+                    <Text style={{ color: colors.DARKERGRAY }}>Driver: {`(${item.driver})`} {item.driver === "main" ? crew.driverName : crew.backupDriverName}</Text>
+                    <Text style={{ color: colors.DARKERGRAY }}>Collector 1: {`(${item.collector1})`} {item.collector1 === "main" ? crew.collector1Name : crew.backupCollector1Name}</Text>
+                    <Text style={{ color: colors.DARKERGRAY }}>Collector 2: {`(${item.collector2})`} {item.collector2 === "main" ? crew.collector2Name : crew.backupCollector2Name}</Text>
+                  </View>
+                </View>
+              ))}
+              <View style={{ height: 50 }}></View>
+            </ScrollView>}
         </View>
       </View>
       <View
