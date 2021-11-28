@@ -35,12 +35,12 @@ export default function ReportDetail(props) {
   const role = props.navigation.getParam("role", "some default value");
   
   useEffect(()=>{
-    console.log("kkk", item.id)
+    console.log("report id", item.id)
   },[])
 
   const ignore = async() =>{
     console.log("here in ignore")
-    db.collection("Reports").doc(item.id).update({status: "Declined"})
+    db.collection("Reports").doc(item.id).update({status: "Closed"})
     props.navigation.goBack()
   }
 

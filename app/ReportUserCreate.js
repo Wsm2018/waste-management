@@ -56,9 +56,7 @@ export default function ReportUserCreate(props) {
     getbins()
   }, []);
 
-  useEffect(() => {
-    console.log("selected biiiiiiiiiiiiiinnnnnnnn", selectedBin)
-  }, [selectedBin])
+  
 
   const handleLocation = async () => {
 
@@ -222,16 +220,32 @@ export default function ReportUserCreate(props) {
               //image= {selectedMarker}
               pinColor={item == selectedBin ? '#4682B4' : "red"}
             >
-              
-                  <Callout
+              {
+                      selectedBin == item ?
+<Callout
+                    //tooltip
+                    onPress={() => setSelectedBin(null)}
+                    style={{ width: 70, height: 50 }}
+                  //onPress={() =>setSelectedBin(item)}rr
+
+                  >
+                    <Text>Unselect</Text>
+                    
+                  </Callout>
+                      :
+<Callout
                     //tooltip
                     onPress={() => setSelectedBin(item)}
                     style={{ width: 70, height: 50 }}
                   //onPress={() =>setSelectedBin(item)}rr
 
                   >
-                    <Text>Click To Select Bin</Text>
+                    <Text>Select</Text>
+                    
                   </Callout>
+
+                    }
+                  
                
 
             </Marker>

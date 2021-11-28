@@ -38,7 +38,7 @@ export default function ReportHistory(props) {
 
   useEffect(()=>{
     //getUser()
-    db.collection("Reports").where("status", "==", "Pending").onSnapshot(querySnapshot => {
+    db.collection("Reports").where("status", "!=", "Pending").onSnapshot(querySnapshot => {
       let r = [];
       querySnapshot.forEach(doc => {
           r.push({ id: doc.id, ...doc.data() });
