@@ -105,7 +105,7 @@ export default function HomeCrew(props) {
             const today = new Date();
             setReports([...tempReports.filter(report => new Date(report.date) > today && new Date(report.date).getDate() !== today.getDate())])
             setOldReports([...tempReports.filter(report => new Date(report.date) < today && new Date(report.date).getDate() !== today.getDate())])
-            setTodayReports([...tempReports.filter(report => new Date(report.date).getDate() === today.getDate()+1)])
+            setTodayReports([...tempReports.filter(report => new Date(report.date).getDate() === today.getDate())])
             console.log("=========today reports====", [...tempReports.filter(report => new Date(report.date).getDate() === today.getDate())])
           });
         });
