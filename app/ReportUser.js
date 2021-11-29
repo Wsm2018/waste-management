@@ -163,6 +163,7 @@ export default function ReportUser(props) {
                 {/* <Text style={{ color:colors.DARKGRAY}}>{item.location}</Text> */}
                 <Text style={{ color:colors.DARKGRAY}}>{item.date.split("GMT")[0]}</Text>
                 <Text style={{ color:colors.DARKGRAY}}>{item.status}</Text>
+                <Text style={{ color:colors.BLACK}}>{item.description}</Text>
               </View>
               </TouchableOpacity>
               {/* <View style={{ width: '25%' }}>

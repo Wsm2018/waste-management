@@ -230,7 +230,7 @@ export default function ScheduleMap(props) {
                   size={22}
                 />
               </TouchableOpacity>
-              <Callout
+              {/* <Callout
                 tooltip
                 // onPress={() => changeBin(item, index)}
                 // style={{}}
@@ -258,7 +258,7 @@ export default function ScheduleMap(props) {
                     <Text style={{ color: colors.WHITE }}>Assign</Text>
                   </TouchableOpacity>
                 </View>
-              </Callout>
+              </Callout> */}
             </Marker>
           ))}
         {bins.length > 0 && <MapView.Polyline

@@ -29,6 +29,7 @@ import { LinearGradient } from 'expo-linear-gradient'
 import MapView , {Marker} from "react-native-maps";
 import { colors } from './common/theme'
 import db from "../db";
+import { customMapStyle } from "./common/mapStyle";
 
 export default function ReportDetail(props) {
   const item = props.navigation.getParam("item", "some default value");
@@ -124,12 +125,33 @@ export default function ReportDetail(props) {
                   latitudeDelta: 0.08,
                   longitudeDelta: 0.08,
                 }}
-                style={{ flex: 0.5 }}>
-                <Marker coordinate={{
-                  latitude: item.location.location.latitude,
-                  longitude: item.location.location.longitude,
-                }}>
-                </Marker>
+                customMapStyle={customMapStyle}
+                style={{ flex: 1 }}>
+                  <Marker coordinate={{
+                    latitude: item.location.location.latitude,
+                    longitude: item.location.location.longitude,
+                  }}>
+                    <TouchableOpacity
+                      style={{
+                        backgroundColor: colors.RED,
+                        aspectRatio: 1/1,
+                        borderRadius: 100,
+                        // borderTopRightRadius:100,
+                        // borderTopLeftRadius:100,
+                        // borderBottomRightRadius:1000,
+                        // borderBottomLeftRadius:1000,
+                        padding: 7,
+                      }}
+                    >
+                      {/* {console.log("item ", item)} */}
+                      <Icon
+                        name="trashcan"
+                        type="octicon"
+                        color={colors.WHITE}
+                        size={22}
+                      />
+                    </TouchableOpacity>
+                  </Marker>
                 </MapView>
                 :
                 null

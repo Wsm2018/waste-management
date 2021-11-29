@@ -133,7 +133,7 @@ export default function HomeCrew(props) {
           containerStyle: { marginLeft: 10, },
         }}
         centerComponent={
-          <Text style={{ fontSize: 20, color: colors.WHITE }}>{role === "manager" ? "Schedule History" : "Completed Dutie"}s</Text>
+          <Text style={{ fontSize: 20, color: colors.WHITE }}>{role === "manager" ? "Schedule History" : "Completed Duties"}</Text>
         }
       // rightComponent={{
       //   icon: screenView ? 'history' :'format-list-bulleted',

@@ -10,7 +10,9 @@ import {
   KeyboardAvoidingView,
   Platform,
   Keyboard,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
+  Image,
+  Dimensions
 } from 'react-native'
 
 import { Input, Icon } from 'react-native-elements'
@@ -25,7 +27,7 @@ import {
 } from 'react-native-responsive-dimensions'
 import { LinearGradient } from 'expo-linear-gradient'
 import db from "../db";
-
+var { height, width } = Dimensions.get('window');
 import { colors } from '../app/common/theme'
 
 export default function Login({ navigation }) {
@@ -238,6 +240,20 @@ export default function Login({ navigation }) {
               </Text>
             </TouchableOpacity>
           </View>
+        </View>
+        <View style={{flex:0.5, alignItems:"center", justifyContent:"center"}}>
+          {/* <Text>Hello</Text> */}
+          <Image
+                style={{
+                // aspectRatio:1/1,
+                height:height/4,
+                // width:400,
+                // alignSelf:"center"
+                // flex:1,
+                resizeMode:"contain",
+                }}
+                source={require('../assets/truck.png')}
+            /> 
         </View>
         {screenView === 'login' ? (
           <View

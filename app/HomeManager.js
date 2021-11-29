@@ -159,7 +159,8 @@ export default function HomeManager(props) {
       >
         {bins &&
           bins.map((item, index) => (
-            <Marker
+            index < 50 &&
+            (<Marker
               key={index}
               coordinate={{
                 latitude: item.location.U,
@@ -223,7 +224,7 @@ export default function HomeManager(props) {
                   </TouchableOpacity>
                 </View>
               </Callout>
-            </Marker>
+            </Marker>)
           ))}
 
         {/* {report &&
@@ -328,7 +329,7 @@ export default function HomeManager(props) {
           bottom: "4%",
         }}
       >
-        <View style={{ marginBottom: 15 }}>
+        {/* <View style={{ marginBottom: 15 }}>
           <TouchableOpacity
             onPress={() => props.navigation.navigate("Report")}
             // onPress={() => props.navigation.navigate('Priority')}
@@ -359,7 +360,7 @@ export default function HomeManager(props) {
               size={33}
             />
           </TouchableOpacity>
-        </View>
+        </View> */}
         <View
           style={{
             flexDirection: "row",
@@ -368,7 +369,37 @@ export default function HomeManager(props) {
           }}
         >
           <View>
-            <TouchableOpacity
+          <TouchableOpacity
+            onPress={() => props.navigation.navigate("Report")}
+            // onPress={() => props.navigation.navigate('Priority')}
+            style={{
+              height: 55,
+              backgroundColor: colors.ORANGE,
+              aspectRatio: 1 / 1,
+              borderRadius: 100,
+              justifyContent: "center",
+              alignItems: "center",
+              shadowColor: "#000",
+              shadowOffset: {
+                width: 0,
+                height: 2,
+              },
+              shadowOpacity: 0.25,
+              shadowRadius: 3.84,
+
+              elevation: 5,
+            }}
+          >
+            <Icon
+              // name="report"
+              // type="material"
+              name="delete-alert-outline"
+              type="material-community"              
+              color={colors.WHITE}
+              size={33}
+            />
+          </TouchableOpacity>
+            {/* <TouchableOpacity
               // onPress={() => props.navigation.navigate('Report')}
               onPress={() => props.navigation.navigate("Priority")}
               style={{
@@ -397,7 +428,7 @@ export default function HomeManager(props) {
                 color={colors.WHITE}
                 size={30}
               />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
           <View>
             <TouchableOpacity

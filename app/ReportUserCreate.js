@@ -33,6 +33,7 @@ import { colors } from './common/theme'
 import * as Location from "expo-location";
 import { getDistance, getPreciseDistance } from 'geolib';
 import selectedMarker from '../assets/greenMarker.png'
+import { color } from 'react-native-reanimated';
 //import * as ImagePicker from "expo-image-picker";
 
 // user location done
@@ -53,8 +54,15 @@ export default function ReportUserCreate(props) {
 
   useEffect(() => {
     handleLocation()
-    getbins()
+   
   }, []);
+
+  useEffect(()=>{
+    if(userLocation){
+      getbins()
+    }
+
+  },[userLocation])
 
   
 
@@ -82,31 +90,20 @@ export default function ReportUserCreate(props) {
     db.collection("Bins").onSnapshot(querySnapshot => {
       let b = [];
       querySnapshot.forEach(doc => {
-        b.push({ id: doc.id, ...doc.data() });
+        if(getDistance(
+          { latitude: doc.data().location.latitude, longitude: doc.data().location.longitude },
+          { latitude: userLocation.latitude, longitude: userLocation.longitude })
+        <= 2000){
+//should be 500 btw
+            b.push({ id: doc.id, ...doc.data() });
+        }
+       
       });
-      setBins([...b]);
+      setCloseBins([...b]);
     })
 
   }
 
-  useEffect(() => {
-
-    if (bins && userLocation) {
-      console.log("filtering bins")
-      //db.collection("Reports").add({ user: firebase.auth().currentUser.uid, description: "blaaa blaa blaaa" , date : Date(), title, status:"Pending" , location: bins[0] , closingDateTime: null , handeldBy: null , collector1:null, collector2:null, driver: null})
-      let cb = bins.filter(b =>
-        getDistance(
-          { latitude: b.location.latitude, longitude: b.location.longitude },
-          { latitude: userLocation.latitude, longitude: userLocation.longitude })
-        <= 2000
-      )
-
-      // console.log("remaining bins", cb)
-      setCloseBins(cb)
-
-    }
-
-  }, [bins, userLocation])
 
 
   const submit = async () => {
@@ -218,11 +215,39 @@ export default function ReportUserCreate(props) {
                 longitude: item.location.longitude,
               }}
               //image= {selectedMarker}
-              pinColor={item == selectedBin ? '#4682B4' : "red"}
+              // pinColor={item == selectedBin ? '#4682B4' : "red"}
+              onPress={()=>{
+                if(selectedBin === item) {
+                  setSelectedBin(null)
+
+                } else {
+                  setSelectedBin(item)
+                }
+              }}
             >
-              {
-                      selectedBin == item ?
-<Callout
+              <TouchableOpacity
+                style={{
+                  backgroundColor:selectedBin === item ? colors.GREEN:colors.DARKGRAY,
+                  aspectRatio: 1/1,
+                  borderRadius: 100,
+                  // borderTopRightRadius:100,
+                  // borderTopLeftRadius:100,
+                  // borderBottomRightRadius:1000,
+                  // borderBottomLeftRadius:1000,
+                  padding: 7,
+                }}
+              >
+                {/* {console.log("item ", item)} */}
+                <Icon
+                  name="trashcan"
+                  type="octicon"
+                  color={colors.WHITE}
+                  size={22}
+                />
+              </TouchableOpacity>
+              {/* {
+                  selectedBin == item ?
+                  <Callout
                     //tooltip
                     onPress={() => setSelectedBin(null)}
                     style={{ width: 70, height: 50 }}
@@ -233,21 +258,39 @@ export default function ReportUserCreate(props) {
                     
                   </Callout>
                       :
-<Callout
-                    //tooltip
-                    onPress={() => setSelectedBin(item)}
+                  <Callout
+                    tooltip
+                    onPress={(x) => {
+                      setSelectedBin(item)
+                      // x.currentTarget.
+                    }}
                     style={{ width: 70, height: 50 }}
                   //onPress={() =>setSelectedBin(item)}rr
 
                   >
-                    <Text>Select</Text>
-                    
+                    <Text> {selectedBin == item ?"Unselect" : "Select"}</Text>
+                    <View
+                      style={{
+                        padding: 3,
+                      }}
+                    >
+                      <TouchableOpacity
+                        // onPress={() => props.navigation.navigate("ReportAssign")}
+                        // onPress={() => calloutPress()}
+                        style={{
+                          backgroundColor: colors.GREEN,
+                          justifyContent: "center",
+                          alignItems: "center",
+                          width: 80,
+                          height: 40,
+                          borderRadius: 10,
+                        }}
+                      >
+                        <Text style={{ color: colors.WHITE }}>Assign</Text>
+                      </TouchableOpacity>
+                    </View>
                   </Callout>
-
-                    }
-                  
-               
-
+                } */}
             </Marker>
 
 
@@ -258,7 +301,7 @@ export default function ReportUserCreate(props) {
           }
 
         </MapView>
-
+        <Text style={{textAlign:"center", paddingTop:"1%", color:colors.RED}}>{closeBins && closeBins.length === 0 && "There are no bins close to your location"}</Text>
       </View>
       <View style={{
         flex: 1,
@@ -276,9 +319,9 @@ export default function ReportUserCreate(props) {
           <TouchableOpacity
             // onPress={() => props.navigation.navigate('ReportAssign')}
             onPress={() => submit()}
-            disabled={!description}
+            disabled={(!description || description === "" || description.length === 0 )&& !selectedBin}
             style={{
-              backgroundColor: colors.GREEN,
+              backgroundColor: (!description || description === "" || description.length === 0)&& !selectedBin ?colors.GRAY :colors.GREEN,
               width: '100%',
               height: '100%',
               justifyContent: 'center',
@@ -286,7 +329,7 @@ export default function ReportUserCreate(props) {
               borderRadius: 10,
             }}
           >
-            <Text style={{ color: colors.WHITE }}>{!process ? "Submit" : "Processing Please Wait"}</Text>
+            <Text style={{ color: colors.WHITE }}>Submit</Text>
           </TouchableOpacity>
         </View>
       </View>

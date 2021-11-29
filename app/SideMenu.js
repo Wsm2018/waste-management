@@ -51,13 +51,22 @@ export default function SideMenu(props) {
         fetchUser()
     }, []);
 
-    const sideMenuList = [
+    const sideMenuListManager = [
         { name: 'Home', navigationName: 'Home', icon: 'home', type: 'ant-design' },
-        { name: 'Details', navigationName: 'Details', icon: 'home', type: 'font-awesome' },
+        // { name: 'Details', navigationName: 'Details', icon: 'home', type: 'font-awesome' },
         { name: 'Schedule', navigationName: 'ScheduleManagement', icon: 'car-sports', type: 'material-community' },
         { name: 'Report', navigationName: 'ReportUser', icon: 'report', type: 'material' },
         { name: 'Logout', icon: 'logout', type: 'material' },
     ];
+
+    const sideMenuList = [
+        // { name: 'Home', navigationName: 'Home', icon: 'home', type: 'ant-design' },
+        // { name: 'Details', navigationName: 'Details', icon: 'home', type: 'font-awesome' },
+        // { name: 'Schedule', navigationName: 'ScheduleManagement', icon: 'car-sports', type: 'material-community' },
+        // { name: 'Report', navigationName: 'ReportUser', icon: 'report', type: 'material' },
+        { name: 'Logout', icon: 'logout', type: 'material' },
+    ];
+
 
     //navigation to screens from side menu
     navigateToScreen = (route) => () => {
@@ -75,7 +84,7 @@ export default function SideMenu(props) {
                 {/* <View style={[styles.vertialLine, { height: (width <= 320) ? width / 1.53 : width / 1.68 }]}></View> */}
                 
                     <FlatList
-                        data={sideMenuList}
+                        data={user && user.role === "Manager"? sideMenuListManager : sideMenuList}
                         keyExtractor={(item, index) => index.toString()}
                         
                         bounces={false}
