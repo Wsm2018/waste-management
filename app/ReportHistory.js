@@ -30,25 +30,82 @@ import db from '../db'
 
 import { colors } from './common/theme'
 import { getRoughCompassDirection } from 'geolib'
+import { createSwitchNavigator } from 'react-navigation'
 
 export default function ReportHistory(props) {
   const [screenView, setScreenView] = useState(true)
+  const [assignedReports, setAssignedReports] = useState([])
+  const [declinedReports, setDeclinedReports] = useState([])
   const [reports, setReports] = useState([])
-  const [role , setRole] = useState(null)
+  const [viewAssignedReports, setViewAssignedReports] = useState(true)
+  const [role, setRole] = useState(null)
+  const [municipalities, setMunicipalities] = useState();
+  const [districts, setDistricts] = useState();
+  const [crews, setCrews] = useState([]);
 
-  useEffect(()=>{
-    //getUser()
-    db.collection("Reports").where("status", "==", "Pending").onSnapshot(querySnapshot => {
+  useEffect(() => {
+    db.collection("Reports").where("status", "==", "Assigned").onSnapshot(querySnapshot => {
       let r = [];
       querySnapshot.forEach(doc => {
-          r.push({ id: doc.id, ...doc.data() });
+        r.push({ id: doc.id, ...doc.data() });
       });
+      setAssignedReports([...r]);
       setReports([...r]);
-  });
+      console.log("reports======", r)
+    });
+    db.collection("Reports").where("status", "==", "Declined").onSnapshot(querySnapshot => {
+      let r = [];
+      querySnapshot.forEach(doc => {
+        r.push({ id: doc.id, ...doc.data() });
+      });
+      setDeclinedReports([...r]);
+      console.log("reports======", r)
+    });
 
-  })
+    db.collection("Crews").onSnapshot(querySnapshot => {
+      let r = [];
+      querySnapshot.forEach(doc => {
+        r.push({ id: doc.id, ...doc.data() });
+      });
+      setCrews([...r]);
+      // console.log("crews======", r)
+    });
+  }, []);
 
- 
+  useEffect(() => {
+    db.collection("Municipalities").onSnapshot((querySnapshot) => {
+      const tempMunicipalities = [];
+      querySnapshot.forEach((doc) => {
+        tempMunicipalities.push({ id: doc.id, ...doc.data() });
+      });
+      // console.log(" Current tempMunicipalities: ", tempMunicipalities);
+      setMunicipalities([...tempMunicipalities]);
+    });
+
+    db.collection("Districts").onSnapshot((querySnapshot) => {
+      const tempDistricts = [];
+      querySnapshot.forEach((doc) => {
+        tempDistricts.push({ id: doc.id, ...doc.data() });
+      });
+      // console.log(" Current promotion: ", tempDistricts);
+      setDistricts([...tempDistricts]);
+    });
+  }, []);
+
+  const getDistrict = (itemDId) => {
+    const dis = districts && districts.length > 0 && districts.filter(d => d.id === itemDId)[0]
+    const theName = dis ? dis.name + ", " + getMunicipality(dis.municipalityId) : ""
+    return theName
+  }
+  const getMunicipality = (itemMId) => {
+    const mun = municipalities && municipalities.length > 0 && municipalities.filter(m => m.id === itemMId)[0]
+    const theName = mun ? mun.name : ""
+    return theName
+  }
+  const getCrewNo = (id) => {
+    return crews && crews.length > 0 && crews.filter(crew => crew.id === id)[0] ?
+      crews.filter(crew => crew.id === id)[0].crewNo : ""
+  }
 
 
   return (
@@ -73,13 +130,13 @@ export default function ReportHistory(props) {
           <Text style={{ fontSize: 20, color: colors.WHITE }}>Reports History</Text>
         }
         rightComponent={{
-          icon: screenView ? 'history' :'format-list-bulleted',
+          icon: screenView ? 'history' : 'format-list-bulleted',
           type: 'material',
           color: colors.WHITE,
           size: 30,
           component: TouchableWithoutFeedback,
           onPress: () => {
-            console.log( "histooory")
+            console.log("histooory")
           },
         }}
         // containerStyle={styles.headerStyle}
@@ -106,58 +163,115 @@ export default function ReportHistory(props) {
           <Text style={{ fontSize: 25, color: colors.BLACK }}>
             {/* {screenView ? "Pending Reports" : "Reports History"} */}
           </Text>
+          <TouchableOpacity
+            onPress={() => {
+              viewAssignedReports ? setReports(declinedReports) : setReports(assignedReports)
+              setViewAssignedReports(!viewAssignedReports)
+            }}
+            style={{
+              flex: 2,
+              minHeight: 30,
+              borderRadius: 10,
+              backgroundColor: colors.GREEN,
+              shadowColor: '#000',
+              shadowOffset: {
+                width: 0,
+                height: 1,
+              },
+              shadowOpacity: 0.25,
+              shadowRadius: 1,
+              elevation: 1,
+              width: "60%",
+              justifyContent: "center",
+              alignItems: "center",
+              margin: 5
+            }}
+          >
+            <Text
+              style={{ fontSize: 18, color: colors.BLACK }}
+            >
+              {
+                viewAssignedReports ? "View Declined Reports" : "View Assigned Reports"
+              }
+            </Text>
+          </TouchableOpacity>
         </View>
         <View style={{ flex: 10 }}>
-        <ScrollView>
-          {reports ? reports.map((item, index) => (
-            <View
-              style={{
-                width: '100%',
-                backgroundColor: colors.WHITE,
-                minHeight: 100,
-                marginTop: 10,
-                flexDirection: 'row',
-                borderRadius: 10,
-                shadowColor: '#000',
-                shadowOffset: {
-                  width: 0,
-                  height: 1,
-                },
-                shadowOpacity: 0.25,
-                shadowRadius: 1,
+          <ScrollView>
+            {crews && reports ? reports.map((item, index) => (
+              <View
+                key={index}
+                style={{
+                  width: '100%',
+                  backgroundColor: colors.WHITE,
+                  minHeight: 100,
+                  marginTop: 10,
+                  flexDirection: 'row',
+                  borderRadius: 10,
+                  shadowColor: '#000',
+                  shadowOffset: {
+                    width: 0,
+                    height: 1,
+                  },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 1,
 
-                elevation: 1,
-              }}
-            >
-              <TouchableOpacity
-                onPress={()=>props.navigation.navigate('ReportDetail',{item,role})}
-                  // style={{
-                  //   width: '100%',
-                  //   backgroundColor: colors.GREEN,
-                  //   minHeight: 100,
-                  //   justifyContent: 'center',
-                  //   alignItems: 'center',
-                  //   borderTopRightRadius:10,
-                  //   borderBottomRightRadius:10
-                  // }}
+                  elevation: 1,
+                }}
+              >
+                <TouchableOpacity
+                  onPress={() => props.navigation.navigate('ReportDetail', { item, role })}
+                  style={{
+                    flex: 1,
+                    minHeight: 100,
+                    borderRadius: 10,
+                    backgroundColor: colors.WHITE,
+                    shadowColor: '#000',
+                    shadowOffset: {
+                      width: 0,
+                      height: 1,
+                    },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 1,
+
+                    elevation: 1,
+                    flexDirection: 'row',
+                  }}
                 >
-              <View style={{ width: '100%', justifyContent:"space-evenly", paddingLeft:10}}>
-                <Text style={{fontWeight:"bold", color:colors.black, fontSize:16}}>{index + 1}. {item.title} </Text>
-                {/* <Text style={{ color:colors.DARKGRAY}}>{item.location}</Text> */}
-                <Text style={{ color:colors.DARKGRAY}}>{item.date.split("GMT")[0]}</Text>
-                <Text style={{ color:colors.DARKGRAY}}>{item.status}</Text>
-              </View>
-              </TouchableOpacity>
-              {/* <View style={{ width: '25%' }}>
+                  <TouchableOpacity
+                    onPress={() => props.navigation.navigate('ReportDetail', { item, role })}
+                    style={{
+                      width: '7%',
+                      backgroundColor: colors.GREEN,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      borderTopLeftRadius: 10,
+                      borderBottomLeftRadius: 10,
+                      alignContent: "center"
+                    }}
+                  >
+                    <Text style={{ fontWeight: "bold", color: colors.black, fontSize: 16, textAlign: "center" }}>{index + 1}. {item.title} </Text>
+
+                  </TouchableOpacity>
+                  <View style={{ width: '100%', justifyContent: "space-evenly", paddingLeft: 10 }}>
+
+                    {/* <Text style={{ color:colors.DARKGRAY}}>{item.location}</Text> */}
+                    <Text style={{ color: colors.DARKGRAY }}>{item.date.split("GMT")[0]}</Text>
+                    <Text style={{ color: colors.DARKGRAY }}>{getDistrict(item.location.districtId)}</Text>
+                    <Text style={{ color: colors.DARKGRAY }}>{item.status}</Text>
+                    {viewAssignedReports && <Text style={{ color: colors.DARKGRAY }}>Crew No. {getCrewNo(item.assignedTo)}</Text>}
+                  </View>
+                </TouchableOpacity>
+                {/* <View style={{ width: '25%' }}>
                 
                   <Text style={{color:colors.WHITE,}}>Details</Text>
                 
               </View> */}
-            </View>
-          )) : null}
-          <View style={{ height: 50 }}></View>
-        </ScrollView>
-          
+              </View>
+            )) : null}
+            <View style={{ height: 50 }}></View>
+          </ScrollView>
+
         </View>
       </View>
       {/* </TouchableWithoutFeedback> */}

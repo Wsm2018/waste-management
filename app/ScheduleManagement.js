@@ -41,6 +41,10 @@ export default function ScheduleManagement(props) {
               tempCrewSchedules.push({ id: docP.id, ...docP.data(), dateTime: docP.data().dateTime.toDate(), crewNo: doc.data().crewNo });
             });
             tempSchedules = tempSchedules.concat(tempCrewSchedules)
+            tempSchedules = tempSchedules.filter((item, index) => {
+              return (tempSchedules.map((e)=> { return e.id; }).indexOf(item.id) === index)
+            })
+            tempSchedules = tempSchedules.sort((a,b)=>{ return a.dateTime - b.dateTime });
             tempCrews.push({ id: doc.id, ...doc.data() });
             //console.log(" Current tempCrews: ", tempCrews)
             setCrews([...tempCrews]);
@@ -48,7 +52,7 @@ export default function ScheduleManagement(props) {
             setSchedules([...tempSchedules.filter(schedule => schedule.dateTime > today && schedule.dateTime.getDate() !== today.getDate())])
             setOldSchedules([...tempSchedules.filter(schedule => schedule.dateTime < today && schedule.dateTime.getDate() !== today.getDate())])
             setTodaySchedules([...tempSchedules.filter(schedule => schedule.dateTime.getDate() === today.getDate())])
-            console.log(" Current tempSchedules: ", tempSchedules)
+            //console.log(" Current tempSchedules: ", tempSchedules)
           });
       });
     })
@@ -108,7 +112,7 @@ export default function ScheduleManagement(props) {
           color: colors.WHITE,
           size: 30,
           component: TouchableWithoutFeedback,
-          onPress: () => { navigation.navigate("ScheduleEdit") },
+          onPress: () => { props.navigation.navigate("ScheduleEdit") },
         }}
         // containerStyle={styles.headerStyle}
         // innerContainerStyles={styles.inrContStyle}

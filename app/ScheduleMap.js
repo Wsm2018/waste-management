@@ -64,7 +64,6 @@ export default function ScheduleMap(props) {
     return (
       <Modal
         animationType="fade"
-        transparent={true}
         visible={openModal}
       >
         <View style={styles.detailsModalContainer}>
@@ -374,7 +373,7 @@ export default function ScheduleMap(props) {
         </View>
         <View>
           <TouchableOpacity
-            onPress={() => navigation.navigate('Chat')}
+            onPress={() => props.navigation.navigate('Chat')}
             style={{
               height: 55,
               backgroundColor: colors.GREEN,

@@ -96,7 +96,7 @@ export default function HomeCrew(props) {
           });
           setCrew(tempCrew);
           // console.log(" Current crew with names--: ", tempCrew);
-          db.collection("Reports").where("handeldBy", "==", `${tempCrew.id}`).onSnapshot((querySnapshot) => {
+          db.collection("Reports").where("assignedTo", "==", `${tempCrew.id}`).onSnapshot((querySnapshot) => {
             const tempReports = [];
             querySnapshot.forEach((doc) => {
               tempReports.push({ id: doc.id, ...doc.data() });
