@@ -10,6 +10,7 @@ import ReportAssign from "../app/ReportAssign";
 import Priority from "../app/Priority";
 import PriorityAssign from "../app/PriorityAssign";
 import ScheduleMap from "../app/ScheduleMap";
+import OldSchedules from "../app/OldSchedules";
 import Chat from "../app/Chat";
 import ChatList from "../app/ChatList";
 import ScheduleManagement from "../app/ScheduleManagement";
@@ -32,6 +33,7 @@ const HomeStack = createStackNavigator(
     Priority,
     PriorityAssign,
     ScheduleMap,
+    OldSchedules,
     Chat,
     ChatList,
     ReportHistory

@@ -51,7 +51,7 @@ export default function ReportAssign(props) {
     db.collection("Reports").doc(details.id).update({
       assignedTo:c ,
       handledBy: firebase.auth().currentUser.uid,
-      status: "Done",
+      status: "Assigned",
       closingDateTime: new Date()+""
       })
     props.navigation.navigate('Home')
@@ -99,7 +99,7 @@ export default function ReportAssign(props) {
       >
         <View style={{ flex: 1, justifyContent: 'flex-end' }}>
           <Text style={{ fontSize: 25, color: colors.BLACK }}>
-            Available Crew
+            Available Crew(s)
           </Text>
         </View>
         <View style={{ flex: 10 }}>
@@ -125,7 +125,7 @@ export default function ReportAssign(props) {
                 }}
               >
                 <View style={{ width: '75%', justifyContent:"space-evenly", paddingLeft:10}}>
-                  <Text style={{fontWeight:"bold", color:colors.black, fontSize:16}}>{item.crewNo}</Text>
+                  <Text style={{fontWeight:"bold", color:colors.black, fontSize:16}}>Crew No. {item.crewNo}</Text>
                   {/* <Text style={{ color:colors.DARKGRAY}}>{item.driver}</Text>
                   <Text style={{ color:colors.DARKGRAY}}>{item.collector1} & {item.collector2}</Text> */}
                 </View>

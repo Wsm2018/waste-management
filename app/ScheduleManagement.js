@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, Button, TouchableOpacity, StyleSheet, TouchableWithoutFeedback,ScrollView } from 'react-native'
+import { View, Text, Button, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, ScrollView } from 'react-native'
 import { Input, Icon, Header } from 'react-native-elements'
 import { Avatar, Card, Title, Paragraph } from 'react-native-paper';
 import firebase from 'firebase'
@@ -16,29 +16,43 @@ import { LinearGradient } from 'expo-linear-gradient'
 import db from "../db";
 import moment from "moment";
 
-export default function ScheduleManagement({ navigation }) {
+export default function ScheduleManagement(props) {
   const [email, setEmail] = useState('')
   const [crews, setCrews] = useState()
   //const [schedules, setSchedules] = useState();
   const [municipalities, setMunicipalities] = useState();
   const [districts, setDistricts] = useState();
+  const [oldSchedules, setOldSchedules] = useState();
+  const [schedules, setSchedules] = useState();
+  const [todaySchedules, setTodaySchedules] = useState();
 
   useEffect(() => {
     db.collection("Crews").onSnapshot((querySnapshot) => {
       const tempCrews = [];
-      
+      let tempSchedules = [];
+
       querySnapshot.forEach((doc) => {
         db.collection("Crews")
           .doc(doc.id)
           .collection("Schedules").orderBy("dateTime")
           .onSnapshot((querySnapshot) => {
-            const tempSchedules = [];
+            const tempCrewSchedules = [];
             querySnapshot.forEach((docP) => {
-              tempSchedules.push({ id: docP.id, ...docP.data() });
+              tempCrewSchedules.push({ id: docP.id, ...docP.data(), dateTime: docP.data().dateTime.toDate(), crewNo: doc.data().crewNo });
             });
-            tempCrews.push({ id: doc.id, schedules: [...tempSchedules], ...doc.data() });
-            console.log(" Current tempCrews: ", tempCrews)
+            tempSchedules = tempSchedules.concat(tempCrewSchedules)
+            tempSchedules = tempSchedules.filter((item, index) => {
+              return (tempSchedules.map((e)=> { return e.id; }).indexOf(item.id) === index)
+            })
+            tempSchedules = tempSchedules.sort((a,b)=>{ return a.dateTime - b.dateTime });
+            tempCrews.push({ id: doc.id, ...doc.data() });
+            //console.log(" Current tempCrews: ", tempCrews)
             setCrews([...tempCrews]);
+            const today = new Date();
+            setSchedules([...tempSchedules.filter(schedule => schedule.dateTime > today && schedule.dateTime.getDate() !== today.getDate())])
+            setOldSchedules([...tempSchedules.filter(schedule => schedule.dateTime < today && schedule.dateTime.getDate() !== today.getDate())])
+            setTodaySchedules([...tempSchedules.filter(schedule => schedule.dateTime.getDate() === today.getDate())])
+            //console.log(" Current tempSchedules: ", tempSchedules)
           });
       });
     })
@@ -75,21 +89,8 @@ export default function ScheduleManagement({ navigation }) {
     return theName
   }
 
-  let Schedules = [
-    {
-      number: 1,
-      zone: 1,
-      crew: 1
-    },
-    {
-      number: 2,
-      zone: 2,
-      crew: 2
-    },
-  ]
-
   return (
-    <View style={{ flex: 1,backgroundColor: colors.LIGHTGRAY }}>
+    <View style={{ flex: 1, backgroundColor: colors.LIGHTGRAY }}>
       <Header
         backgroundColor={colors.GREEN}
         leftComponent={{
@@ -106,12 +107,12 @@ export default function ScheduleManagement({ navigation }) {
           <Text style={{ fontSize: 20, color: colors.WHITE }}>Schedule</Text>
         }
         rightComponent={{
-          icon: 'add' ,
+          icon: 'add',
           type: 'material',
           color: colors.WHITE,
           size: 30,
           component: TouchableWithoutFeedback,
-          onPress: () => {navigation.navigate("ScheduleEdit")},
+          onPress: () => { props.navigation.navigate("ScheduleEdit") },
         }}
         // containerStyle={styles.headerStyle}
         // innerContainerStyles={styles.inrContStyle}
@@ -125,59 +126,172 @@ export default function ScheduleManagement({ navigation }) {
         }
       />
 
-      
+
       <ScrollView>
-      <View
-        style={{
-          flex: 1,
-          // backgroundColor: 'red',
-          width: '90%',
-          alignSelf: 'center',
-        }}
-      >
-        <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-          <Text style={{ fontSize: 25, color: colors.BLACK,marginTop:15 }}>
-            All Schedules
-          </Text>
-        </View>
-        <View style={{ flex: 10 }}>
-          <ScrollView>
-          {crews && crews.length > 0 && crews.map((crew, index) => (
-            crew.schedules.map((item, index) => (
-            <View
-              style={{
-                width: '100%',
-                backgroundColor: colors.WHITE,
-                minHeight: 100,
-                marginTop: 20,
-                padding:5,
-                flexDirection: 'row',
-                borderRadius: 10,
-                shadowColor: '#000',
-                shadowOffset: {
-                  width: 0,
-                  height: 1,
-                },
-                shadowOpacity: 0.25,
-                shadowRadius: 1,
-                elevation: 1,
-              }}
+        <View
+          style={{
+            flex: 1,
+            // backgroundColor: 'red',
+            width: '90%',
+            alignSelf: 'center',
+          }}
+        >
+          <TouchableOpacity
+            onPress={() => props.navigation.navigate('OldSchedules', { oldSchedules, role: "manager" })}
+            style={{
+              flex: 2,
+              minHeight: 30,
+              borderRadius: 10,
+              backgroundColor: colors.GREEN,
+              shadowColor: '#000',
+              shadowOffset: {
+                width: 0,
+                height: 1,
+              },
+              shadowOpacity: 0.25,
+              shadowRadius: 1,
+              elevation: 1,
+              width: "60%",
+              justifyContent: "center",
+              alignItems: "center",
+              margin: 5
+            }}
+          >
+            <Text
+              style={{ fontSize: 18, color: colors.BLACK }}
             >
-              <View style={{ width: '100%', justifyContent:"space-evenly", paddingLeft:10}}>
-                <Text style={{fontWeight:"bold", color:colors.black, fontSize:16}}>CrewNo.{crew.crewNo} - {moment(item.dateTime.toDate()).format("LL")}</Text>
-                <Text style={{ color:colors.DARKGRAY}}>zone  {getDistrict(item.districtId)}</Text>
-                <Text style={{ color:colors.DARKGRAY}}>Driver: {item.driver}, </Text>
-                <Text style={{ color:colors.DARKGRAY}}>Collector 1: {item.collector1},</Text>
-                <Text style={{ color:colors.DARKGRAY}}>Collector 2: {item.collector2}</Text>
+              Schedule History
+            </Text>
+          </TouchableOpacity>
+          <View style={{ flex: 10 }}>
+            <ScrollView>
+              <View style={{ flex: 1.5 }}>
+                <View style={{ justifyContent: 'center' }}>
+                  <Text
+                    style={{ fontSize: 20, color: colors.BLACK, fontWeight: 'bold' }}
+                  >
+                    Today
+                  </Text>
+                </View>
+                <ScrollView>
+                  {todaySchedules && todaySchedules.length > 0 && todaySchedules.map((item, index) => (
+                    <View
+                      key={index}
+                      style={{
+                        width: '100%',
+                        backgroundColor: colors.WHITE,
+                        minHeight: 150,
+                        marginTop: 10,
+                        flexDirection: 'row',
+                        borderRadius: 10,
+                        shadowColor: '#000',
+                        shadowOffset: {
+                          width: 0,
+                          height: 1,
+                        },
+                        shadowOpacity: 0.25,
+                        shadowRadius: 1,
+
+                        elevation: 1,
+                      }}
+                      key={item.id}
+                    >
+                      <View
+                        style={{
+                          width: '100%',
+                          justifyContent: 'space-evenly',
+                          paddingLeft: 10,
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontWeight: 'bold',
+                            color: colors.black,
+                            fontSize: 16,
+                          }}
+                        >
+                          {moment(item.dateTime).format("LLL")}
+                        </Text>
+
+                        <Text style={{ color: colors.DARKERGRAY }}>
+                          {getDistrict(item.districtId)}
+                        </Text>
+                        <Text style={{ color: colors.DARKERGRAY }}>Crew No.: {item.crewNo}</Text>
+                        <Text style={{ color: colors.DARKERGRAY }}>Driver: {item.driver}</Text>
+                        <Text style={{ color: colors.DARKERGRAY }}>Collector 1: {item.collector1}</Text>
+                        <Text style={{ color: colors.DARKERGRAY }}>Collector 2: {item.collector2}</Text>
+                      </View>
+                    </View>
+                  ))}
+                  <View style={{ height: 50 }}></View>
+                </ScrollView>
               </View>
-              
-            </View>
-          ))))}
-          <View style={{ height: 50 }}></View>
-        </ScrollView>
-        
+              <View style={{ flex: 1.5 }}>
+                <View style={{ justifyContent: 'center' }}>
+                  <Text
+                    style={{ fontSize: 20, color: colors.BLACK, fontWeight: 'bold' }}
+                  >
+                    Upcoming Schedule
+                  </Text>
+                </View>
+                <ScrollView>
+                  {schedules && schedules.length > 0 && schedules.map((item, index) => (
+                    <View
+                      key={index}
+                      style={{
+                        width: '100%',
+                        backgroundColor: colors.WHITE,
+                        minHeight: 150,
+                        marginTop: 10,
+                        flexDirection: 'row',
+                        borderRadius: 10,
+                        shadowColor: '#000',
+                        shadowOffset: {
+                          width: 0,
+                          height: 1,
+                        },
+                        shadowOpacity: 0.25,
+                        shadowRadius: 1,
+
+                        elevation: 1,
+                      }}
+                      key={item.id}
+                    >
+                      <View
+                        style={{
+                          width: '100%',
+                          justifyContent: 'space-evenly',
+                          paddingLeft: 10,
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontWeight: 'bold',
+                            color: colors.black,
+                            fontSize: 16,
+                          }}
+                        >
+                          {moment(item.dateTime).format("LLL")}
+                        </Text>
+
+                        <Text style={{ color: colors.DARKERGRAY }}>
+                          {getDistrict(item.districtId)}
+                        </Text>
+                        <Text style={{ color: colors.DARKERGRAY }}>Crew No.: {item.crewNo}</Text>
+                        <Text style={{ color: colors.DARKERGRAY }}>Driver: {item.driver}</Text>
+                        <Text style={{ color: colors.DARKERGRAY }}>Collector 1: {item.collector1}</Text>
+                        <Text style={{ color: colors.DARKERGRAY }}>Collector 2: {item.collector2}</Text>
+                      </View>
+                    </View>
+                  ))}
+                  <View style={{ height: 50 }}></View>
+                </ScrollView>
+              </View>
+              <View style={{ height: 50 }}></View>
+            </ScrollView>
+
+          </View>
         </View>
-      </View>
 
 
       </ScrollView>

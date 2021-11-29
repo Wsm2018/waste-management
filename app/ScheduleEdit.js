@@ -19,7 +19,7 @@ import db from "../db";
 import DatePicker from "react-native-datepicker";
 import moment from "moment";
 
-export default function ScheduleEdit({ navigation }) {
+export default function ScheduleEdit(props) {
   const [permaChange, setPermaChange] = useState(false)
   const [selectedCrew, setSelectedCrew] = useState(null)
   const [selectedDriver, setSelectedDriver] = useState(null)
@@ -90,7 +90,7 @@ export default function ScheduleEdit({ navigation }) {
       .doc(crew)
       .collection("Schedules")
       .add(formData)
-    navigation.goBack();
+    props.navigation.goBack();
   }
   const onChange = (value, name) =>
     setFormData({ ...formData, [name]: value });
@@ -113,7 +113,7 @@ export default function ScheduleEdit({ navigation }) {
             size: 30,
             component: TouchableWithoutFeedback,
             onPress: () => {
-              navigation.goBack();
+              props.navigation.goBack();
             },
           }}
           centerComponent={
@@ -187,6 +187,7 @@ export default function ScheduleEdit({ navigation }) {
                 items={districts}
                 onValueChange={(value) => onChange(value, "districtId")}
                 value={formData.districtId}
+                style={{ inputAndroid: { color: 'black' } }}
               />
             </View>
           </View>
@@ -200,6 +201,7 @@ export default function ScheduleEdit({ navigation }) {
                 items={crews}
                 onValueChange={(value) => onChange(value, "crew")}
                 value={formData.crew}
+                style={{ inputAndroid: { color: 'black' } }}
               />
             </View>
           </View>
@@ -211,6 +213,7 @@ export default function ScheduleEdit({ navigation }) {
                 useNativeAndroidPickerStyle={false}
                 items={drivers}
                 onValueChange={(value) => onChange(value, "driver")}
+                style={{ inputAndroid: { color: 'black' } }}
               />
             </View>
           </View>
@@ -222,6 +225,7 @@ export default function ScheduleEdit({ navigation }) {
                 useNativeAndroidPickerStyle={false}
                 items={firstCollectors}
                 onValueChange={(value) => onChange(value, "collector1")}
+                style={{ inputAndroid: { color: 'black' } }}
               />
             </View>
           </View>
@@ -233,6 +237,7 @@ export default function ScheduleEdit({ navigation }) {
                 useNativeAndroidPickerStyle={false}
                 items={secondCollectors}
                 onValueChange={(value) => onChange(value, "collector2")}
+                style={{ inputAndroid: { color: 'black' } }}
               />
             </View>
           </View>
