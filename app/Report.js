@@ -29,21 +29,33 @@ import { LinearGradient } from 'expo-linear-gradient'
 import db from '../db'
 
 import { colors } from './common/theme'
+import { getRoughCompassDirection } from 'geolib'
 
 export default function Report(props) {
   const [screenView, setScreenView] = useState(true)
   const [reports, setReports] = useState([])
+  const [role , setRole] = useState(null)
 
   useEffect(()=>{
-    db.collection("Reports").onSnapshot(querySnapshot => {
+    getUser()
+    db.collection("Reports").orderBy("date","asc").where("status", "==", "Pending").onSnapshot(querySnapshot => {
       let r = [];
       querySnapshot.forEach(doc => {
           r.push({ id: doc.id, ...doc.data() });
       });
       setReports([...r]);
- });
-  
+  });
+
   })
+
+  getUser = async() =>{
+    const u = await db.collection("Users").doc(firebase.auth().currentUser.uid).get()
+    if( u.data().role == "Manager"){
+      setRole("Manager")
+    }
+  }
+
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: colors.LIGHTGRAY }}
@@ -72,7 +84,7 @@ export default function Report(props) {
           size: 30,
           component: TouchableWithoutFeedback,
           onPress: () => {
-            setScreenView(!screenView)
+            props.navigation.navigate('ReportHistory')
           },
         }}
         // containerStyle={styles.headerStyle}
@@ -97,65 +109,60 @@ export default function Report(props) {
       >
         <View style={{ flex: 1, justifyContent: 'flex-end' }}>
           <Text style={{ fontSize: 25, color: colors.BLACK }}>
-            {screenView ? "Pending Reports" : "Reports History"}
+            {/* {screenView ? "Pending Reports" : "Reports History"} */}
           </Text>
         </View>
         <View style={{ flex: 10 }}>
-          {screenView ? <ScrollView>
-            {reports.map((item, index) => (
-              item.status == "done" ?
-              <View
-                key={index}
-                style={{
-                  width: '100%',
-                  backgroundColor: colors.WHITE,
-                  minHeight: 100,
-                  marginTop: 10,
-                  flexDirection: 'row',
-                  borderRadius: 10,
-                  shadowColor: '#000',
-                  shadowOffset: {
-                    width: 0,
-                    height: 1,
-                  },
-                  shadowOpacity: 0.25,
-                  shadowRadius: 1,
+        <ScrollView>
+          {reports ? reports.map((item, index) => (
+            <View
+              style={{
+                width: '100%',
+                backgroundColor: colors.WHITE,
+                minHeight: 100,
+                marginTop: 10,
+                flexDirection: 'row',
+                borderRadius: 10,
+                shadowColor: '#000',
+                shadowOffset: {
+                  width: 0,
+                  height: 1,
+                },
+                shadowOpacity: 0.25,
+                shadowRadius: 1,
 
-                  elevation: 1,
-                }}
-              >
-                <View style={{ width: '75%', justifyContent:"space-evenly", paddingLeft:10}}>
-                  <Text style={{fontWeight:"bold", color:colors.black, fontSize:16}}>{index + 1}. {item.title}</Text>
-                  {/* <Text style={{ color:colors.DARKGRAY}}>{item.location}</Text> */}
-                  <Text style={{ color:colors.DARKGRAY}}>{item.status}</Text>
-                </View>
-                <View style={{ width: '25%' }}>
-                  <TouchableOpacity
-                  onPress={()=>props.navigation.navigate('ReportDetail', {item})}
-                    style={{
-                      width: '100%',
-                      backgroundColor: colors.GREEN,
-                      minHeight: 100,
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      borderTopRightRadius:10,
-                      borderBottomRightRadius:10
-                    }}
-                  >
-                    <Text style={{color:colors.WHITE,}}>Details</Text>
-                  </TouchableOpacity>
-                </View>
+                elevation: 1,
+              }}
+            >
+              <TouchableOpacity
+                onPress={()=>props.navigation.navigate('ReportDetail',{item,role})}
+                  // style={{
+                  //   width: '100%',
+                  //   backgroundColor: colors.GREEN,
+                  //   minHeight: 100,
+                  //   justifyContent: 'center',
+                  //   alignItems: 'center',
+                  //   borderTopRightRadius:10,
+                  //   borderBottomRightRadius:10
+                  // }}
+                >
+              <View style={{ width: '100%', justifyContent:"space-evenly", paddingLeft:10}}>
+                <Text style={{fontWeight:"bold", color:colors.black, fontSize:16}}>{index + 1}. {item.title} </Text>
+                {/* <Text style={{ color:colors.DARKGRAY}}>{item.location}</Text> */}
+                <Text style={{ color:colors.DARKGRAY}}>{item.date.split("GMT")[0]}</Text>
+                <Text style={{ color:colors.DARKGRAY}}>{item.status}</Text>
               </View>
-             : 
-             null
-            ))}
-            <View style={{ height: 50 }}></View>
-          </ScrollView> :
-          <ScrollView>
-          
+              </TouchableOpacity>
+              {/* <View style={{ width: '25%' }}>
+                
+                  <Text style={{color:colors.WHITE,}}>Details</Text>
+                
+              </View> */}
+            </View>
+          )) : null}
           <View style={{ height: 50 }}></View>
         </ScrollView>
-          }
+          
         </View>
       </View>
       {/* </TouchableWithoutFeedback> */}

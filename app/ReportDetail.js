@@ -28,13 +28,22 @@ import {
 import { LinearGradient } from 'expo-linear-gradient'
 import MapView , {Marker} from "react-native-maps";
 import { colors } from './common/theme'
+import db from "../db";
 
 export default function ReportDetail(props) {
   const item = props.navigation.getParam("item", "some default value");
+  const role = props.navigation.getParam("role", "some default value");
   
   useEffect(()=>{
-    console.log("kkk", item.location)
+    console.log("report id", item.id)
   },[])
+
+  const ignore = async() =>{
+    console.log("here in ignore")
+    db.collection("Reports").doc(item.id).update({status: "Closed"})
+    props.navigation.goBack()
+  }
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: colors.LIGHTGRAY }}
@@ -105,11 +114,21 @@ export default function ReportDetail(props) {
             
               {
                 item.location ?
-                <MapView style={{ flex: 0.5 }}>
+                <MapView  
+                showsUserLocation={true}
+                region
+                provider="google"
+                region={{
+                  latitude: item.location ? item.location.location.latitude : 25.3548,
+                  longitude: item.location ? item.location.location.longitude : 51.1839,
+                  latitudeDelta: 0.08,
+                  longitudeDelta: 0.08,
+                }}
+                style={{ flex: 0.5 }}>
                 <Marker coordinate={{
-                  latitude : item.location.coords.latitude,
-                  longitude : item.location.coords.longitude
-                }}><Text>Report Location</Text>
+                  latitude: item.location.location.latitude,
+                  longitude: item.location.location.longitude,
+                }}>
                 </Marker>
                 </MapView>
                 :
@@ -130,7 +149,9 @@ export default function ReportDetail(props) {
       
           </View>
         </View>
-        <View
+        {
+          role == "Manager" &&
+<View
           style={{
             flex: 2,
             flexDirection: 'row',
@@ -155,9 +176,10 @@ export default function ReportDetail(props) {
                 alignItems: 'center',
                 borderRadius: 10,
               }}
+               onPress = {()=> ignore()}
             >
               <Text style={{ color: colors.BLACK }}>Ignore</Text>
-            </TouchableOpacity>
+            </TouchableOpacity >
           </View>
           <View
             style={{
@@ -182,6 +204,8 @@ export default function ReportDetail(props) {
             </TouchableOpacity>
           </View>
         </View>
+        }
+        
       </View>
       {/* </TouchableWithoutFeedback> */}
     </KeyboardAvoidingView>

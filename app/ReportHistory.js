@@ -31,42 +31,25 @@ import db from '../db'
 import { colors } from './common/theme'
 import { getRoughCompassDirection } from 'geolib'
 
-
-export default function ReportUser(props) {
+export default function ReportHistory(props) {
   const [screenView, setScreenView] = useState(true)
-  const [reports, setReports] = useState()
+  const [reports, setReports] = useState([])
   const [role , setRole] = useState(null)
 
   useEffect(()=>{
-    //get user role
-    // if manager -> show all reports ? only user submitted reports
-    getUser()
-    
-  },[])
+    //getUser()
+    db.collection("Reports").where("status", "!=", "Pending").onSnapshot(querySnapshot => {
+      let r = [];
+      querySnapshot.forEach(doc => {
+          r.push({ id: doc.id, ...doc.data() });
+      });
+      setReports([...r]);
+  });
 
-  const getUser = async()=>{
-    const u = await db.collection("Users").doc(firebase.auth().currentUser.uid).get()
-    if( u.data().role == "Manager"){
-      setRole("Manager")
-      db.collection("Reports").orderBy("date","asc").onSnapshot(querySnapshot => {
-        let r = [];
-        querySnapshot.forEach(doc => {
-            r.push({ id: doc.id, ...doc.data() });
-        });
-        setReports([...r]);
-    });
-    }
-    else{
-      db.collection("Reports").orderBy("date","asc").where( "user" == firebase.auth().currentUser.uid).onSnapshot(querySnapshot => {
-        let r = [];
-        querySnapshot.forEach(doc => {
-            r.push({ id: doc.id, ...doc.data() });
-        });
-        setReports([...r]);
-    });
-    }
-    //console.log("uzzzzzzzzzzeeeeeeeeeeeerrrrrrrr", firebase.auth().currentUser.uid)
-  }
+  })
+
+ 
+
 
   return (
     <KeyboardAvoidingView
@@ -77,26 +60,26 @@ export default function ReportUser(props) {
       <Header
         backgroundColor={colors.GREEN}
         leftComponent={{
-          icon: 'menu',
-          type: 'feather',
+          icon: 'angle-left',
+          type: 'font-awesome',
           color: colors.WHITE,
-          size: 25,
+          size: 30,
           component: TouchableWithoutFeedback,
           onPress: () => {
-            props.navigation.openDrawer()
+            props.navigation.goBack()
           },
         }}
         centerComponent={
-          <Text style={{ fontSize: 20, color: colors.WHITE }}>My Reports</Text>
+          <Text style={{ fontSize: 20, color: colors.WHITE }}>Reports History</Text>
         }
         rightComponent={{
-          icon: 'plus',
-          type: 'feather',
+          icon: screenView ? 'history' :'format-list-bulleted',
+          type: 'material',
           color: colors.WHITE,
-          size: 25,
+          size: 30,
           component: TouchableWithoutFeedback,
           onPress: () => {
-            props.navigation.navigate('ReportUserCreate')
+            console.log( "histooory")
           },
         }}
         // containerStyle={styles.headerStyle}
@@ -121,11 +104,11 @@ export default function ReportUser(props) {
       >
         <View style={{ flex: 1, justifyContent: 'flex-end' }}>
           <Text style={{ fontSize: 25, color: colors.BLACK }}>
-            My Reports
+            {/* {screenView ? "Pending Reports" : "Reports History"} */}
           </Text>
         </View>
-        <View style={{ flex: 10 }}>         
-          <ScrollView>
+        <View style={{ flex: 10 }}>
+        <ScrollView>
           {reports ? reports.map((item, index) => (
             <View
               style={{
