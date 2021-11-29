@@ -40,7 +40,7 @@ export default function Report(props) {
 
   useEffect(() => {
     getUser()
-    db.collection("Reports").where("status", "==", "Pending").onSnapshot(querySnapshot => {
+    db.collection("Reports").orderBy("date","asc").where("status", "==", "Pending").onSnapshot(querySnapshot => {
       let r = [];
       querySnapshot.forEach(doc => {
         r.push({ id: doc.id, ...doc.data() });

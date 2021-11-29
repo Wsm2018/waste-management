@@ -48,7 +48,7 @@ export default function ReportUser(props) {
     const u = await db.collection("Users").doc(firebase.auth().currentUser.uid).get()
     if( u.data().role == "Manager"){
       setRole("Manager")
-      db.collection("Reports").onSnapshot(querySnapshot => {
+      db.collection("Reports").orderBy("date","asc").onSnapshot(querySnapshot => {
         let r = [];
         querySnapshot.forEach(doc => {
             r.push({ id: doc.id, ...doc.data() });
@@ -57,7 +57,7 @@ export default function ReportUser(props) {
     });
     }
     else{
-      db.collection("Reports").where("user", "==", firebase.auth().currentUser.uid).onSnapshot(querySnapshot => {
+      db.collection("Reports").orderBy("date","asc").where( "user" == firebase.auth().currentUser.uid).onSnapshot(querySnapshot => {
         let r = [];
         querySnapshot.forEach(doc => {
             r.push({ id: doc.id, ...doc.data() });
