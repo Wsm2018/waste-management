@@ -29,21 +29,84 @@ import {
 import { LinearGradient } from 'expo-linear-gradient'
 import { colors } from './common/theme'
 import db from '../db'
+import Chat from './Chat'
 const { width, height } = Dimensions.get('window')
 
 export default function ChatList(props) {
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
-  const [chats, setChats] = useState([])
+  const [chatsF, setChatsF] = useState([])
+  const [chatsT, setChatsT] = useState([])
+  const [ users, setUsers] = useState([])
+  const [chats , setChats] = useState([])
+  const [others , setOthers] = useState([])
 
   useEffect(() => {
+    //getUsers
+    setChats([])
     db.collection("Users").onSnapshot(querySnapshot => {
+      let r = [];
+      querySnapshot.forEach(doc => {
+        if( doc.id != firebase.auth().currentUser.uid){
+          r.push({ id: doc.id, ...doc.data() });
+        }
+        
+      });
+      //setChats([...r]);
+      setUsers([...r])
+    })
+
+    //getMessages FROM & TO the user
+    db.collection("Chats").where("from","==",firebase.auth().currentUser.uid).onSnapshot(querySnapshot => {
       let r = [];
       querySnapshot.forEach(doc => {
         r.push({ id: doc.id, ...doc.data() });
       });
-      setChats([...r]);
+      setChatsF([...r]);
+      //setUsers([...r])
     })
-  })
+    db.collection("Chats").where("to","==",firebase.auth().currentUser.uid).onSnapshot(querySnapshot => {
+      let r = [];
+      querySnapshot.forEach(doc => {
+        r.push({ id: doc.id, ...doc.data() });
+      });
+      setChatsT([...r]);
+      //setUsers([...r])
+    })
+
+    
+
+  },[])
+
+  useEffect(()=>{
+if(users){
+  setChats([])
+  let allChats = chatsF 
+    allChats.push(chatsT)
+
+console.log("chatssss", allChats)
+    // add the latest messages to 
+    let usersChats = []
+    for( let i=0 ; i < users.length ; i++){
+      
+      //add latest message with number of not seen / and filter by date asc
+      let c = allChats.filter( u => u.to == users[i].id || u.from == users[i].id )
+      console.log("cccccccccc", c , users[i].id)
+      //unseen
+      let unseen = c.filter( r => r.from === users[i].id ).length
+
+      //latest 
+      let sorted = c.sort((a,b)=> a.date - b.date)[c.length -1]
+      //console.log("example------------------------------------------------------------------------------------------------------- ", c , unseen , sorted)
+      
+      if( c.length > 0){
+        let temp = chats
+        temp.push({ user : users[i], message: sorted , unseen: unseen})
+        setChats(temp)
+      }
+      
+    }
+}
+  },[users])
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -102,12 +165,9 @@ export default function ChatList(props) {
         }}
       >
         {
-          chats.map(item =>
-            item.id == firebase.auth().currentUser.uid ?
-              null
-              :
+          chats.map( item =>
               <TouchableOpacity
-                onPress={() => props.navigation.navigate('Chat', { item })}
+                onPress={() => props.navigation.navigate('Chat', { item})}
                 style={{ 
                    justifyContent: "space-evenly",
                     paddingLeft: 30,
@@ -117,7 +177,9 @@ export default function ChatList(props) {
                       paddingTop:10 ,
                       backgroundColor:"#dfecdf", 
                       }}>
-                <Text style={{ fontWeight: "bold", color: colors.black, fontSize: 16 }}>{item.email}</Text>
+                <Text style={{ fontWeight: "bold", color: colors.black, fontSize: 16 }}>{item.user.email}</Text>
+                <Text style={{ fontWeight: "bold", color: colors.black, fontSize: 16 }}>{item.message.message}</Text>
+                <Text style={{ fontWeight: "bold", color: colors.black, fontSize: 16 }}>{item.unseen}</Text>
                 <Text style={{ color: colors.DARKGRAY }}>{item.role}</Text>
               </TouchableOpacity>
           )
