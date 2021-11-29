@@ -59,11 +59,19 @@ export default function SideMenu(props) {
         { name: 'Logout', icon: 'logout', type: 'material' },
     ];
 
-    const sideMenuList = [
-        // { name: 'Home', navigationName: 'Home', icon: 'home', type: 'ant-design' },
+    const sideMenuListWorker = [
+        { name: 'Home', navigationName: 'Home', icon: 'home', type: 'ant-design' },
         // { name: 'Details', navigationName: 'Details', icon: 'home', type: 'font-awesome' },
         // { name: 'Schedule', navigationName: 'ScheduleManagement', icon: 'car-sports', type: 'material-community' },
         // { name: 'Report', navigationName: 'ReportUser', icon: 'report', type: 'material' },
+        { name: 'Logout', icon: 'logout', type: 'material' },
+    ];
+
+    const sideMenuListUser = [
+        { name: 'Home', navigationName: 'Home', icon: 'home', type: 'ant-design' },
+        // { name: 'Details', navigationName: 'Details', icon: 'home', type: 'font-awesome' },
+        // { name: 'Schedule', navigationName: 'ScheduleManagement', icon: 'car-sports', type: 'material-community' },
+        { name: 'Report', navigationName: 'ReportUser', icon: 'report', type: 'material' },
         { name: 'Logout', icon: 'logout', type: 'material' },
     ];
 
@@ -84,7 +92,7 @@ export default function SideMenu(props) {
                 {/* <View style={[styles.vertialLine, { height: (width <= 320) ? width / 1.53 : width / 1.68 }]}></View> */}
                 
                     <FlatList
-                        data={user && user.role === "Manager"? sideMenuListManager : sideMenuList}
+                        data={user && user.role && user.role === "Manager"? sideMenuListManager : user && user.role && user.role === "Worker"? sideMenuListWorker : sideMenuListUser}
                         keyExtractor={(item, index) => index.toString()}
                         
                         bounces={false}

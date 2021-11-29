@@ -159,8 +159,8 @@ export default function HomeManager(props) {
       >
         {bins &&
           bins.map((item, index) => (
-            index < 50 &&
-            (<Marker
+            
+            <Marker
               key={index}
               coordinate={{
                 latitude: item.location.U,
@@ -224,7 +224,7 @@ export default function HomeManager(props) {
                   </TouchableOpacity>
                 </View>
               </Callout>
-            </Marker>)
+            </Marker>
           ))}
 
         {/* {report &&
