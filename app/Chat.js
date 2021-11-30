@@ -44,7 +44,7 @@ export default function Chat(props) {
   const send = () => {
     db.collection("Chats").add({
       from: firebase.auth().currentUser.uid,
-      to: user.user.id,
+      to: user.id,
       message: newMessage,
       date: new Date(),
       mDate: new Date + "",
@@ -54,12 +54,18 @@ export default function Chat(props) {
   }
 
   useEffect(() => {
-
+console.log("user --------------",user)
     db.collection("Chats").onSnapshot(querySnapshot => {
       let r = [];
       let s = [];
       querySnapshot.forEach(doc => {
-        if( ( doc.data().to || doc.data().from == firebase.auth().currentUser.uid) &&  (doc.data().to || doc.data().from == user.user.id)){
+        if( 
+          ( (doc.data().to == firebase.auth().currentUser.uid) && (doc.data().from ==  user.id))
+          ||
+          ( (doc.data().from == firebase.auth().currentUser.uid) && (doc.data().to == user.id)) 
+          )
+          
+      {
           r.push({ id: doc.id, ...doc.data() });
           if (!doc.data().seen && doc.data().to == firebase.auth().currentUser.uid  ) {
           s.push({ id: doc.id, ...doc.data() })
@@ -166,7 +172,7 @@ export default function Chat(props) {
           },
         }}
         centerComponent={
-          <Text style={{ fontSize: 20, color: colors.WHITE }}>{user.user.email}</Text>
+          <Text style={{ fontSize: 20, color: colors.WHITE }}>{user.email}</Text>
         }
       />
 

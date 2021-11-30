@@ -42,17 +42,13 @@ export default function ChatList(props) {
 
   useEffect(() => {
     //getUsers
-    setChats([])
+    //setChats([])
     db.collection("Users").onSnapshot(querySnapshot => {
       let r = [];
       querySnapshot.forEach(doc => {
-        if( doc.id != firebase.auth().currentUser.uid){
-          r.push({ id: doc.id, ...doc.data() });
-        }
-        
+        r.push({ id: doc.id, ...doc.data() });
       });
-      //setChats([...r]);
-      setUsers([...r])
+      setUsers([...r]);
     })
 
     //getMessages FROM & TO the user
@@ -72,41 +68,60 @@ export default function ChatList(props) {
       setChatsT([...r]);
       //setUsers([...r])
     })
-
-    
-
   },[])
 
+
+
   useEffect(()=>{
-if(users){
-  setChats([])
-  let allChats = chatsF 
-    allChats.push(chatsT)
 
-console.log("chatssss", allChats)
-    // add the latest messages to 
-    let usersChats = []
-    for( let i=0 ; i < users.length ; i++){
-      
-      //add latest message with number of not seen / and filter by date asc
-      let c = allChats.filter( u => u.to == users[i].id || u.from == users[i].id )
-      console.log("cccccccccc", c , users[i].id)
-      //unseen
-      let unseen = c.filter( r => r.from === users[i].id ).length
+    
+      //console.log("uzzzeeerrsss", users)
+      let all = chatsF ; all.push(chatsT)
+      let userArr = []
+      for( let i=0 ; i < chatsT.length ; i++){
+        // add user id if not in arr
+        if( userArr.filter( u => u == chatsT[i].from).length == 0){
+          userArr.push(chatsT[i].from)
+        }
 
-      //latest 
-      let sorted = c.sort((a,b)=> a.date - b.date)[c.length -1]
-      //console.log("example------------------------------------------------------------------------------------------------------- ", c , unseen , sorted)
-      
-      if( c.length > 0){
-        let temp = chats
-        temp.push({ user : users[i], message: sorted , unseen: unseen})
-        setChats(temp)
       }
+      for( let i=0 ; i < chatsT.length ; i++){
+        // add user id if not in arr
+        if( userArr.filter( u => u == chatsT[i].from).length == 0){
+          userArr.push(chatsT[i].from)
+        }
+      }
+
+      //get users
+      let finalList = []
+      for( let i = 0 ; i < userArr.length ; i++){
+        let seenCounter = chatsT.filter( c =>  userArr[i] == c.from && c.seen == false ).length
+        let u = users.filter( u => u.id == userArr[i])[0]
+        
+
+        let lastMessage = chatsT.concat(chatsF) 
+        lastMessage = lastMessage.filter( l => l.from == userArr[i] || l.to == userArr[i] )
+        lastMessage = lastMessage.sort((a,b)=> a.date - b.date)[lastMessage.length -1]
+        finalList.push({ user: u , unseen : seenCounter, message: lastMessage})
+      }
+      //order list
+      finalList = finalList.sort((a,b)=> a.message.date - b.message.date)
+      setChats(finalList)
+     // console.log("--------", userArr )
+      //console.log("FINALLLL", finalList)
       
+
+    //remove chat users from other users list
+    let temp = []
+    for(let i=0 ; i < users.length ; i++){
+      if (userArr.filter( u => u == users[i].id).length == 0){
+        temp.push(users[i])
+      }
     }
-}
-  },[users])
+    setOthers(temp)
+    
+  },[chatsT,chatsF])
+
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -165,9 +180,10 @@ console.log("chatssss", allChats)
         }}
       >
         {
+          chats?
           chats.map( item =>
               <TouchableOpacity
-                onPress={() => props.navigation.navigate('Chat', { item})}
+                onPress={() => props.navigation.navigate('Chat',  {item : item.user})}
                 style={{ 
                    justifyContent: "space-evenly",
                     paddingLeft: 30,
@@ -180,9 +196,34 @@ console.log("chatssss", allChats)
                 <Text style={{ fontWeight: "bold", color: colors.black, fontSize: 16 }}>{item.user.email}</Text>
                 <Text style={{ fontWeight: "bold", color: colors.black, fontSize: 16 }}>{item.message.message}</Text>
                 <Text style={{ fontWeight: "bold", color: colors.black, fontSize: 16 }}>{item.unseen}</Text>
-                <Text style={{ color: colors.DARKGRAY }}>{item.role}</Text>
+                <Text style={{ fontWeight: "bold", color: colors.black, fontSize: 16 }}>{item.message.mDate}</Text>
+                <Text style={{ color: colors.DARKGRAY }}>{item.user.role}</Text>
               </TouchableOpacity>
           )
+          :
+          null
+        }
+        <Text>Others</Text>
+        {
+          others ?
+          others.map( item =>
+            <TouchableOpacity
+              onPress={() => props.navigation.navigate('Chat',  {item})}
+              style={{ 
+                 justifyContent: "space-evenly",
+                  paddingLeft: 30,
+                   borderBottomWidth: 5,
+                    borderColor:"#70a970", 
+                    marginBottom:5, 
+                    paddingTop:10 ,
+                    backgroundColor:"#dfecdf", 
+                    }}>
+              <Text style={{ fontWeight: "bold", color: colors.black, fontSize: 16 }}>{item.email}</Text>
+              <Text style={{ color: colors.DARKGRAY }}>{item.role}</Text>
+            </TouchableOpacity>
+        )
+        :
+        null
         }
 
 
