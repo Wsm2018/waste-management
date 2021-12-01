@@ -39,6 +39,7 @@ export default function Chat(props) {
   const [sent, setSent] = useState([])
   const [recieved, setRecieved] = useState([])
   const [sortedChat, setSortedChat] = useState([])
+  const [seenMessages, setSeenMessages] = useState([])
 
   const send = () => {
     db.collection("Chats").add({
@@ -46,74 +47,82 @@ export default function Chat(props) {
       to: user.id,
       message: newMessage,
       date: new Date(),
-      mDate: new Date + ""
+      mDate: new Date + "",
+      seen: false
     })
     setNewMessage(null)
   }
 
   useEffect(() => {
-
+console.log("user --------------",user)
     db.collection("Chats").onSnapshot(querySnapshot => {
       let r = [];
+      let s = [];
       querySnapshot.forEach(doc => {
-        r.push({ id: doc.id, ...doc.data() });
-
+        if( 
+          ( (doc.data().to == firebase.auth().currentUser.uid) && (doc.data().from ==  user.id))
+          ||
+          ( (doc.data().from == firebase.auth().currentUser.uid) && (doc.data().to == user.id)) 
+          )
+          
+      {
+          r.push({ id: doc.id, ...doc.data() });
+          if (!doc.data().seen && doc.data().to == firebase.auth().currentUser.uid  ) {
+          s.push({ id: doc.id, ...doc.data() })
+           }
+        }
+ 
       });
       setSent([...r]);
+      setSeenMessages([...s])
+     
     })
-
+    
   }, [])
+
+  useEffect(()=>{
+    if(seenMessages){
+      for( let i=0 ; i < seenMessages.length ; i++){
+        console.log("changing ---------------")
+        db.collection("Chats").doc(seenMessages[i].id).update({seen: true})
+      }
+    }
+  },[seenMessages])
 
 
   useEffect(() => {
     if (sent.length > 0) {
-      var filtering = sent.filter(m =>
-        (m.to == user.id && m.from == firebase.auth().currentUser.uid)
-        ||
-        (m.to == firebase.auth().currentUser.uid && m.from == user.id)
-      )
-      console.log("all messages", filtering)
+      var temp = sent
 
-      filtering = filtering.sort(
-        (a, b) => b.date.toDate() - a.date.toDate()
-      );
-      console.log("84")
-      var temp = []
-      for (let i = filtering.length - 1; i >= 0; i--) {
-        console.log("iiii", i)
-        temp.push(filtering[i])
-      }
-      
-      // console.log("the sorted chat", sortedChat, filtering)
 
       //filter all date
       var dates = []
-      for( let i=0 ; i < temp.length ; i++){
-        
-        if( dates.filter( d => d.date == 
-          ( temp[i].mDate.split(" ")[0] + " " + 
-           temp[i].mDate.split(" ")[1] +" " + 
-           temp[i].mDate.split(" ")[2] +" " + 
-           temp[i].mDate.split(" ")[3]) ).length == 0)
-        {
-          console.log("here 98")
-          dates.push( { date : temp[i].mDate.split(" ")[0] +" " + 
-          temp[i].mDate.split(" ")[1]+" " +
-          temp[i].mDate.split(" ")[2] +" " +
-          temp[i].mDate.split(" ")[3] })
-          var allDates = temp.filter( d => 
-            d.mDate.split(" ")[0]+" " +
-            d.mDate.split(" ")[1]+" " +
-            d.mDate.split(" ")[2] +" " +
-            d.mDate.split(" ")[3] === dates[dates.length -1].date)
+      for (let i = 0; i < temp.length; i++) {
 
-            dates[dates.length -1].allDates = allDates
-            
+        if (dates.filter(d => d.date ==
+          (temp[i].mDate.split(" ")[0] + " " +
+            temp[i].mDate.split(" ")[1] + " " +
+            temp[i].mDate.split(" ")[2] + " " +
+            temp[i].mDate.split(" ")[3])).length == 0) {
+          console.log("here 98")
+          dates.push({
+            date: temp[i].mDate.split(" ")[0] + " " +
+              temp[i].mDate.split(" ")[1] + " " +
+              temp[i].mDate.split(" ")[2] + " " +
+              temp[i].mDate.split(" ")[3]
+          })
+          var allDates = temp.filter(d =>
+            d.mDate.split(" ")[0] + " " +
+            d.mDate.split(" ")[1] + " " +
+            d.mDate.split(" ")[2] + " " +
+            d.mDate.split(" ")[3] === dates[dates.length - 1].date)
+
+          dates[dates.length - 1].allDates = allDates
+
         }
 
-        //console.log("here is the date",toDate( sortedChat.date))
       }
-      console.log("all date for date",dates)
+      console.log("all date for date", dates)
       setSortedChat(...[dates])
     }
   }, [sent])
@@ -180,61 +189,61 @@ export default function Chat(props) {
 
             {sortedChat.length > 0 ?
               sortedChat.map((item, index) =>
-              <View>
-                <View style={{ marginLeft:"auto", marginRight:"auto", borderRadius: 15}}>
-                  <Text style={{padding:5,textAlign: "center" , backgroundColor:"#dfecdf", width:"30%"}}>{item.date}</Text>
+                <View>
+                  <View style={{ marginLeft: "auto", marginRight: "auto", borderRadius: 15 }}>
+                    <Text style={{ paddingTop: 10, paddingBottom:10, textAlign: "center", width: "30%" }}>{item.date}</Text>
                   </View>
                   {
-                    item.allDates.map( m => 
-                      
+                    item.allDates.map(m =>
+
                       m.from == firebase.auth().currentUser.uid ?
 
-                    <View style={{
-                      width: "100%", paddingLeft: 10,
-                      marginTop: 10,
-                      alignItems: "flex-start",
-                      // backgroundColor: "red"
-                    }}>
-                      <View style={{ backgroundColor: colors.DARKGRAY, minHeight: 50, maxWidth: "60%", borderRadius: 15, borderTopLeftRadius: 0, justifyContent: "center", paddingLeft: 10, paddingRight: 10 }}>
-                        <Text style={{ color: colors.WHITE }}>{m.message}</Text>
-                      </View>
-                      <View style={{ maxWidth: "60%", paddingLeft: 5, marginTop: 2 }}>
-                        <Text>{m.mDate.split(" ")[4]}</Text>
-                      </View>
-                    </View>
-                    :
-                    <View style={{
-                      width: "100%", paddingRight: 10,
-                      marginTop: 10,
-                      alignItems: "flex-end"
-                      // backgroundColor: "red"
-                    }}>
-                      <View style={{
-                        backgroundColor: colors.GREEN,
-                        minHeight: 50,
-                        maxWidth: "60%",
-                        borderRadius: 15,
-                        borderTopRightRadius: 0,
-                        justifyContent: "center",
-                        paddingLeft: 10,
-                        paddingRight: 10
-                      }}>
-                        <Text style={{ color: colors.WHITE }}>{m.message}</Text>
-                      </View>
-                      <View style={{ maxWidth: "60%", paddingRight: 5, marginTop: 2 }}>
-                        <Text>{m.mDate.split(" ")[4]}</Text>
-                      </View>
-                    </View>
-                      
-                      
-                      
-                      )
-                    
-                  }
-                  
+                        <View style={{
+                          width: "100%", paddingLeft: 10,
+                          marginTop: 10,
+                          alignItems: "flex-start",
+                          // backgroundColor: "red"
+                        }}>
+                          <View style={{ backgroundColor: colors.DARKGRAY, minHeight: 50, maxWidth: "60%", borderRadius: 15, borderTopLeftRadius: 0, justifyContent: "center", paddingLeft: 10, paddingRight: 10 }}>
+                            <Text style={{ color: colors.WHITE }}>{m.message}</Text>
+                          </View>
+                          <View style={{ maxWidth: "60%", paddingLeft: 5, marginTop: 2 }}>
+                            <Text>{m.mDate.split(" ")[4]}</Text>
+                          </View>
+                        </View>
+                        :
+                        <View style={{
+                          width: "100%", paddingRight: 10,
+                          marginTop: 10,
+                          alignItems: "flex-end"
+                          // backgroundColor: "red"
+                        }}>
+                          <View style={{
+                            backgroundColor: colors.GREEN,
+                            minHeight: 50,
+                            maxWidth: "60%",
+                            borderRadius: 15,
+                            borderTopRightRadius: 0,
+                            justifyContent: "center",
+                            paddingLeft: 10,
+                            paddingRight: 10
+                          }}>
+                            <Text style={{ color: colors.WHITE }}>{m.message}</Text>
+                          </View>
+                          <View style={{ maxWidth: "60%", paddingRight: 5, marginTop: 2 }}>
+                            <Text>{m.mDate.split(" ")[4]}</Text>
+                          </View>
+                        </View>
 
-                  </View>
-                
+
+
+                    )
+
+                  }
+
+
+                </View>
+
               )
 
               : null}
