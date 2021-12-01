@@ -42,7 +42,7 @@ export default function ChatList(props) {
 
   useEffect(() => {
     //getUsers
-    //setChats([])
+   // setChats([])
     db.collection("Users").onSnapshot(querySnapshot => {
       let r = [];
       querySnapshot.forEach(doc => {
@@ -74,24 +74,31 @@ export default function ChatList(props) {
 
   useEffect(()=>{
 
+    if( chatsF.length > 0 || chatsT.length > 0){
+
     
-      //console.log("uzzzeeerrsss", users)
+     // console.log("uzzzeeerrsss", users)
       let all = chatsF ; all.push(chatsT)
+     //  console.log("heeeerrreeee working", all)
       let userArr = []
       for( let i=0 ; i < chatsT.length ; i++){
         // add user id if not in arr
         if( userArr.filter( u => u == chatsT[i].from).length == 0){
           userArr.push(chatsT[i].from)
+          console.log("adding to arr",chatsT[i].from)
+        //  userArr = 
         }
 
       }
-      for( let i=0 ; i < chatsT.length ; i++){
+      for( let i=0 ; i < chatsF.length ; i++){
         // add user id if not in arr
-        if( userArr.filter( u => u == chatsT[i].from).length == 0){
-          userArr.push(chatsT[i].from)
+        if( userArr.filter( u => u == chatsF[i].to).length == 0){
+          userArr.push(chatsF[i].to)
         }
       }
-
+      console.log("before", userArr)
+      userArr = userArr.filter( u => u != undefined)
+      console.log("after", userArr)
       //get users
       let finalList = []
       for( let i = 0 ; i < userArr.length ; i++){
@@ -105,10 +112,12 @@ export default function ChatList(props) {
         finalList.push({ user: u , unseen : seenCounter, message: lastMessage})
       }
       //order list
-      finalList = finalList.sort((a,b)=> a.message.date - b.message.date)
+      finalList = finalList.sort((a,b)=> b.message.date - a.message.date)
+      
       setChats(finalList)
+      //addChat(finalList)
      // console.log("--------", userArr )
-      //console.log("FINALLLL", finalList)
+      
       
 
     //remove chat users from other users list
@@ -118,9 +127,18 @@ export default function ChatList(props) {
         temp.push(users[i])
       }
     }
+    
     setOthers(temp)
+   // console.log("pleeeaasseeee 1",finalList)
+  }
+  else if(users){
+    setOthers(users)
+  }
+ // console.log("pleeeaasseeee 2",chats)
     
   },[chatsT,chatsF])
+
+  
 
 
   useEffect(() => {
@@ -180,7 +198,14 @@ export default function ChatList(props) {
         }}
       >
         {
-          chats?
+          chats.lenght > 0 &&
+<Text style={{ fontSize: 30, color: colors.DARKERGRAY, marginLeft:"auto", marginRight:"auto" , paddingBottom:15, paddingTop:15}}>
+           My Chats
+           </Text>
+        }
+         
+        {
+          chats.length > 0?
           chats.map( item =>
               <TouchableOpacity
                 onPress={() => props.navigation.navigate('Chat',  {item : item.user})}
@@ -191,19 +216,59 @@ export default function ChatList(props) {
                       borderColor:"#70a970", 
                       marginBottom:5, 
                       paddingTop:10 ,
+                      paddingRight:30 ,
                       backgroundColor:"#dfecdf", 
+                       paddingBottom:10
                       }}>
-                <Text style={{ fontWeight: "bold", color: colors.black, fontSize: 16 }}>{item.user.email}</Text>
-                <Text style={{ fontWeight: "bold", color: colors.black, fontSize: 16 }}>{item.message.message}</Text>
-                <Text style={{ fontWeight: "bold", color: colors.black, fontSize: 16 }}>{item.unseen}</Text>
-                <Text style={{ fontWeight: "bold", color: colors.black, fontSize: 16 }}>{item.message.mDate}</Text>
-                <Text style={{ color: colors.DARKGRAY }}>{item.user.role}</Text>
+                        <Text style={{ color: colors.DARKGRAY }}>{item.user.role}</Text>
+                        <View 
+                        style={{ justifyContent:"center" , flexDirection:"row"}}
+                        >
+                        
+                          <Text style={{ fontWeight: "bold", color: colors.DARKGRAY , fontSize: 16 , width:"70%" }}>{item.user.email}</Text>
+                          
+                        
+                          <Text style={{  color: colors.DARKGRAY, fontSize: 16 , width:"30%"  }}>
+                            {item.message.mDate.split(" ")[1]} {item.message.mDate.split(" ")[2]} {item.message.mDate.split(" ")[3]} 
+                            </Text>
+                      
+               
+                        </View>
+                        <View 
+                        style={{ justifyContent:"center" , flexDirection:"row"}}
+                        >
+                        <Text style={{ fontWeight: "bold", color: "#70a990", fontSize: 16 , width:"85%"}}>
+                          {item.message.message}</Text>
+                        
+                        <Text style={{  color: colors.DARKGRAY, fontSize: 16 , width:"15%" }}>
+                        {item.message.mDate.split(" ")[4].split(":")[0]}:{item.message.mDate.split(" ")[4].split(":")[1]}
+                            </Text>
+                            </View>
+                            {
+                              item.unseen == 1 ?
+                              <Text style={{ fontWeight: "bold", color: "#70a970", fontSize: 16 }}>{item.unseen} Unread Message</Text>
+                                
+                              : 
+                              item.unseen > 1 ?
+                              <Text style={{ fontWeight: "bold", color: "#70a970", fontSize: 16 }}>{item.unseen} Unread Messages</Text>
+                                
+                              :
+                              null
+                            }
+                        
+              
+                
+                
               </TouchableOpacity>
           )
           :
           null
         }
-        <Text>Others</Text>
+        {
+          others &&
+<Text style={{ fontSize: 30, color: colors.DARKERGRAY, marginLeft:"auto", marginRight:"auto" , paddingBottom:15, paddingTop:15}}>Others</Text>
+        
+        }
         {
           others ?
           others.map( item =>
@@ -218,8 +283,9 @@ export default function ChatList(props) {
                     paddingTop:10 ,
                     backgroundColor:"#dfecdf", 
                     }}>
-              <Text style={{ fontWeight: "bold", color: colors.black, fontSize: 16 }}>{item.email}</Text>
-              <Text style={{ color: colors.DARKGRAY }}>{item.role}</Text>
+                           <Text style={{ color: colors.DARKGRAY }}>{item.role}</Text>
+              <Text style={{ fontWeight: "bold", color: colors.DARKGRAY , fontSize: 16 , width:"70%" , paddingBottom:15}}>{item.email}</Text>
+         
             </TouchableOpacity>
         )
         :

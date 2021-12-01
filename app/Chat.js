@@ -94,7 +94,6 @@ console.log("user --------------",user)
     if (sent.length > 0) {
       var temp = sent
 
-      // console.log("the sorted chat", sortedChat, filtering)
 
       //filter all date
       var dates = []
@@ -122,7 +121,6 @@ console.log("user --------------",user)
 
         }
 
-        //console.log("here is the date",toDate( sortedChat.date))
       }
       console.log("all date for date", dates)
       setSortedChat(...[dates])
@@ -193,7 +191,7 @@ console.log("user --------------",user)
               sortedChat.map((item, index) =>
                 <View>
                   <View style={{ marginLeft: "auto", marginRight: "auto", borderRadius: 15 }}>
-                    <Text style={{ padding: 5, textAlign: "center", backgroundColor: "#dfecdf", width: "30%" }}>{item.date}</Text>
+                    <Text style={{ paddingTop: 10, paddingBottom:10, textAlign: "center", width: "30%" }}>{item.date}</Text>
                   </View>
                   {
                     item.allDates.map(m =>
