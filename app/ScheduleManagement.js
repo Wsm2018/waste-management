@@ -51,7 +51,7 @@ export default function ScheduleManagement(props) {
             const today = new Date();
             setSchedules([...tempSchedules.filter(schedule => schedule.dateTime > today && schedule.dateTime.getDate() !== today.getDate())])
             setOldSchedules([...tempSchedules.filter(schedule => schedule.dateTime < today && schedule.dateTime.getDate() !== today.getDate())])
-            setTodaySchedules([...tempSchedules.filter(schedule => schedule.dateTime.getDate() === today.getDate())])
+            setTodaySchedules([...tempSchedules.filter(schedule => schedule.dateTime.toLocaleDateString() === today.toLocaleDateString())])
             //console.log(" Current tempSchedules: ", tempSchedules)
           });
       });

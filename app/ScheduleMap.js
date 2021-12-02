@@ -371,7 +371,7 @@ export default function ScheduleMap(props) {
             <Icon name="trashcan" type="octicon" color={colors.WHITE} size={28} />
           </TouchableOpacity> */}
         </View>
-        <View>
+        {/* <View>
           <TouchableOpacity
             onPress={() => props.navigation.navigate('Chat')}
             style={{
@@ -399,7 +399,7 @@ export default function ScheduleMap(props) {
               size={28}
             />
           </TouchableOpacity>
-        </View>
+        </View> */}
         {descriptionModal()}
       </View>
     </View>

@@ -125,7 +125,7 @@ export default function HomeCrew(props) {
           // console.log("old schedules: ", tempSchedules.filter(schedule => {
           // console.log("dateTime", schedule.dateTime.toDate(), "----------", today)
           //   return schedule.dateTime.toDate() < today}))
-          let tempTodaySchedules = [...tempSchedules.filter(schedule => schedule.dateTime.toDate().getDate() === today.getDate())]
+          let tempTodaySchedules = [...tempSchedules.filter(schedule => schedule.dateTime.toDate().toLocaleDateString() === today.toLocaleDateString())]
           db.collection("Municipalities").onSnapshot((querySnapshot) => {
             const tempMunicipalities = [];
             querySnapshot.forEach((doc) => {

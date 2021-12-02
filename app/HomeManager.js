@@ -159,7 +159,7 @@ export default function HomeManager(props) {
       >
         {bins &&
           bins.map((item, index) => (
-            
+            index < 50 &&
             <Marker
               key={index}
               coordinate={{
