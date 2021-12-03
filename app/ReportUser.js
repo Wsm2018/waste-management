@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from "react";
 
 import {
   View,
@@ -13,90 +13,99 @@ import {
   TouchableWithoutFeedback,
   StatusBar,
   ScrollView,
-} from 'react-native'
+} from "react-native";
 
-import { Input, Icon, Header } from 'react-native-elements'
-import firebase from 'firebase'
-import 'firebase/auth'
-import 'firebase/firestore'
-import Modal from 'react-native-modal'
+import { Input, Icon, Header } from "react-native-elements";
+import firebase from "firebase";
+import "firebase/auth";
+import "firebase/firestore";
+import Modal from "react-native-modal";
 import {
   responsiveHeight,
   responsiveWidth,
   responsiveFontSize,
-} from 'react-native-responsive-dimensions'
-import { LinearGradient } from 'expo-linear-gradient'
-import db from '../db'
+} from "react-native-responsive-dimensions";
+import { LinearGradient } from "expo-linear-gradient";
+import db from "../db";
 
-import { colors } from './common/theme'
-import { getRoughCompassDirection } from 'geolib'
-
+import { colors } from "./common/theme";
+import { getRoughCompassDirection } from "geolib";
 
 export default function ReportUser(props) {
-  const [screenView, setScreenView] = useState(true)
-  const [reports, setReports] = useState()
-  const [role , setRole] = useState(null)
+  const [screenView, setScreenView] = useState(true);
+  const [reports, setReports] = useState();
+  const [role, setRole] = useState(null);
 
-  useEffect(()=>{
+  useEffect(() => {
     //get user role
     // if manager -> show all reports ? only user submitted reports
-    getUser()
-    
-  },[])
+    getUser();
+  }, []);
 
-  const getUser = async()=>{
-    const u = await db.collection("Users").doc(firebase.auth().currentUser.uid).get()
-    if( u.data().role == "Manager"){
-      setRole("Manager")
-      db.collection("Reports").orderBy("date","asc").onSnapshot(querySnapshot => {
-        let r = [];
-        querySnapshot.forEach(doc => {
+  const getUser = async () => {
+    const u = await db
+      .collection("Users")
+      .doc(firebase.auth().currentUser.uid)
+      .get();
+    if (u.data().role == "Manager") {
+      setRole("Manager");
+      const unsub = db
+        .collection("Reports")
+        .orderBy("date", "asc")
+        .onSnapshot((querySnapshot) => {
+          let r = [];
+          querySnapshot.forEach((doc) => {
             r.push({ id: doc.id, ...doc.data() });
+          });
+          setReports([...r]);
         });
-        setReports([...r]);
-    });
-    }
-    else{
-      db.collection("Reports").orderBy("date","asc").where( "user" == firebase.auth().currentUser.uid).onSnapshot(querySnapshot => {
-        let r = [];
-        querySnapshot.forEach(doc => {
-            r.push({ id: doc.id, ...doc.data() });
+      return unsub;
+    } else {
+      // console.log("here", firebase.auth().currentUser.uid);
+      const unsub = db
+        .collection("Reports")
+        .where("user", "==", firebase.auth().currentUser.uid)
+        .orderBy("date", "asc")
+        .onSnapshot((querySnapshot) => {
+          const rps = [];
+          querySnapshot.forEach((doc) => {
+            rps.push({ id: doc.id, ...doc.data() });
+          });
+          setReports([...rps]);
         });
-        setReports([...r]);
-    });
+      return unsub;
     }
-    //console.log("uzzzzzzzzzzeeeeeeeeeeeerrrrrrrr", firebase.auth().currentUser.uid)
-  }
+  };
 
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: colors.LIGHTGRAY }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       {/* <StatusBar hidden={false} /> */}
       <Header
         backgroundColor={colors.GREEN}
         leftComponent={{
-          icon: 'menu',
-          type: 'feather',
+          icon: "menu",
+          type: "feather",
           color: colors.WHITE,
           size: 25,
           component: TouchableWithoutFeedback,
           onPress: () => {
-            props.navigation.openDrawer()
+            props.navigation.openDrawer();
           },
         }}
         centerComponent={
           <Text style={{ fontSize: 20, color: colors.WHITE }}>My Reports</Text>
         }
         rightComponent={{
-          icon: 'plus',
-          type: 'feather',
+          icon: "plus",
+          type: "feather",
           color: colors.WHITE,
           size: 25,
           component: TouchableWithoutFeedback,
           onPress: () => {
-            props.navigation.navigate('ReportUserCreate')
+            props.navigation.navigate("ReportUserCreate");
           },
         }}
         // containerStyle={styles.headerStyle}
@@ -115,72 +124,96 @@ export default function ReportUser(props) {
         style={{
           flex: 1,
           // backgroundColor: 'red',
-          width: '90%',
-          alignSelf: 'center',
+          width: "90%",
+          alignSelf: "center",
         }}
       >
-        <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-          <Text style={{ fontSize: 25, color: colors.BLACK }}>
-            My Reports
-          </Text>
+        <View style={{ flex: 1, justifyContent: "flex-end" }}>
+          <Text style={{ fontSize: 25, color: colors.BLACK }}>My Reports</Text>
         </View>
-        <View style={{ flex: 10 }}>         
+        <View style={{ flex: 10 }}>
           <ScrollView>
-          {reports ? reports.map((item, index) => (
-            <View
-              style={{
-                width: '100%',
-                backgroundColor: colors.WHITE,
-                minHeight: 100,
-                marginTop: 10,
-                flexDirection: 'row',
-                borderRadius: 10,
-                shadowColor: '#000',
-                shadowOffset: {
-                  width: 0,
-                  height: 1,
-                },
-                shadowOpacity: 0.25,
-                shadowRadius: 1,
+            {reports
+              ? reports.map((item, index) => (
+                  <View
+                    style={{
+                      width: "100%",
+                      backgroundColor: colors.WHITE,
+                      minHeight: 100,
+                      marginTop: 10,
+                      flexDirection: "row",
+                      borderRadius: 10,
+                      shadowColor: "#000",
+                      shadowOffset: {
+                        width: 0,
+                        height: 1,
+                      },
+                      shadowOpacity: 0.25,
+                      shadowRadius: 1,
 
-                elevation: 1,
-              }}
-            >
-              <TouchableOpacity
-                onPress={()=>props.navigation.navigate('ReportDetail',{item,role})}
-                  // style={{
-                  //   width: '100%',
-                  //   backgroundColor: colors.GREEN,
-                  //   minHeight: 100,
-                  //   justifyContent: 'center',
-                  //   alignItems: 'center',
-                  //   borderTopRightRadius:10,
-                  //   borderBottomRightRadius:10
-                  // }}
-                >
-              <View style={{ width: '100%', justifyContent:"space-evenly", paddingLeft:10}}>
-                <Text style={{fontWeight:"bold", color:colors.black, fontSize:16}}>{index + 1}. {item.title} </Text>
-                {/* <Text style={{ color:colors.DARKGRAY}}>{item.location}</Text> */}
-                <Text style={{ color:colors.DARKGRAY}}>{item.date.split("GMT")[0]}</Text>
-                <Text style={{ color:colors.DARKGRAY}}>{item.status}</Text>
-                <Text style={{ color:colors.BLACK}}>{item.description}</Text>
-              </View>
-              </TouchableOpacity>
-              {/* <View style={{ width: '25%' }}>
+                      elevation: 1,
+                    }}
+                  >
+                    <TouchableOpacity
+                      onPress={() =>
+                        props.navigation.navigate("ReportDetail", {
+                          item,
+                          role,
+                        })
+                      }
+                      // style={{
+                      //   width: '100%',
+                      //   backgroundColor: colors.GREEN,
+                      //   minHeight: 100,
+                      //   justifyContent: 'center',
+                      //   alignItems: 'center',
+                      //   borderTopRightRadius:10,
+                      //   borderBottomRightRadius:10
+                      // }}
+                    >
+                      <View
+                        style={{
+                          width: "100%",
+                          justifyContent: "space-evenly",
+                          paddingLeft: 10,
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontWeight: "bold",
+                            color: colors.black,
+                            fontSize: 16,
+                          }}
+                        >
+                          {index + 1}. {item.title}{" "}
+                        </Text>
+                        {/* <Text style={{ color:colors.DARKGRAY}}>{item.location}</Text> */}
+                        <Text style={{ color: colors.DARKGRAY }}>
+                          {item.date.split("GMT")[0]}
+                        </Text>
+                        <Text style={{ color: colors.DARKGRAY }}>
+                          {item.status}
+                        </Text>
+                        <Text style={{ color: colors.BLACK }}>
+                          {item.description}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                    {/* <View style={{ width: '25%' }}>
                 
                   <Text style={{color:colors.WHITE,}}>Details</Text>
                 
               </View> */}
-            </View>
-          )) : null}
-          <View style={{ height: 50 }}></View>
-        </ScrollView>
-          
+                  </View>
+                ))
+              : null}
+            <View style={{ height: 50 }}></View>
+          </ScrollView>
         </View>
       </View>
       {/* </TouchableWithoutFeedback> */}
     </KeyboardAvoidingView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -189,4 +222,4 @@ const styles = StyleSheet.create({
     // flexDirection: 'column',
     // justifyContent: 'center',
   },
-})
+});
